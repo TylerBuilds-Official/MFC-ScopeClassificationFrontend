@@ -1,0 +1,320 @@
+/* ── Session Grid ─────────────────────────────────────────────────── */
+
+.session-grid {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.session-grid thead th {
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky;
+  top: 0;
+  background: var(--bg-primary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.session-grid thead th:hover {
+  color: var(--text-secondary);
+}
+
+.session-grid tbody tr {
+  transition: background 0.12s ease;
+  cursor: pointer;
+}
+
+.session-grid tbody tr:hover {
+  background: var(--bg-hover);
+}
+
+.session-grid tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.session-grid tbody td:first-child {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.session-id {
+  font-family: var(--font-mono), sans-serif;
+  font-size: 12px;
+  color: var(--accent);
+}
+
+/* ── Session Detail ──────────────────────────────────────────────── */
+
+.session-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+
+.stat-card .stat-label {
+  font-size: 11.5px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.stat-card .stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stat-card .stat-value.aligned      { color: var(--match-aligned); }
+.stat-card .stat-value.partial      { color: var(--match-partial); }
+.stat-card .stat-value.erector-only { color: var(--match-erector-only); }
+.stat-card .stat-value.mfc-only     { color: var(--match-mfc-only); }
+
+/* ── Filters ─────────────────────────────────────────────────────── */
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.filter-bar select,
+.filter-bar input {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 7px 12px;
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.filter-bar select:focus,
+.filter-bar input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.filter-select {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 7px 12px;
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* ── Filter Chips ─────────────────────────────────────────────────── */
+
+.filter-chip-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.filter-chip-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-right: 2px;
+}
+
+.filter-chip-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border-subtle);
+  margin: 0 6px;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 550;
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.filter-chip:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* Active states — match type colors */
+.filter-chip.active[data-type="aligned"]       { background: rgba(52, 211, 153, 0.14);  color: var(--match-aligned);      border-color: var(--match-aligned); }
+.filter-chip.active[data-type="partial"]       { background: rgba(251, 191, 36, 0.14);  color: var(--match-partial);      border-color: var(--match-partial); }
+.filter-chip.active[data-type="erector-only"]  { background: rgba(249, 115, 22, 0.14);  color: var(--match-erector-only); border-color: var(--match-erector-only); }
+.filter-chip.active[data-type="mfc-only"]      { background: rgba(167, 139, 250, 0.14); color: var(--match-mfc-only);     border-color: var(--match-mfc-only); }
+
+/* Active states — risk level colors */
+.filter-chip.active[data-risk="critical"] { background: rgba(239, 68, 68, 0.14);  color: var(--risk-critical); border-color: var(--risk-critical); }
+.filter-chip.active[data-risk="high"]     { background: rgba(249, 115, 22, 0.14); color: var(--risk-high);     border-color: var(--risk-high); }
+.filter-chip.active[data-risk="medium"]   { background: rgba(234, 179, 8, 0.14);  color: var(--risk-medium);   border-color: var(--risk-medium); }
+.filter-chip.active[data-risk="low"]      { background: rgba(34, 197, 94, 0.14);  color: var(--risk-low);      border-color: var(--risk-low); }
+
+/* Clear chip */
+.filter-chip.clear {
+  border-color: transparent;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.filter-chip.clear:hover {
+  color: var(--status-error);
+}
+
+.filter-chip-count {
+  margin-left: auto;
+  font-family: var(--font-mono), sans-serif;
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+/* ── Match Value Colors (table cells) ────────────────────────────── */
+
+.match-val {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.match-val.aligned      { color: var(--match-aligned); }
+.match-val.partial      { color: var(--match-partial); }
+.match-val.erector-only { color: var(--match-erector-only); }
+.match-val.mfc-only     { color: var(--match-mfc-only); }
+
+.risk-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--risk-high);
+}
+
+/* ── Inline Edit ────────────────────────────────────────────────── */
+
+.editable-value {
+  font-size: 13.5px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.editable-text {
+  cursor: pointer;
+  border-bottom: 1px dashed transparent;
+  transition: border-color 0.1s ease;
+}
+
+.editable-text:hover {
+  border-bottom-color: var(--text-muted);
+}
+
+.inline-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border-default);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.inline-add-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-muted);
+}
+
+.inline-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.inline-edit-input {
+  flex: 1;
+  padding: 3px 8px;
+  font-size: 13px;
+  font-family: inherit;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  outline: none;
+  min-width: 0;
+}
+
+.inline-edit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.1s ease;
+}
+
+.inline-edit-btn.save {
+  background: var(--accent);
+  color: #fff;
+}
+
+.inline-edit-btn.save:hover {
+  opacity: 0.85;
+}
+
+.inline-edit-btn.save:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.inline-edit-btn.cancel {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.inline-edit-btn.cancel:hover {
+  background: var(--bg-active);
+  color: var(--text-primary);
+}

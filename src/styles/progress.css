@@ -1,0 +1,170 @@
+/* ── Progress Card ────────────────────────────────────────────────── */
+
+.progress-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.progress-card.done {
+  border-color: var(--status-complete);
+}
+
+.progress-card.failed {
+  border-color: var(--status-error);
+}
+
+.progress-card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.progress-card-icon {
+  display: flex;
+  align-items: center;
+  color: var(--accent);
+}
+
+.progress-card.done .progress-card-icon    { color: var(--status-complete); }
+.progress-card.failed .progress-card-icon  { color: var(--status-error); }
+
+.progress-card-icon .spin {
+  animation: progress-spin 1s linear infinite;
+}
+
+@keyframes progress-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.progress-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.progress-card-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ── Phase Pipeline ──────────────────────────────────────────────── */
+
+.progress-phases {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 18px;
+}
+
+.phase-step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.phase-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.phase-step.past .phase-dot {
+  background: rgba(52, 211, 153, 0.15);
+  color: var(--status-complete);
+}
+
+.phase-step.current .phase-dot {
+  background: rgba(78, 140, 255, 0.15);
+  color: var(--accent);
+}
+
+.progress-card.done .phase-step.current .phase-dot {
+  background: rgba(52, 211, 153, 0.15);
+  color: var(--status-complete);
+}
+
+.progress-card.failed .phase-step.current .phase-dot {
+  background: rgba(248, 113, 113, 0.15);
+  color: var(--status-error);
+}
+
+.phase-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.phase-step.past .phase-label    { color: var(--status-complete); }
+.phase-step.current .phase-label { color: var(--text-primary); font-weight: 600; }
+
+.phase-line {
+  width: 40px;
+  height: 2px;
+  background: var(--border-subtle);
+  margin: 0 8px;
+  flex-shrink: 0;
+}
+
+.phase-line.filled {
+  background: var(--status-complete);
+}
+
+/* ── Live Stats ──────────────────────────────────────────────────── */
+
+.progress-stats {
+  display: flex;
+  gap: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.progress-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.progress-stat-val {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-stat-val.aligned      { color: var(--match-aligned); }
+.progress-stat-val.erector-only { color: var(--match-erector-only); }
+.progress-stat-val.mfc-only     { color: var(--match-mfc-only); }
+
+.progress-stat-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+/* ── Error ────────────────────────────────────────────────────────── */
+
+.progress-error {
+  margin-top: 14px;
+  padding: 10px 14px;
+  background: rgba(248, 113, 113, 0.08);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--status-error);
+  line-height: 1.5;
+}
