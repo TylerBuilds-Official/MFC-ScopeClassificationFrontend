@@ -1,13 +1,16 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Trash2 } from 'lucide-react'
 
+import { useAuth } from '../auth'
 import Header from '../components/global/Header'
 import StatusBadge from '../components/global/StatusBadge'
 import LoadingSpinner from '../components/global/LoadingSpinner'
 import EmptyState from '../components/global/EmptyState'
 import CustomSelect from '../components/global/CustomSelect'
+import ConfirmDialog from '../components/global/ConfirmDialog'
 import { useApi } from '../hooks/useApi'
-import { getSessions } from '../api/sessions'
+import { getSessions, deleteSession } from '../api/sessions'
 import type { SessionListItem } from '../types/session'
 
 import '@/styles/sessions.css'
@@ -18,13 +21,16 @@ type SortDir = 'asc' | 'desc'
 
 
 export default function SessionsPage() {
-  const navigate = useNavigate()
+  const navigate   = useNavigate()
+  const { user }   = useAuth()
+  const isAdmin    = user?.is_admin ?? false
 
   const [statusFilter, setStatusFilter] = useState<string>('')
   const [sortKey, setSortKey]           = useState<SortKey>('id')
   const [sortDir, setSortDir]           = useState<SortDir>('desc')
+  const [deleteTarget, setDeleteTarget] = useState<SessionListItem | null>(null)
 
-  const { data, loading, error } = useApi(
+  const { data, loading, error, refetch } = useApi(
     () => getSessions(100, 0, statusFilter || undefined),
     [statusFilter],
   )
@@ -64,6 +70,19 @@ export default function SessionsPage() {
       month: 'short', day: 'numeric', year: 'numeric',
       hour: 'numeric', minute: '2-digit',
     })
+  }
+
+  async function handleDelete() {
+    if (!deleteTarget) return
+
+    try {
+      await deleteSession(deleteTarget.id)
+      setDeleteTarget(null)
+      refetch()
+    } catch (err) {
+      console.error('Delete failed:', err)
+      setDeleteTarget(null)
+    }
   }
 
   return (
@@ -112,6 +131,7 @@ export default function SessionsPage() {
                 <th onClick={() => toggleSort('total_erector_only')}>Erector Only{sortIndicator('total_erector_only')}</th>
                 <th onClick={() => toggleSort('total_mfc_only')}>MFC Only{sortIndicator('total_mfc_only')}</th>
                 <th onClick={() => toggleSort('created_at')}>Created{sortIndicator('created_at')}</th>
+                {isAdmin && <th style={{ width: 44 }} />}
               </tr>
             </thead>
             <tbody>
@@ -126,12 +146,37 @@ export default function SessionsPage() {
                   <td>{s.total_erector_only ?? '—'}</td>
                   <td>{s.total_mfc_only ?? '—'}</td>
                   <td style={{ whiteSpace: 'nowrap' }}>{formatDate(s.created_at)}</td>
+                  {isAdmin && (
+                    <td>
+                      <button
+                        className="row-delete-btn"
+                        title="Delete session"
+                        onClick={e => { e.stopPropagation(); setDeleteTarget(s) }}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
           </table>
         )}
       </main>
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title="Delete Session"
+        message={
+          deleteTarget
+            ? `Delete session #${deleteTarget.id}${deleteTarget.erector_name_raw ? ` (${deleteTarget.erector_name_raw})` : ''}? This hides it from the list but data is preserved.`
+            : ''
+        }
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </>
   )
 }

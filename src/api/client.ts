@@ -1,3 +1,7 @@
+import { msalInstance } from '../auth/msalInstance'
+import { apiTokenRequest } from '../auth/authConfig'
+
+
 const BASE_URL = '/api'
 
 
@@ -14,6 +18,25 @@ export class ApiError extends Error {
 }
 
 
+async function getAuthHeaders(): Promise<Record<string, string>> {
+  const accounts = msalInstance.getAllAccounts()
+  if (accounts.length === 0) return {}
+
+  try {
+    const response = await msalInstance.acquireTokenSilent({
+      ...apiTokenRequest,
+      account: accounts[0],
+    })
+
+    return { Authorization: `Bearer ${response.accessToken}` }
+  } catch {
+    console.warn('[client] Silent token acquisition failed — request will be unauthenticated')
+
+    return {}
+  }
+}
+
+
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
     const body = await response.json().catch(() => ({ detail: response.statusText }))
@@ -25,7 +48,8 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
 
 export async function get<T>(path: string, params?: Record<string, string | number>): Promise<T> {
-  const url = new URL(`${BASE_URL}${path}`, window.location.origin)
+  const url  = new URL(`${BASE_URL}${path}`, window.location.origin)
+  const auth = await getAuthHeaders()
 
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
@@ -33,16 +57,19 @@ export async function get<T>(path: string, params?: Record<string, string | numb
     })
   }
 
-  const response = await fetch(url.toString())
+  const response = await fetch(url.toString(), {
+    headers: { ...auth },
+  })
 
   return handleResponse<T>(response)
 }
 
 
 export async function patch<T>(path: string, body: Record<string, unknown>): Promise<T> {
+  const auth     = await getAuthHeaders()
   const response = await fetch(`${BASE_URL}${path}`, {
     method:  'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...auth },
     body:    JSON.stringify(body),
   })
 
@@ -51,9 +78,10 @@ export async function patch<T>(path: string, body: Record<string, unknown>): Pro
 
 
 export async function put<T>(path: string, body: Record<string, unknown>): Promise<T> {
+  const auth     = await getAuthHeaders()
   const response = await fetch(`${BASE_URL}${path}`, {
     method:  'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...auth },
     body:    JSON.stringify(body),
   })
 
@@ -62,7 +90,11 @@ export async function put<T>(path: string, body: Record<string, unknown>): Promi
 
 
 export async function del_<T>(path: string): Promise<T> {
-  const response = await fetch(`${BASE_URL}${path}`, { method: 'DELETE' })
+  const auth     = await getAuthHeaders()
+  const response = await fetch(`${BASE_URL}${path}`, {
+    method:  'DELETE',
+    headers: { ...auth },
+  })
 
   return handleResponse<T>(response)
 }
@@ -70,10 +102,11 @@ export async function del_<T>(path: string): Promise<T> {
 
 export async function post<T>(path: string, body: FormData | Record<string, unknown>): Promise<T> {
   const isFormData = body instanceof FormData
+  const auth       = await getAuthHeaders()
 
   const response = await fetch(`${BASE_URL}${path}`, {
-    method: 'POST',
-    headers: isFormData ? {} : { 'Content-Type': 'application/json' },
+    method:  'POST',
+    headers: isFormData ? { ...auth } : { 'Content-Type': 'application/json', ...auth },
     body:    isFormData ? body : JSON.stringify(body),
   })
 

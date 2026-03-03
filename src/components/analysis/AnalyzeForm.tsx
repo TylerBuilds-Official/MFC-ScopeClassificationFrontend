@@ -1,5 +1,6 @@
 import { useState, useRef, type DragEvent } from 'react'
 import { Upload, FileText, X } from 'lucide-react'
+import { useAuth } from '../../auth'
 
 
 export interface AnalyzeFormData {
@@ -19,13 +20,16 @@ interface AnalyzeFormProps {
 
 
 export default function AnalyzeForm({ onSubmit, loading }: AnalyzeFormProps) {
+  const { user } = useAuth()
+
   const [networkPath, setNetworkPath] = useState('')
   const [erectorName, setErectorName] = useState('')
   const [jobNumber, setJobNumber]     = useState('')
   const [jobName, setJobName]         = useState('')
-  const [initiatedBy, setInitiatedBy] = useState('')
   const [file, setFile]               = useState<File | null>(null)
   const [dragOver, setDragOver]       = useState(false)
+
+  const initiatedBy = user?.display_name ?? ''
 
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -143,9 +147,8 @@ export default function AnalyzeForm({ onSubmit, loading }: AnalyzeFormProps) {
           <input
             type="text"
             value={initiatedBy}
-            onChange={e => setInitiatedBy(e.target.value)}
-            placeholder="e.g. tylere"
-            disabled={loading}
+            readOnly
+            className="readonly-field"
           />
         </div>
       </div>

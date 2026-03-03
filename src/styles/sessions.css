@@ -325,3 +325,30 @@
   background: var(--bg-active);
   color: var(--text-primary);
 }
+
+
+/* ── Row delete button (admin) ───────────────────────────────────── */
+
+.row-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.12s ease;
+}
+
+tr:hover .row-delete-btn {
+  opacity: 1;
+}
+
+.row-delete-btn:hover {
+  background: rgba(248, 113, 113, 0.1);
+  color: var(--status-error);
+}

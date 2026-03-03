@@ -1,4 +1,4 @@
-import { get, patch } from './client'
+import { get, patch, del_ } from './client'
 import type { SessionListResponse, SessionDetail, SessionProgress } from '../types/session'
 
 
@@ -33,4 +33,10 @@ export async function updateSession(
 ): Promise<{ updated: number }> {
 
   return patch<{ updated: number }>(`/sessions/${id}`, data)
+}
+
+
+export async function deleteSession(id: number): Promise<{ deleted: number }> {
+
+  return del_<{ deleted: number }>(`/sessions/${id}`)
 }

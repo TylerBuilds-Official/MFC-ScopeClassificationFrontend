@@ -1,24 +1,29 @@
 import { useState, useEffect } from 'react'
-import { ChevronDown, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronRight, CheckCircle, Circle, Loader2 } from 'lucide-react'
 
 import RiskBadge from '../../components/global/RiskBadge'
 import MfcIdLink from '../../components/global/MfcIdLink'
 import AiText from '../../components/global/AiText'
 import type { MatchRow } from '../../types/match'
+import type { ActionItem } from '../../types/actionItem'
 
 
 interface MatchTableProps {
-  matches:           MatchRow[]
-  showSession?:      boolean
-  showCategory?:     boolean
-  sessionMeta?:      Record<number, { erector?: string; job?: string; file?: string }>
-  categoryMap?:      Map<number, string>
-  highlightMatchId?: number | null
-  onHighlightDone?:  () => void
+  matches:              MatchRow[]
+  showSession?:         boolean
+  showCategory?:        boolean
+  sessionMeta?:         Record<number, { erector?: string; job?: string; file?: string }>
+  categoryMap?:         Map<number, string>
+  highlightMatchId?:    number | null
+  onHighlightDone?:     () => void
+  actionByMatchId?:     Map<number, ActionItem>
+  busyActionIds?:       Set<number>
+  onToggleAddressed?:   (matchId: number) => void
 }
 
 
-export default function MatchTable({ matches, showSession, showCategory = true, sessionMeta, categoryMap, highlightMatchId, onHighlightDone }: MatchTableProps) {
+export default function MatchTable({ matches, showSession, showCategory = true, sessionMeta, categoryMap, highlightMatchId, onHighlightDone, actionByMatchId, busyActionIds, onToggleAddressed }: MatchTableProps) {
+  const hasTriage = actionByMatchId != null && onToggleAddressed != null
   const [expandedId, setExpandedId] = useState<number | null>(null)
 
   /* ── Auto-expand + scroll to highlighted match ────────────────── */
@@ -83,6 +88,33 @@ export default function MatchTable({ matches, showSession, showCategory = true, 
                   #{m.session_id} — {sessionMeta[m.session_id].erector}
                 </span>
               )}
+
+              {hasTriage && (() => {
+                const action = actionByMatchId.get(m.id)
+                if (!action) return null
+
+                const isBusy      = busyActionIds?.has(action.id) ?? false
+                const isAddressed = action.status === 'addressed'
+
+                return (
+                  <button
+                    className={`triage-btn ${isAddressed ? 'addressed' : ''}`}
+                    title={isAddressed ? 'Mark unreviewed' : 'Mark addressed'}
+                    disabled={isBusy}
+                    onClick={e => { e.stopPropagation(); onToggleAddressed(m.id) }}
+                  >
+                    {isBusy
+                      ? <Loader2 size={14} className="triage-spinner" />
+                      : isAddressed
+                        ? <CheckCircle size={14} />
+                        : <Circle size={14} />
+                    }
+                    <span className="triage-label">
+                      {isAddressed ? 'Addressed' : 'Mark Done'}
+                    </span>
+                  </button>
+                )
+              })()}
             </div>
 
             {/* Expanded — exclusion text + AI reasoning + risk notes */}

@@ -527,3 +527,107 @@
   flex-direction: column;
   gap: 8px;
 }
+
+
+/* ── Triage button (high risk page) ──────────────────────────────── */
+
+.triage-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.triage-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(100, 160, 220, 0.06);
+}
+
+.triage-btn.addressed {
+  border-color: var(--match-aligned);
+  color: var(--match-aligned);
+  background: rgba(74, 222, 128, 0.06);
+}
+
+.triage-btn.addressed:hover {
+  border-color: var(--text-muted);
+  color: var(--text-muted);
+  background: transparent;
+}
+
+.triage-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.triage-spinner {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.triage-label {
+  font-weight: 500;
+}
+
+
+/* ── All addressed banner ────────────────────────────────────────── */
+
+.hr-complete-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  border-radius: var(--radius-md);
+  background: rgba(74, 222, 128, 0.06);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  color: var(--match-aligned);
+}
+
+.hr-complete-banner svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.hr-complete-banner div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hr-complete-banner strong {
+  font-size: 13.5px;
+  color: var(--text-primary);
+}
+
+.hr-complete-banner span {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+.hr-banner-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: inherit;
+}
+
+.hr-banner-link:hover {
+  color: var(--text-primary);
+}

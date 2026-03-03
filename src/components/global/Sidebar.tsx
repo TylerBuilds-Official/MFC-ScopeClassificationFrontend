@@ -1,7 +1,10 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutGrid, Search, AlertTriangle, Grid3X3, Upload, FileText } from 'lucide-react'
+import { LayoutGrid, Search, AlertTriangle, GraduationCap, Upload, FileText, LogOut } from 'lucide-react'
+import { useAuth } from '../../auth'
 
 export default function Sidebar() {
+  const { user, logout } = useAuth()
+
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
@@ -21,10 +24,12 @@ export default function Sidebar() {
           <AlertTriangle size={18} />
           High Risk
         </NavLink>
-        <NavLink to="/heatmap" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-          <Grid3X3 size={18} />
-          Heatmap
-        </NavLink>
+        {user?.is_estimator && (
+          <NavLink to="/training" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            <GraduationCap size={18} />
+            Train
+          </NavLink>
+        )}
       </nav>
 
       <div className="sidebar-section-label">Manage</div>
@@ -35,13 +40,31 @@ export default function Sidebar() {
         </NavLink>
       </nav>
 
-      <div className="sidebar-section-label">Actions</div>
-      <nav className="sidebar-nav">
-        <NavLink to="/analyze" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-          <Upload size={18} />
-          Analyze PDF
-        </NavLink>
-      </nav>
+      {user?.is_estimator && (
+        <>
+          <div className="sidebar-section-label">Actions</div>
+          <nav className="sidebar-nav">
+            <NavLink to="/analyze" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+              <Upload size={18} />
+              Analyze PDF
+            </NavLink>
+          </nav>
+        </>
+      )}
+
+      {/* ── User footer ─────────────────────────────────── */}
+      <div className="sidebar-spacer" />
+      {user && (
+        <div className="sidebar-user">
+          <div className="sidebar-user-info">
+            <span className="sidebar-user-name">{user.display_name}</span>
+            <span className="sidebar-user-role">{user.role}</span>
+          </div>
+          <button className="sidebar-sign-out" onClick={logout} title="Sign out">
+            <LogOut size={14} />
+          </button>
+        </div>
+      )}
     </aside>
   )
 }
