@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, AlertTriangle } from 'lucide-react'
+import { AlertTriangle, ClipboardList } from 'lucide-react'
 
 import Header from '../components/global/Header'
 import LoadingSpinner from '../components/global/LoadingSpinner'
@@ -73,9 +73,18 @@ export default function HighRiskSessionPage() {
             )}
           </div>
 
-          <span className="filter-chip-count">
-            {highRisk.length} item{highRisk.length !== 1 ? 's' : ''}
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span className="filter-chip-count">
+              {highRisk.length} item{highRisk.length !== 1 ? 's' : ''}
+            </span>
+            <button
+              className="action-link-btn"
+              onClick={() => navigate(`/sessions/${id}?tab=action-items`)}
+            >
+              <ClipboardList size={13} />
+              Action Items
+            </button>
+          </div>
         </div>
 
         {(session.loading || matches.loading) && (

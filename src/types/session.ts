@@ -11,6 +11,7 @@ export interface SessionListItem {
   total_erector_only: number | null
   total_mfc_only:     number | null
   total_partial:      number | null
+  total_high_risk:    number | null
   created_at:         string | null
   completed_at:       string | null
 }

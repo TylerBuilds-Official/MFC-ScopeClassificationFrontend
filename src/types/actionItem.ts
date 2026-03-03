@@ -15,7 +15,8 @@ export interface ActionItem {
   risk_notes:    string | null
   ai_reasoning:  string | null
   category_id:   number | null
-  mfc_item_type: string | null
+  mfc_exclusion_id: number | null
+  mfc_item_type:    string | null
 }
 
 export interface ActionItemSummary {

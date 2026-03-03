@@ -11,6 +11,9 @@ import {
 } from 'lucide-react'
 
 import RiskBadge from '../global/RiskBadge'
+import MfcIdLink from '../global/MfcIdLink'
+import AiText from '../global/AiText'
+import StatusContextMenu from './StatusContextMenu'
 import type { ActionItem } from '../../types/actionItem'
 
 
@@ -90,6 +93,10 @@ export default function ActionItemRow({
                         'var(--match-erector-only)'
 
   return (
+    <StatusContextMenu
+      currentStatus={item.status}
+      onSelect={status => onStatus(item.id, status)}
+    >
     <div className={`action-item-row ${isDismissed ? 'dismissed' : ''} status-${item.status}`}>
       {/* Main row */}
       <div className="action-item-main">
@@ -173,7 +180,10 @@ export default function ActionItemRow({
                 <p className="excl-text-content">{item.erector_text}</p>
               </div>
               <div className="excl-text-block mfc">
-                <div className="excl-text-label">MFC</div>
+                <div className="excl-text-label">
+                  MFC
+                  <MfcIdLink id={item.mfc_exclusion_id} />
+                </div>
                 <p className="excl-text-content">{item.mfc_text}</p>
               </div>
             </div>
@@ -184,6 +194,7 @@ export default function ActionItemRow({
             <div className="excl-text-block mfc">
               <div className="excl-text-label">
                 MFC Match
+                <MfcIdLink id={item.mfc_exclusion_id} />
                 {item.mfc_item_type && item.mfc_item_type !== 'Exclusion' && (
                   <span className={`excl-type-badge ${item.mfc_item_type.toLowerCase()}`}>
                     {item.mfc_item_type}
@@ -198,13 +209,13 @@ export default function ActionItemRow({
           {item.ai_reasoning && (
             <div className="detail-section">
               <span className="detail-label">AI Reasoning</span>
-              <p className="detail-text">{item.ai_reasoning}</p>
+              <p className="detail-text"><AiText text={item.ai_reasoning} /></p>
             </div>
           )}
           {item.risk_notes && (
             <div className="detail-section">
               <span className="detail-label">Risk Notes</span>
-              <p className="detail-text risk">{item.risk_notes}</p>
+              <p className="detail-text risk"><AiText text={item.risk_notes} /></p>
             </div>
           )}
 
@@ -258,6 +269,7 @@ export default function ActionItemRow({
         </div>
       )}
     </div>
+    </StatusContextMenu>
   )
 }
 

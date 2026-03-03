@@ -5,6 +5,7 @@ import Header from '../components/global/Header'
 import StatusBadge from '../components/global/StatusBadge'
 import LoadingSpinner from '../components/global/LoadingSpinner'
 import EmptyState from '../components/global/EmptyState'
+import CustomSelect from '../components/global/CustomSelect'
 import { useApi } from '../hooks/useApi'
 import { getSessions } from '../api/sessions'
 import type { SessionListItem } from '../types/session'
@@ -73,17 +74,18 @@ export default function SessionsPage() {
         <div className="page-header">
           <h2>Sessions</h2>
           <div className="filter-bar">
-            <select
+            <CustomSelect
+              options={[
+                { value: '',           label: 'All Statuses' },
+                { value: 'Complete',   label: 'Complete' },
+                { value: 'Classified', label: 'Classified' },
+                { value: 'Extracted',  label: 'Extracted' },
+                { value: 'Ingested',   label: 'Ingested' },
+                { value: 'Error',      label: 'Error' },
+              ]}
               value={statusFilter}
-              onChange={e => setStatusFilter(e.target.value)}
-            >
-              <option value="">All Statuses</option>
-              <option value="Complete">Complete</option>
-              <option value="Classified">Classified</option>
-              <option value="Extracted">Extracted</option>
-              <option value="Ingested">Ingested</option>
-              <option value="Error">Error</option>
-            </select>
+              onChange={setStatusFilter}
+            />
           </div>
         </div>
 

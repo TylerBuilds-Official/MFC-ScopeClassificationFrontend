@@ -1,4 +1,5 @@
-import { useState, useCallback, useRef, useMemo } from 'react'
+import { useState, useCallback, useRef, useMemo, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Plus, Pencil, Trash2, Check, X, Layers, ChevronDown, ChevronRight, Search, ArrowRight } from 'lucide-react'
 
 import Header from '../components/global/Header'
@@ -8,6 +9,7 @@ import { useApi } from '../hooks/useApi'
 import { getCategories } from '../api/categories'
 import {
   getMfcExclusions,
+  getMfcExclusion,
   createMfcExclusion,
   updateMfcExclusion,
   deleteMfcExclusion,
@@ -15,7 +17,10 @@ import {
 import type { Category } from '../types/category'
 import type { MfcExclusion } from '../types/exclusion'
 
+import CustomSelect from '../components/global/CustomSelect'
+import ConfirmDialog from '../components/global/ConfirmDialog'
 import '../styles/exclusions.css'
+import '../styles/action-items.css'
 
 
 const ALL_CATEGORIES = -1
@@ -40,11 +45,31 @@ function parseSearch(raw: string): ParsedSearch {
 
 
 export default function ExclusionsPage() {
-  const [activeCatId, setActiveCatId] = useState<number>(ALL_CATEGORIES)
-  const [searchInput, setSearchInput] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [activeCatId, setActiveCatId]   = useState<number>(ALL_CATEGORIES)
+  const [highlightId, setHighlightId]   = useState<number | null>(null)
+  const [searchInput, setSearchInput]   = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
 
   const debounceRef = useRef<ReturnType<typeof setTimeout>>()
+
+  /* ── Deep-link highlight: ?highlight=<id> ────────────────────────── */
+
+  useEffect(() => {
+    const raw = searchParams.get('highlight')
+    if (!raw) return
+
+    const id = Number(raw)
+    if (!id) return
+
+    setHighlightId(id)
+    searchParams.delete('highlight')
+    setSearchParams(searchParams, { replace: true })
+
+    getMfcExclusion(id)
+      .then(exc => setActiveCatId(exc.CategoryId))
+      .catch(() => { /* exclusion not found — no-op */ })
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleSearchChange(value: string) {
     setSearchInput(value)
@@ -107,6 +132,8 @@ export default function ExclusionsPage() {
                   allExclusions={allExclusions}
                   categories={categories}
                   onNavigate={(catId) => { setActiveCatId(catId) }}
+                  highlightId={highlightId}
+                  onHighlightDone={() => setHighlightId(null)}
                 />
               ) : null}
             </div>
@@ -200,15 +227,39 @@ interface AllExclusionsPanelProps {
   search:     ParsedSearch
 }
 
+interface AddExclusionState {
+  text:       string
+  categoryId: number | null
+  itemType:   string
+  saving:     boolean
+}
+
+const ITEM_TYPES = ['Exclusion', 'Condition', 'Clarification'] as const
+
 function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
-  const [collapsed, setCollapsed] = useState<Set<number>>(new Set())
-  const [editId, setEditId]       = useState<number | null>(null)
-  const [busy, setBusy]           = useState(false)
+  const [collapsed, setCollapsed]     = useState<Set<number>>(new Set())
+  const [editId, setEditId]           = useState<number | null>(null)
+  const [busy, setBusy]               = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<MfcExclusion | null>(null)
+  const [addModal, setAddModal]       = useState<AddExclusionState | null>(null)
+  const [activeTypes, setActiveTypes] = useState<Set<string>>(new Set())
 
   const { data, loading, refetch } = useApi(() => getMfcExclusions(), [])
   const exclusions                 = data?.exclusions ?? []
 
-  const isSearching = search.raw.length > 0
+  const isSearching   = search.raw.length > 0
+  const isTypeFiltered = activeTypes.size > 0
+  const isFiltering    = isSearching || isTypeFiltered
+
+  function toggleType(type: string) {
+    setActiveTypes(prev => {
+      const next = new Set(prev)
+      if (next.has(type)) next.delete(type)
+      else                next.add(type)
+
+      return next
+    })
+  }
 
   function toggleCollapse(catId: number) {
     setCollapsed(prev => {
@@ -222,16 +273,18 @@ function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
 
   const catMap = new Map(categories.map(c => [c.Id, c.Name]))
 
-  // Filter exclusions based on search
+  // Filter exclusions based on search + type
   const filtered = useMemo(() => {
-    if (!isSearching) return exclusions
-
     return exclusions.filter(exc => {
+      if (isTypeFiltered && !activeTypes.has(exc.ItemType)) return false
+
+      if (!isSearching) return true
+
       if (search.idSearch !== null) return exc.Id === search.idSearch
 
       return exc.Exclusion.toLowerCase().includes(search.text)
     })
-  }, [exclusions, search, isSearching])
+  }, [exclusions, search, isSearching, isTypeFiltered, activeTypes])
 
   // Group by category, maintain sort order
   const grouped = new Map<number, MfcExclusion[]>()
@@ -245,9 +298,9 @@ function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
   const sortedGroups = Array.from(grouped.entries())
     .sort(([a], [b]) => (catOrder.get(a) ?? 999) - (catOrder.get(b) ?? 999))
 
-  // Auto-expand groups that contain search results
+  // Auto-expand groups that contain filtered results
   const effectiveCollapsed = useMemo(() => {
-    if (!isSearching) return collapsed
+    if (!isFiltering) return collapsed
 
     const matchedCatIds = new Set(sortedGroups.map(([id]) => id))
     const next          = new Set(collapsed)
@@ -255,7 +308,7 @@ function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
     for (const id of matchedCatIds) next.delete(id)
 
     return next
-  }, [collapsed, sortedGroups, isSearching])
+  }, [collapsed, sortedGroups, isFiltering])
 
   const allCatIds    = sortedGroups.map(([id]) => id)
   const allCollapsed = allCatIds.length > 0 && allCatIds.every(id => effectiveCollapsed.has(id))
@@ -268,7 +321,28 @@ function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
     }
   }
 
-  const matchedIds = isSearching ? new Set(filtered.map(e => e.Id)) : null
+  const matchedIds = isFiltering ? new Set(filtered.map(e => e.Id)) : null
+
+  function openAddModal() {
+    setAddModal({ text: '', categoryId: null, itemType: 'Exclusion', saving: false })
+  }
+
+  async function handleAddSave() {
+    if (!addModal || !addModal.categoryId || !addModal.text.trim()) return
+
+    setAddModal(prev => prev ? { ...prev, saving: true } : null)
+    try {
+      await createMfcExclusion({
+        category_id: addModal.categoryId,
+        exclusion:   addModal.text.trim(),
+        item_type:   addModal.itemType,
+      })
+      setAddModal(null)
+      refetch()
+    } catch {
+      setAddModal(prev => prev ? { ...prev, saving: false } : null)
+    }
+  }
 
   return (
     <>
@@ -276,15 +350,38 @@ function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
         <h3>All MFC Exclusions</h3>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <span className="filter-chip-count">
-            {isSearching ? `${filtered.length} of ${exclusions.length}` : `${exclusions.length} items`}
+            {isFiltering ? `${filtered.length} of ${exclusions.length}` : `${exclusions.length} items`}
           </span>
-          {sortedGroups.length > 0 && !isSearching && (
+          {sortedGroups.length > 0 && !isFiltering && (
             <button className="btn-sm ghost" onClick={toggleAll}>
               {allCollapsed ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
               {allCollapsed ? 'Expand All' : 'Collapse All'}
             </button>
           )}
+          <button className="add-btn" onClick={openAddModal}>
+            <Plus size={14} /> Add
+          </button>
         </div>
+      </div>
+
+      <div className="excl-type-filter-bar">
+        {ITEM_TYPES.map(type => (
+          <button
+            key={type}
+            className={`excl-type-chip ${type.toLowerCase()} ${activeTypes.has(type) ? 'active' : ''}`}
+            onClick={() => toggleType(type)}
+          >
+            {type}
+          </button>
+        ))}
+        {isTypeFiltered && (
+          <button
+            className="excl-type-chip clear"
+            onClick={() => setActiveTypes(new Set())}
+          >
+            Clear
+          </button>
+        )}
       </div>
 
       <div className="exclusion-panel-body">
@@ -294,12 +391,16 @@ function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
           <EmptyState title="No exclusions" message="No MFC exclusions have been created yet." />
         )}
 
-        {!loading && isSearching && filtered.length === 0 && exclusions.length > 0 && (
+        {!loading && isFiltering && filtered.length === 0 && exclusions.length > 0 && (
           <EmptyState
             title="No results"
-            message={search.idSearch !== null
-              ? `No exclusion found with ID #${search.idSearch}.`
-              : `No exclusions matching "${search.raw}".`}
+            message={
+              isSearching && search.idSearch !== null
+                ? `No exclusion found with ID #${search.idSearch}.`
+                : isSearching
+                  ? `No exclusions matching "${search.raw}"${isTypeFiltered ? ' with selected types' : ''}.`
+                  : 'No exclusions match the selected type filters.'
+            }
           />
         )}
 
@@ -341,16 +442,7 @@ function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
                     key={exc.Id}
                     exclusion={exc}
                     onEdit={() => setEditId(exc.Id)}
-                    onDelete={async () => {
-                      if (!confirm('Delete this exclusion?') ) return
-                      setBusy(true)
-                      try {
-                        await deleteMfcExclusion(exc.Id)
-                        refetch()
-                      } finally {
-                        setBusy(false)
-                      }
-                    }}
+                    onDelete={() => setDeleteTarget(exc)}
                     highlight={matchedIds?.has(exc.Id) ?? false}
                   />
                 )
@@ -359,6 +451,97 @@ function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
           )
         })}
       </div>
+
+      {addModal && (
+        <div className="action-modal-overlay" onClick={() => setAddModal(null)}>
+          <div className="action-modal" onClick={e => e.stopPropagation()}>
+            <div className="action-modal-header">
+              <h3>Add MFC Exclusion</h3>
+              <button className="action-icon-btn" onClick={() => setAddModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="action-modal-body">
+              <label className="action-modal-label">
+                Exclusion Text
+                <textarea
+                  className="action-modal-textarea"
+                  value={addModal.text}
+                  onChange={e => setAddModal({ ...addModal, text: e.target.value })}
+                  rows={3}
+                  autoFocus
+                />
+              </label>
+
+              <label className="action-modal-label">
+                Category
+                <CustomSelect
+                  options={categories.map(c => ({
+                    value: String(c.Id),
+                    label: c.Name,
+                  }))}
+                  value={String(addModal.categoryId ?? '')}
+                  onChange={v => setAddModal({ ...addModal, categoryId: Number(v) || null })}
+                  placeholder="Select category..."
+                />
+              </label>
+
+              <label className="action-modal-label">
+                Item Type
+                <CustomSelect
+                  options={[
+                    { value: 'Exclusion',     label: 'Exclusion' },
+                    { value: 'Condition',      label: 'Condition' },
+                    { value: 'Clarification',  label: 'Clarification' },
+                  ]}
+                  value={addModal.itemType}
+                  onChange={v => setAddModal({ ...addModal, itemType: v })}
+                />
+              </label>
+            </div>
+
+            <div className="action-modal-footer">
+              <button
+                className="action-modal-cancel"
+                onClick={() => setAddModal(null)}
+              >
+                Cancel
+              </button>
+              <button
+                className="action-modal-save"
+                onClick={handleAddSave}
+                disabled={addModal.saving || !addModal.categoryId || !addModal.text.trim()}
+              >
+                {addModal.saving ? 'Saving...' : 'Create Exclusion'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title="Delete MFC Exclusion?"
+        message={deleteTarget
+          ? `This will permanently remove exclusion #${deleteTarget.Id}: "${deleteTarget.Exclusion.slice(0, 80)}${deleteTarget.Exclusion.length > 80 ? '...' : ''}"\n\nThis cannot be undone.`
+          : ''}
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={async () => {
+          if (!deleteTarget) return
+          const id = deleteTarget.Id
+          setDeleteTarget(null)
+          setBusy(true)
+          try {
+            await deleteMfcExclusion(id)
+            refetch()
+          } finally {
+            setBusy(false)
+          }
+        }}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </>
   )
 }
@@ -369,17 +552,21 @@ function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
 /* ── Single Category Panel ───────────────────────────────────────── */
 
 interface ExclusionPanelProps {
-  category:       Category
-  search:         ParsedSearch
-  allExclusions:  MfcExclusion[]
-  categories:     Category[]
-  onNavigate:     (catId: number) => void
+  category:         Category
+  search:           ParsedSearch
+  allExclusions:    MfcExclusion[]
+  categories:       Category[]
+  onNavigate:       (catId: number) => void
+  highlightId?:     number | null
+  onHighlightDone?: () => void
 }
 
-function ExclusionPanel({ category, search, allExclusions, categories, onNavigate }: ExclusionPanelProps) {
-  const [adding, setAdding]     = useState(false)
-  const [editId, setEditId]     = useState<number | null>(null)
-  const [busy, setBusy]         = useState(false)
+function ExclusionPanel({ category, search, allExclusions, categories, onNavigate, highlightId, onHighlightDone }: ExclusionPanelProps) {
+  const [adding, setAdding]             = useState(false)
+  const [editId, setEditId]             = useState<number | null>(null)
+  const [busy, setBusy]                 = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<MfcExclusion | null>(null)
+  const [activeTypes, setActiveTypes]   = useState<Set<string>>(new Set())
 
   const { data, loading, refetch } = useApi(
     () => getMfcExclusions(category.Id),
@@ -388,17 +575,54 @@ function ExclusionPanel({ category, search, allExclusions, categories, onNavigat
 
   const exclusions = data?.exclusions ?? []
 
-  const isSearching = search.raw.length > 0
+  /* ── Deep-link: scroll to highlighted row once data loads ──────── */
+
+  useEffect(() => {
+    if (!highlightId || loading || exclusions.length === 0) return
+
+    const timer = setTimeout(() => {
+      const el = document.querySelector(`[data-excl-id="${highlightId}"]`)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        el.classList.add('deep-link-highlight')
+
+        const cleanup = () => {
+          el.classList.remove('deep-link-highlight')
+          onHighlightDone?.()
+        }
+
+        el.addEventListener('animationend', cleanup, { once: true })
+      }
+    }, 100)
+
+    return () => clearTimeout(timer)
+  }, [highlightId, loading, exclusions.length]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const isSearching   = search.raw.length > 0
+  const isTypeFiltered = activeTypes.size > 0
+  const isFiltering    = isSearching || isTypeFiltered
+
+  function toggleType(type: string) {
+    setActiveTypes(prev => {
+      const next = new Set(prev)
+      if (next.has(type)) next.delete(type)
+      else                next.add(type)
+
+      return next
+    })
+  }
 
   const filtered = useMemo(() => {
-    if (!isSearching) return exclusions
-
     return exclusions.filter(exc => {
+      if (isTypeFiltered && !activeTypes.has(exc.ItemType)) return false
+
+      if (!isSearching) return true
+
       if (search.idSearch !== null) return exc.Id === search.idSearch
 
       return exc.Exclusion.toLowerCase().includes(search.text)
     })
-  }, [exclusions, search, isSearching])
+  }, [exclusions, search, isSearching, isTypeFiltered, activeTypes])
 
   // Cross-category hint: ID was searched but not found in this category
   const crossCatHint = useMemo(() => {
@@ -413,7 +637,7 @@ function ExclusionPanel({ category, search, allExclusions, categories, onNavigat
     return { exclusion: found, catName, catId: found.CategoryId }
   }, [isSearching, search, filtered, allExclusions, categories])
 
-  const matchedIds = isSearching ? new Set(filtered.map(e => e.Id)) : null
+  const matchedIds = isFiltering ? new Set(filtered.map(e => e.Id)) : null
 
   const handleCreate = useCallback(async (text: string, itemType: string) => {
     setBusy(true)
@@ -442,9 +666,11 @@ function ExclusionPanel({ category, search, allExclusions, categories, onNavigat
     }
   }, [refetch])
 
-  const handleDelete = useCallback(async (id: number) => {
-    if (!confirm('Delete this exclusion?')) return
+  const confirmDelete = useCallback(async () => {
+    if (!deleteTarget) return
 
+    const id = deleteTarget.Id
+    setDeleteTarget(null)
     setBusy(true)
     try {
       await deleteMfcExclusion(id)
@@ -452,7 +678,7 @@ function ExclusionPanel({ category, search, allExclusions, categories, onNavigat
     } finally {
       setBusy(false)
     }
-  }, [refetch])
+  }, [deleteTarget, refetch])
 
   return (
     <>
@@ -460,12 +686,32 @@ function ExclusionPanel({ category, search, allExclusions, categories, onNavigat
         <h3>{category.Name}</h3>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <span className="filter-chip-count">
-            {isSearching ? `${filtered.length} of ${exclusions.length}` : `${exclusions.length} items`}
+            {isFiltering ? `${filtered.length} of ${exclusions.length}` : `${exclusions.length} items`}
           </span>
           <button className="add-btn" onClick={() => setAdding(true)} disabled={adding}>
             <Plus size={14} /> Add
           </button>
         </div>
+      </div>
+
+      <div className="excl-type-filter-bar">
+        {ITEM_TYPES.map(type => (
+          <button
+            key={type}
+            className={`excl-type-chip ${type.toLowerCase()} ${activeTypes.has(type) ? 'active' : ''}`}
+            onClick={() => toggleType(type)}
+          >
+            {type}
+          </button>
+        ))}
+        {isTypeFiltered && (
+          <button
+            className="excl-type-chip clear"
+            onClick={() => setActiveTypes(new Set())}
+          >
+            Clear
+          </button>
+        )}
       </div>
 
       <div className="exclusion-panel-body">
@@ -479,19 +725,23 @@ function ExclusionPanel({ category, search, allExclusions, categories, onNavigat
           />
         )}
 
-        {!loading && !isSearching && exclusions.length === 0 && !adding && (
+        {!loading && !isFiltering && exclusions.length === 0 && !adding && (
           <EmptyState
             title="No exclusions"
             message={`No MFC exclusions in ${category.Name} yet.`}
           />
         )}
 
-        {!loading && isSearching && filtered.length === 0 && !crossCatHint && (
+        {!loading && isFiltering && filtered.length === 0 && !crossCatHint && (
           <EmptyState
             title="No results"
-            message={search.idSearch !== null
-              ? `No exclusion with ID #${search.idSearch} in ${category.Name}.`
-              : `No exclusions matching "${search.raw}" in ${category.Name}.`}
+            message={
+              isSearching && search.idSearch !== null
+                ? `No exclusion with ID #${search.idSearch} in ${category.Name}.`
+                : isSearching
+                  ? `No exclusions matching "${search.raw}"${isTypeFiltered ? ' with selected types' : ''} in ${category.Name}.`
+                  : `No ${Array.from(activeTypes).join(' or ').toLowerCase()} items in ${category.Name}.`
+            }
           />
         )}
 
@@ -523,12 +773,24 @@ function ExclusionPanel({ category, search, allExclusions, categories, onNavigat
               key={exc.Id}
               exclusion={exc}
               onEdit={() => setEditId(exc.Id)}
-              onDelete={() => handleDelete(exc.Id)}
+              onDelete={() => setDeleteTarget(exc)}
               highlight={matchedIds?.has(exc.Id) ?? false}
             />
           )
         ))}
       </div>
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title="Delete MFC Exclusion?"
+        message={deleteTarget
+          ? `This will permanently remove exclusion #${deleteTarget.Id}: "${deleteTarget.Exclusion.slice(0, 80)}${deleteTarget.Exclusion.length > 80 ? '...' : ''}"\n\nThis cannot be undone.`
+          : ''}
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </>
   )
 }
@@ -547,7 +809,10 @@ function ExclusionRow({ exclusion, onEdit, onDelete, highlight }: ExclusionRowPr
   const typeClass = exclusion.ItemType.toLowerCase()
 
   return (
-    <div className={`exclusion-row ${highlight ? 'search-highlight' : ''}`}>
+    <div
+      className={`exclusion-row ${highlight ? 'search-highlight' : ''}`}
+      data-excl-id={exclusion.Id}
+    >
       <span className="excl-id">#{exclusion.Id}</span>
       <div className="excl-body">
         <div className="excl-text">{exclusion.Exclusion}</div>
@@ -592,11 +857,15 @@ function InlineForm({ initial, onSave, onCancel, busy }: InlineFormProps) {
         autoFocus
       />
       <div className="excl-form-row">
-        <select value={itemType} onChange={e => setItemType(e.target.value)}>
-          <option value="Exclusion">Exclusion</option>
-          <option value="Condition">Condition</option>
-          <option value="Clarification">Clarification</option>
-        </select>
+        <CustomSelect
+          options={[
+            { value: 'Exclusion',     label: 'Exclusion' },
+            { value: 'Condition',      label: 'Condition' },
+            { value: 'Clarification',  label: 'Clarification' },
+          ]}
+          value={itemType}
+          onChange={setItemType}
+        />
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
           <button className="btn-sm ghost" onClick={onCancel} disabled={busy}>
             <X size={13} /> Cancel

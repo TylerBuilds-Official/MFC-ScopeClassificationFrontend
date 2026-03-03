@@ -168,7 +168,7 @@
 }
 
 .exclusion-row .excl-id {
-  font-family: var(--font-mono);
+  font-family: var(--font-mono), sans-serif;
   font-size: 11.5px;
   color: var(--text-muted);
   min-width: 36px;
@@ -426,6 +426,64 @@
 
 .excl-cross-cat-hint strong {
   color: var(--accent);
+}
+
+/* ── Type Filter Bar ──────────────────────────────────────────────── */
+
+.excl-type-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.excl-type-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.excl-type-chip:hover {
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+}
+
+.excl-type-chip.exclusion.active {
+  background: rgba(248, 113, 113, 0.12);
+  color: var(--status-error);
+  border-color: var(--status-error);
+}
+
+.excl-type-chip.condition.active {
+  background: rgba(251, 191, 36, 0.12);
+  color: var(--status-running);
+  border-color: var(--status-running);
+}
+
+.excl-type-chip.clarification.active {
+  background: rgba(78, 140, 255, 0.12);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.excl-type-chip.clear {
+  border-color: transparent;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.excl-type-chip.clear:hover {
+  color: var(--status-error);
 }
 
 /* ── All-View Category Headers ───────────────────────────────────── */

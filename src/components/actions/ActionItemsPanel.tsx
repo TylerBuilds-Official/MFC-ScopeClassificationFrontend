@@ -5,6 +5,8 @@ import ActionSummaryBar from './ActionSummaryBar'
 import ActionItemRow from './ActionItemRow'
 import LoadingSpinner from '../global/LoadingSpinner'
 import EmptyState from '../global/EmptyState'
+import CustomSelect from '../global/CustomSelect'
+import ConfirmDialog from '../global/ConfirmDialog'
 import { useApi } from '../../hooks/useApi'
 import { useCategories } from '../../hooks/useCategories'
 import {
@@ -48,6 +50,7 @@ export default function ActionItemsPanel({ sessionId, onViewMatch }: ActionItems
   const [dismissedOpen, setDismissedOpen] = useState(false)
   const [addToMfc, setAddToMfc]           = useState<AddToMfcState | null>(null)
   const [regenerating, setRegenerating]   = useState(false)
+  const [confirmRegen, setConfirmRegen]   = useState(false)
 
   // Optimistic local state: overlay status changes without refetching
   const [localOverrides, setLocalOverrides] = useState<Map<number, Partial<ActionItem>>>(new Map())
@@ -136,6 +139,7 @@ export default function ActionItemsPanel({ sessionId, onViewMatch }: ActionItems
   }, [])
 
   const handleRegenerate = useCallback(async () => {
+    setConfirmRegen(false)
     setRegenerating(true)
     try {
       await generateActionItems(sessionId)
@@ -192,10 +196,19 @@ export default function ActionItemsPanel({ sessionId, onViewMatch }: ActionItems
         title="No action items"
         message="This session has no items requiring attention."
       />
-      <button className="action-regen-btn" onClick={handleRegenerate} disabled={regenerating}>
+      <button className="action-regen-btn" onClick={() => setConfirmRegen(true)} disabled={regenerating}>
         <RefreshCw size={14} className={regenerating ? 'spinning' : ''} />
         {regenerating ? 'Regenerating...' : 'Regenerate from matches'}
       </button>
+      <ConfirmDialog
+        open={confirmRegen}
+        title="Regenerate Action Items?"
+        message="This will remove all existing action items and re-derive them from the current match data. All review progress will be reset to unreviewed."
+        confirmLabel="Regenerate"
+        variant="danger"
+        onConfirm={handleRegenerate}
+        onCancel={() => setConfirmRegen(false)}
+      />
     </div>
   )
 
@@ -208,7 +221,7 @@ export default function ActionItemsPanel({ sessionId, onViewMatch }: ActionItems
       <div className="action-items-toolbar">
         <button
           className="action-regen-btn"
-          onClick={handleRegenerate}
+          onClick={() => setConfirmRegen(true)}
           disabled={regenerating}
           title="Re-derive action items from current match data"
         >
@@ -306,29 +319,28 @@ export default function ActionItemsPanel({ sessionId, onViewMatch }: ActionItems
 
               <label className="action-modal-label">
                 Category
-                <select
-                  className="action-modal-select"
-                  value={addToMfc.categoryId ?? ''}
-                  onChange={e => setAddToMfc({ ...addToMfc, categoryId: Number(e.target.value) || null })}
-                >
-                  <option value="">Select category...</option>
-                  {Array.from(categoryMap.entries()).map(([id, name]) => (
-                    <option key={id} value={id}>{name}</option>
-                  ))}
-                </select>
+                <CustomSelect
+                  options={Array.from(categoryMap.entries()).map(([id, name]) => ({
+                    value: String(id),
+                    label: name,
+                  }))}
+                  value={String(addToMfc.categoryId ?? '')}
+                  onChange={v => setAddToMfc({ ...addToMfc, categoryId: Number(v) || null })}
+                  placeholder="Select category..."
+                />
               </label>
 
               <label className="action-modal-label">
                 Item Type
-                <select
-                  className="action-modal-select"
+                <CustomSelect
+                  options={[
+                    { value: 'Exclusion',     label: 'Exclusion' },
+                    { value: 'Inclusion',     label: 'Inclusion' },
+                    { value: 'Clarification', label: 'Clarification' },
+                  ]}
                   value={addToMfc.itemType}
-                  onChange={e => setAddToMfc({ ...addToMfc, itemType: e.target.value })}
-                >
-                  <option value="Exclusion">Exclusion</option>
-                  <option value="Inclusion">Inclusion</option>
-                  <option value="Clarification">Clarification</option>
-                </select>
+                  onChange={v => setAddToMfc({ ...addToMfc, itemType: v })}
+                />
               </label>
             </div>
 
@@ -350,6 +362,16 @@ export default function ActionItemsPanel({ sessionId, onViewMatch }: ActionItems
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmRegen}
+        title="Regenerate Action Items?"
+        message="This will remove all existing action items and re-derive them from the current match data. All review progress will be reset to unreviewed."
+        confirmLabel="Regenerate"
+        variant="danger"
+        onConfirm={handleRegenerate}
+        onCancel={() => setConfirmRegen(false)}
+      />
     </div>
   )
 }

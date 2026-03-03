@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 
 import MatchTable from './MatchTable'
@@ -6,8 +6,10 @@ import type { MatchRow } from '../../types/match.ts'
 
 
 interface CategoryAccordionProps {
-  matches:      MatchRow[]
-  categoryMap?: Map<number, string>
+  matches:           MatchRow[]
+  categoryMap?:      Map<number, string>
+  highlightMatchId?: number | null
+  onHighlightDone?:  () => void
 }
 
 
@@ -18,10 +20,21 @@ interface CategoryGroup {
 }
 
 
-export default function CategoryAccordion({ matches, categoryMap }: CategoryAccordionProps) {
+export default function CategoryAccordion({ matches, categoryMap, highlightMatchId, onHighlightDone }: CategoryAccordionProps) {
   const [openIds, setOpenIds] = useState<Set<number | null>>(new Set())
 
   const groups = groupByCategory(matches, categoryMap)
+
+  /* ── Auto-open group containing highlighted match ─────────────── */
+
+  useEffect(() => {
+    if (highlightMatchId == null) return
+
+    const ownerGroup = groups.find(g => g.matches.some(m => m.id === highlightMatchId))
+    if (ownerGroup) {
+      setOpenIds(prev => new Set(prev).add(ownerGroup.categoryId))
+    }
+  }, [highlightMatchId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function toggle(id: number | null) {
     setOpenIds(prev => {
@@ -53,7 +66,13 @@ export default function CategoryAccordion({ matches, categoryMap }: CategoryAcco
 
             {isOpen && (
               <div className="category-group-body">
-                <MatchTable matches={g.matches} categoryMap={categoryMap} showCategory={false} />
+                <MatchTable
+                  matches={g.matches}
+                  categoryMap={categoryMap}
+                  showCategory={false}
+                  highlightMatchId={highlightMatchId}
+                  onHighlightDone={onHighlightDone}
+                />
               </div>
             )}
           </div>

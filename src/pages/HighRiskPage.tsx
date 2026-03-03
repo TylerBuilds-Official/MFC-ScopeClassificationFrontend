@@ -95,11 +95,13 @@ function SessionPicker() {
             <th>Erector Only</th>
             <th>MFC Only</th>
             <th>Risk Items</th>
+            <th>High Risk</th>
           </tr>
         </thead>
         <tbody>
           {sessions.map(s => {
-            const riskCount = (s.total_erector_only ?? 0) + (s.total_mfc_only ?? 0)
+            const highRiskCount = s.total_high_risk ?? 0
+            const riskCount     = (s.total_aligned ?? 0) + (s.total_partial ?? 0) + (s.total_erector_only ?? 0)
 
             return (
               <tr key={s.id} onClick={() => navigate(`/high-risk/session/${s.id}`)}>
@@ -113,9 +115,18 @@ function SessionPicker() {
                 <td className="match-val mfc-only">{s.total_mfc_only ?? '—'}</td>
                 <td>
                   {riskCount > 0 ? (
-                    <span className="risk-count-badge">
-                      <AlertTriangle size={12} />
+                    <span className="risk-count-badge warn">
                       {riskCount}
+                    </span>
+                  ) : (
+                    <span style={{ color: 'var(--text-muted)' }}>—</span>
+                  )}
+                </td>
+                <td>
+                  {highRiskCount > 0 ? (
+                    <span className="risk-count-badge high">
+                      <AlertTriangle size={12} />
+                      {highRiskCount}
                     </span>
                   ) : (
                     <span style={{ color: 'var(--text-muted)' }}>—</span>

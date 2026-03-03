@@ -1,21 +1,47 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 
 import RiskBadge from '../../components/global/RiskBadge'
+import MfcIdLink from '../../components/global/MfcIdLink'
+import AiText from '../../components/global/AiText'
 import type { MatchRow } from '../../types/match'
 
 
 interface MatchTableProps {
-  matches:         MatchRow[]
-  showSession?:    boolean
-  showCategory?:   boolean
-  sessionMeta?:    Record<number, { erector?: string; job?: string; file?: string }>
-  categoryMap?:    Map<number, string>
+  matches:           MatchRow[]
+  showSession?:      boolean
+  showCategory?:     boolean
+  sessionMeta?:      Record<number, { erector?: string; job?: string; file?: string }>
+  categoryMap?:      Map<number, string>
+  highlightMatchId?: number | null
+  onHighlightDone?:  () => void
 }
 
 
-export default function MatchTable({ matches, showSession, showCategory = true, sessionMeta, categoryMap }: MatchTableProps) {
+export default function MatchTable({ matches, showSession, showCategory = true, sessionMeta, categoryMap, highlightMatchId, onHighlightDone }: MatchTableProps) {
   const [expandedId, setExpandedId] = useState<number | null>(null)
+
+  /* ── Auto-expand + scroll to highlighted match ────────────────── */
+
+  useEffect(() => {
+    if (highlightMatchId == null) return
+
+    setExpandedId(highlightMatchId)
+
+    const timer = setTimeout(() => {
+      const el = document.querySelector(`[data-match-id="${highlightMatchId}"]`)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        el.classList.add('deep-link-highlight')
+        el.addEventListener('animationend', () => {
+          el.classList.remove('deep-link-highlight')
+          onHighlightDone?.()
+        }, { once: true })
+      }
+    }, 150)
+
+    return () => clearTimeout(timer)
+  }, [highlightMatchId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="match-list">
@@ -26,6 +52,7 @@ export default function MatchTable({ matches, showSession, showCategory = true, 
           <div
             key={m.id}
             className={`match-card ${isOpen ? 'expanded' : ''}`}
+            data-match-id={m.id}
           >
             {/* Header row — click to expand */}
             <div
@@ -73,6 +100,7 @@ export default function MatchTable({ matches, showSession, showCategory = true, 
                     <div className="excl-text-block mfc">
                       <div className="excl-text-label">
                         MFC
+                        <MfcIdLink id={m.mfc_exclusion_id} />
                         {m.mfc_item_type && m.mfc_item_type !== 'Exclusion' && (
                           <span className={`excl-type-badge ${m.mfc_item_type.toLowerCase()}`}>
                             {m.mfc_item_type}
@@ -95,13 +123,13 @@ export default function MatchTable({ matches, showSession, showCategory = true, 
                 {m.ai_reasoning && (
                   <div className="detail-section">
                     <span className="detail-label">AI Reasoning</span>
-                    <p className="detail-text">{m.ai_reasoning}</p>
+                    <p className="detail-text"><AiText text={m.ai_reasoning} /></p>
                   </div>
                 )}
                 {m.risk_notes && (
                   <div className="detail-section">
                     <span className="detail-label">Risk Notes</span>
-                    <p className="detail-text risk">{m.risk_notes}</p>
+                    <p className="detail-text risk"><AiText text={m.risk_notes} /></p>
                   </div>
                 )}
               </div>

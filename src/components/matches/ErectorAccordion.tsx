@@ -1,13 +1,17 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { ChevronDown, ChevronRight, Link2 } from 'lucide-react'
 
 import RiskBadge from '../global/RiskBadge'
+import MfcIdLink from '../global/MfcIdLink'
+import AiText from '../global/AiText'
 import type { MatchRow } from '../../types/match'
 
 
 interface ErectorAccordionProps {
-  matches:      MatchRow[]
-  categoryMap?: Map<number, string>
+  matches:           MatchRow[]
+  categoryMap?:      Map<number, string>
+  highlightMatchId?: number | null
+  onHighlightDone?:  () => void
 }
 
 
@@ -24,10 +28,35 @@ interface ErectorGroup {
 const RISK_ORDER: Record<string, number> = { Critical: 0, High: 1, Medium: 2, Low: 3 }
 
 
-export default function ErectorAccordion({ matches, categoryMap }: ErectorAccordionProps) {
+export default function ErectorAccordion({ matches, categoryMap, highlightMatchId, onHighlightDone }: ErectorAccordionProps) {
   const [openIds, setOpenIds] = useState<Set<number | null>>(new Set())
 
   const groups = useMemo(() => buildGroups(matches), [matches])
+
+  /* ── Auto-open group + scroll to highlighted match ────────────── */
+
+  useEffect(() => {
+    if (highlightMatchId == null) return
+
+    const ownerGroup = groups.find(g => g.matches.some(m => m.id === highlightMatchId))
+    if (ownerGroup) {
+      setOpenIds(prev => new Set(prev).add(ownerGroup.extractedId))
+    }
+
+    const timer = setTimeout(() => {
+      const el = document.querySelector(`[data-match-id="${highlightMatchId}"]`)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        el.classList.add('deep-link-highlight')
+        el.addEventListener('animationend', () => {
+          el.classList.remove('deep-link-highlight')
+          onHighlightDone?.()
+        }, { once: true })
+      }
+    }, 200)
+
+    return () => clearTimeout(timer)
+  }, [highlightMatchId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function toggle(id: number | null) {
     setOpenIds(prev => {
@@ -112,7 +141,7 @@ function MfcMatchCard({ match: m, index, total, categoryMap, showMultiLabel }: M
   const [showReasoning, setShowReasoning] = useState(false)
 
   return (
-    <div className="mfc-match-card">
+    <div className="mfc-match-card" data-match-id={m.id}>
       {/* MFC header row */}
       <div className="mfc-match-header">
         {showMultiLabel && (
@@ -135,6 +164,7 @@ function MfcMatchCard({ match: m, index, total, categoryMap, showMultiLabel }: M
         <div className="excl-text-block mfc">
           <div className="excl-text-label">
             MFC
+            <MfcIdLink id={m.mfc_exclusion_id} />
             {m.mfc_item_type && m.mfc_item_type !== 'Exclusion' && (
               <span className={`excl-type-badge ${m.mfc_item_type.toLowerCase()}`}>
                 {m.mfc_item_type}
@@ -169,13 +199,13 @@ function MfcMatchCard({ match: m, index, total, categoryMap, showMultiLabel }: M
               {m.ai_reasoning && (
                 <div className="detail-section">
                   <span className="detail-label">AI Reasoning</span>
-                  <p className="detail-text">{m.ai_reasoning}</p>
+                  <p className="detail-text"><AiText text={m.ai_reasoning} /></p>
                 </div>
               )}
               {m.risk_notes && (
                 <div className="detail-section">
                   <span className="detail-label">Risk Notes</span>
-                  <p className="detail-text risk">{m.risk_notes}</p>
+                  <p className="detail-text risk"><AiText text={m.risk_notes} /></p>
                 </div>
               )}
             </div>

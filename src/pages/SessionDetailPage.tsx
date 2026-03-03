@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import Header from '../components/global/Header'
 import LoadingSpinner from '../components/global/LoadingSpinner'
 import EmptyState from '../components/global/EmptyState'
+import CustomSelect from '../components/global/CustomSelect'
 import SessionSummaryCard from '../components/sessions/SessionSummaryCard'
 import ProgressCard from '../components/sessions/ProgressCard'
 import ErectorAccordion from '../components/matches/ErectorAccordion'
@@ -39,11 +40,14 @@ export default function SessionDetailPage() {
   const navigate  = useNavigate()
   const sessionId = Number(id)
 
-  const [activeTab, setActiveTab]         = useState<SessionTab>('matches')
-  const [viewMode, setViewMode]           = useState<ViewMode>('erector')
-  const [activeTypes, setActiveTypes]     = useState<Set<string>>(new Set())
-  const [activeRisks, setActiveRisks]     = useState<Set<string>>(new Set())
-  const [progress, setProgress]           = useState<SessionProgress | null>(null)
+  const searchParams                          = new URLSearchParams(window.location.search)
+  const initialTab                             = searchParams.get('tab') === 'action-items' ? 'action-items' : 'matches'
+  const [activeTab, setActiveTab]             = useState<SessionTab>(initialTab)
+  const [viewMode, setViewMode]               = useState<ViewMode>('erector')
+  const [activeTypes, setActiveTypes]         = useState<Set<string>>(new Set())
+  const [activeRisks, setActiveRisks]         = useState<Set<string>>(new Set())
+  const [progress, setProgress]               = useState<SessionProgress | null>(null)
+  const [highlightMatchId, setHighlightMatchId] = useState<number | null>(null)
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -132,8 +136,9 @@ export default function SessionDetailPage() {
 
   const hasFilters = activeTypes.size > 0 || activeRisks.size > 0
 
-  // Action items: handle "View Match" → switch to matches tab
-  const handleViewMatch = useCallback((_matchId: number) => {
+  // Action items: handle "View Match" → switch to matches tab + highlight
+  const handleViewMatch = useCallback((matchId: number) => {
+    setHighlightMatchId(matchId)
     setActiveTab('matches')
   }, [])
 
@@ -207,15 +212,15 @@ export default function SessionDetailPage() {
               <>
                 <div className="page-header" style={{ marginTop: 16 }}>
                   <h2>Matches</h2>
-                  <select
+                  <CustomSelect
+                    options={[
+                      { value: 'erector',   label: 'By Erector Item' },
+                      { value: 'accordion', label: 'By Category' },
+                      { value: 'table',     label: 'Flat Table' },
+                    ]}
                     value={viewMode}
-                    onChange={e => setViewMode(e.target.value as ViewMode)}
-                    className="filter-select"
-                  >
-                    <option value="erector">By Erector Item</option>
-                    <option value="accordion">By Category</option>
-                    <option value="table">Flat Table</option>
-                  </select>
+                    onChange={v => setViewMode(v as ViewMode)}
+                  />
                 </div>
 
                 {/* Filter chips */}
@@ -273,10 +278,25 @@ export default function SessionDetailPage() {
 
                 {!matches.loading && filtered.length > 0 && (
                   viewMode === 'erector'
-                    ? <ErectorAccordion matches={filtered} categoryMap={categoryMap} />
+                    ? <ErectorAccordion
+                        matches={filtered}
+                        categoryMap={categoryMap}
+                        highlightMatchId={highlightMatchId}
+                        onHighlightDone={() => setHighlightMatchId(null)}
+                      />
                     : viewMode === 'accordion'
-                      ? <CategoryAccordion matches={filtered} categoryMap={categoryMap} />
-                      : <MatchTable matches={filtered} categoryMap={categoryMap} />
+                      ? <CategoryAccordion
+                          matches={filtered}
+                          categoryMap={categoryMap}
+                          highlightMatchId={highlightMatchId}
+                          onHighlightDone={() => setHighlightMatchId(null)}
+                        />
+                      : <MatchTable
+                          matches={filtered}
+                          categoryMap={categoryMap}
+                          highlightMatchId={highlightMatchId}
+                          onHighlightDone={() => setHighlightMatchId(null)}
+                        />
                 )}
               </>
             )}
