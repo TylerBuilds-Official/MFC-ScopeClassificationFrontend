@@ -5,6 +5,7 @@ import { MsalProvider } from '@azure/msal-react'
 import { msalInstance } from './auth/msalInstance'
 import { AuthProvider } from './auth'
 import { RunningSessionsProvider } from './hooks/useRunningSessions'
+import { ThemeProvider } from './context/ThemeContext'
 import App from './App'
 
 import './styles/global.css'
@@ -28,7 +29,9 @@ msalInstance.initialize().then(async () => {
         <AuthProvider>
           <BrowserRouter>
             <RunningSessionsProvider>
-              <App />
+              <ThemeProvider>
+                <App />
+              </ThemeProvider>
             </RunningSessionsProvider>
           </BrowserRouter>
         </AuthProvider>

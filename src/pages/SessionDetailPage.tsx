@@ -25,6 +25,22 @@ import '../styles/progress.css'
 import '../styles/action-items.css'
 
 
+/* ── Match Legend ───────────────────────────────────────────────── */
+
+function MatchLegend({ viewMode }: { viewMode: ViewMode }) {
+  if (viewMode === 'table') return null
+
+  return (
+    <div className="match-legend">
+      <span className="match-legend-item">LINKS</span>
+      <span className="match-legend-divider" />
+      <span className="match-legend-item">ALIGNMENT</span>
+      <span className="match-legend-divider" />
+      <span className="match-legend-item">RISK</span>
+    </div>
+  )
+}
+
 type ViewMode   = 'erector' | 'accordion' | 'table'
 type SessionTab = 'matches' | 'action-items'
 
@@ -211,7 +227,7 @@ export default function SessionDetailPage() {
             {activeTab === 'matches' && (
               <>
                 <div className="page-header" style={{ marginTop: 16 }}>
-                  <h2>Matches</h2>
+                  <h2>Matches<span className="matches-view-label">: {{ erector: 'By Erector Item', accordion: 'By Category', table: 'Flat Table' }[viewMode]}</span></h2>
                   <CustomSelect
                     options={[
                       { value: 'erector',   label: 'By Erector Item' },
@@ -274,6 +290,10 @@ export default function SessionDetailPage() {
                       ? 'Try adjusting your filters above.'
                       : 'No comparison data for this session yet.'}
                   />
+                )}
+
+                {!matches.loading && filtered.length > 0 && (
+                  <MatchLegend viewMode={viewMode} />
                 )}
 
                 {!matches.loading && filtered.length > 0 && (

@@ -1,3 +1,6 @@
+import { Sun, Moon } from 'lucide-react'
+import { useTheme } from '../../context/ThemeContext'
+
 interface HeaderProps {
   title: string
   breadcrumb?: string[]
@@ -5,6 +8,8 @@ interface HeaderProps {
 }
 
 export default function Header({ title, breadcrumb, children }: HeaderProps) {
+  const { theme, toggleTheme } = useTheme()
+
   return (
     <header className="header">
       <div>
@@ -20,7 +25,12 @@ export default function Header({ title, breadcrumb, children }: HeaderProps) {
         )}
         <div className="header-title">{title}</div>
       </div>
-      {children && <div className="header-actions">{children}</div>}
+      <div className="header-actions">
+        <button className="theme-toggle" onClick={toggleTheme} title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}>
+          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+        </button>
+        {children}
+      </div>
     </header>
   )
 }

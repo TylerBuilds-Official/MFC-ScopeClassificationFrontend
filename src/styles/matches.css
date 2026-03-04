@@ -1,3 +1,37 @@
+/* ── Matches Header Label ────────────────────────────────────────── */
+
+.matches-view-label {
+  font-size: 0.72em;
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  margin-left: 2px;
+}
+
+/* ── Match Legend ───────────────────────────────────────────────── */
+
+.match-legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 0 18px 6px;
+}
+
+.match-legend-item {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.match-legend-divider {
+  width: 1px;
+  height: 10px;
+  background: var(--border-subtle);
+}
+
 /* ── Match Table ──────────────────────────────────────────────────── */
 
 .match-table {
@@ -41,10 +75,10 @@
   letter-spacing: 0.02em;
 }
 
-.match-type-pill.aligned      { background: rgba(52, 211, 153, 0.12); color: var(--match-aligned); }
-.match-type-pill.partial      { background: rgba(251, 191, 36, 0.12); color: var(--match-partial); }
-.match-type-pill.erector-only { background: rgba(249, 115, 22, 0.12); color: var(--match-erector-only); }
-.match-type-pill.mfc-only     { background: rgba(167, 139, 250, 0.12); color: var(--match-mfc-only); }
+.match-type-pill.aligned      { background: var(--accent-muted); color: var(--match-aligned); }
+.match-type-pill.partial      { background: var(--accent-muted); color: var(--match-partial); }
+.match-type-pill.erector-only { background: var(--accent-muted); color: var(--match-erector-only); }
+.match-type-pill.mfc-only     { background: var(--accent-muted); color: var(--match-mfc-only); }
 
 /* ── Confidence Bar ──────────────────────────────────────────────── */
 
@@ -537,7 +571,7 @@
   gap: 5px;
   margin-left: auto;
   padding: 4px 10px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--text-muted);

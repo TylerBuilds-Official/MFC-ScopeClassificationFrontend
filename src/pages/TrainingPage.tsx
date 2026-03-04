@@ -213,7 +213,7 @@ export default function TrainingPage() {
                 <div className="training-stat-label">Confidence threshold</div>
                 <CustomSelect
                   options={CONFIDENCE_OPTIONS}
-                  value={String(maxConfidence)}
+                  value={maxConfidence.toFixed(2)}
                   onChange={handleThresholdChange}
                 />
               </div>

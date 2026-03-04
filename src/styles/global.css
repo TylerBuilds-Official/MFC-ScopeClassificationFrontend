@@ -49,7 +49,8 @@
   --match-mfc-only:     #a78bfa;
 
   /* Typography */
-  --font-sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans:  'Rubik', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-slab:   'Roboto Slab', Georgia, serif;
   --font-mono:  'JetBrains Mono', 'Fira Code', monospace;
 
   /* Spacing */
@@ -60,6 +61,49 @@
   --radius-sm: 2px;
   --radius-md: 4px;
   --radius-lg: 6px;
+}
+
+/* ── Light Mode Token Overrides ──────────────────────────────────── */
+
+[data-theme="light"] {
+  /* Surface */
+  --bg-primary:     #f4f5f9;
+  --bg-secondary:   #ffffff;
+  --bg-tertiary:    #eceef4;
+  --bg-hover:       #e8eaf0;
+  --bg-active:      #dde0ea;
+
+  /* Borders */
+  --border-subtle:  #e2e4ec;
+  --border-default: #cdd0db;
+
+  /* Text */
+  --text-primary:   #111827;
+  --text-secondary: #4b5263;
+  --text-muted:     #8b91a0;
+
+  /* Accent — slightly deeper blue for light bg contrast */
+  --accent:         #2d6fd4;
+  --accent-hover:   #1a5bbf;
+  --accent-muted:   rgba(45, 111, 212, 0.10);
+
+  /* Status — same hues, slightly deeper */
+  --status-complete:  #059669;
+  --status-running:   #d97706;
+  --status-error:     #dc2626;
+  --status-pending:   #6b7280;
+
+  /* Risk — slightly deeper for light bg */
+  --risk-critical:  #dc2626;
+  --risk-high:      #ea580c;
+  --risk-medium:    #ca8a04;
+  --risk-low:       #16a34a;
+
+  /* Match types — deeper for light bg */
+  --match-aligned:      #059669;
+  --match-partial:      #d97706;
+  --match-erector-only: #ea580c;
+  --match-mfc-only:     #7c3aed;
 }
 
 html, body, #root {
@@ -151,6 +195,59 @@ input, select, textarea {
   color: var(--accent);
 }
 
+
+/* ── Risk Badge ────────────────────────────────────────────────── */
+
+.risk-badge {
+  display:       inline-flex;
+  align-items:   center;
+  padding:       2px 10px;
+  border-radius: 999px;
+  font-size:     11.5px;
+  font-weight:   600;
+  letter-spacing: 0.02em;
+}
+
+.risk-badge--critical { background: rgba(239, 68,  68,  0.12); color: var(--risk-critical); }
+.risk-badge--high     { background: rgba(249, 115, 22,  0.12); color: var(--risk-high); }
+.risk-badge--medium   { background: rgba(234, 179, 8,   0.12); color: var(--risk-medium); }
+.risk-badge--low      { background: rgba(34,  197, 94,  0.12); color: var(--risk-low); }
+
+[data-theme="light"] .risk-badge--critical { background: rgba(220, 38,  38,  0.10); }
+[data-theme="light"] .risk-badge--high     { background: rgba(234, 88,  12,  0.10); }
+[data-theme="light"] .risk-badge--medium   { background: rgba(202, 138, 4,   0.10); }
+[data-theme="light"] .risk-badge--low      { background: rgba(22,  163, 74,  0.10); }
+
+/* ── Theme Toggle ───────────────────────────────────────────────── */
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+/* ── Light mode shadow overrides ─────────────────────────────────── */
+
+[data-theme="light"] .excl-text-block,
+[data-theme="light"] .detail-section,
+[data-theme="light"] .reasoning-text {
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+}
 
 /* ── Highlight Pulse (exclusion deep-link) ───────────────────────── */
 
