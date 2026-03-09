@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutGrid, Search, AlertTriangle, GraduationCap, Upload, FileText, LogOut } from 'lucide-react'
+import { LayoutGrid, Search, AlertTriangle, GraduationCap, Upload, FileText, Shield, LogOut } from 'lucide-react'
 import { useAuth } from '../../auth'
 
 export default function Sidebar() {
@@ -38,6 +38,12 @@ export default function Sidebar() {
           <FileText size={18} />
           MFC Exclusions
         </NavLink>
+        {user?.is_admin && (
+          <NavLink to="/admin" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            <Shield size={18} />
+            Admin
+          </NavLink>
+        )}
       </nav>
 
       {user?.is_estimator && (

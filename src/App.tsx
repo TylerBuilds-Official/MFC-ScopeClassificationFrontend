@@ -12,6 +12,7 @@ import HighRiskSessionPage from './pages/HighRiskSessionPage'
 import ExclusionsPage from './pages/ExclusionsPage'
 import TrainingPage from './pages/TrainingPage'
 import AnalyzePage from './pages/AnalyzePage'
+import AdminPage from './pages/AdminPage'
 
 
 export default function App() {
@@ -35,6 +36,7 @@ export default function App() {
   }
 
   const isEstimator = user?.is_estimator ?? false
+  const isAdmin     = user?.is_admin ?? false
 
   return (
     <div className="app-layout">
@@ -48,6 +50,7 @@ export default function App() {
         <Route path="/exclusions"    element={<ExclusionsPage />} />
         <Route path="/training"     element={isEstimator ? <TrainingPage />  : <Navigate to="/sessions" replace />} />
         <Route path="/analyze"      element={isEstimator ? <AnalyzePage />   : <Navigate to="/sessions" replace />} />
+        <Route path="/admin"        element={isAdmin     ? <AdminPage />     : <Navigate to="/sessions" replace />} />
         <Route path="/auth/callback" element={<Navigate to="/sessions" replace />} />
         <Route path="*"             element={<Navigate to="/sessions" replace />} />
       </Routes>
