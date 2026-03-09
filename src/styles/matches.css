@@ -665,3 +665,94 @@
 .hr-banner-link:hover {
   color: var(--text-primary);
 }
+
+/* ── Contractual Review Panel ────────────────────────────────────── */
+
+.contractual-panel {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  margin-top: 16px;
+  overflow: hidden;
+}
+
+.contractual-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.1s ease;
+}
+
+.contractual-header:hover {
+  background: var(--bg-hover);
+}
+
+.contractual-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.contractual-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg-active);
+  padding: 1px 8px;
+  border-radius: 999px;
+}
+
+.contractual-body {
+  padding: 0 16px 14px;
+}
+
+.contractual-hint {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.contractual-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  transition: background 0.1s ease;
+}
+
+.contractual-item:hover {
+  background: var(--bg-hover);
+}
+
+.contractual-id {
+  font-family: var(--font-mono), sans-serif;
+  font-size: 11px;
+  color: var(--text-muted);
+  min-width: 36px;
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+
+.contractual-text {
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.5;
+  flex: 1;
+}
+
+.contractual-notes {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  font-style: italic;
+  flex-shrink: 0;
+  max-width: 200px;
+  text-align: right;
+}

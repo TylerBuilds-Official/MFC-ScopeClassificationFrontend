@@ -428,6 +428,21 @@
   color: var(--accent);
 }
 
+/* ── Scope Badge ─────────────────────────────────────────────────── */
+
+.excl-scope-badge {
+  display: inline-flex;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.excl-scope-badge.scope-supply       { background: rgba(168, 85, 247, 0.1);  color: #a855f7; }
+.excl-scope-badge.scope-erect        { background: rgba(20, 184, 166, 0.1);  color: #14b8a6; }
+.excl-scope-badge.scope-contractual  { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); }
+
 /* ── Type Filter Bar ──────────────────────────────────────────────── */
 
 .excl-type-filter-bar {
@@ -437,6 +452,22 @@
   padding: 8px 18px;
   border-bottom: 1px solid var(--border-subtle);
   flex-shrink: 0;
+}
+
+.excl-filter-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-right: 2px;
+}
+
+.excl-filter-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--border-default);
+  margin: 0 6px;
 }
 
 .excl-type-chip {
@@ -484,6 +515,25 @@
 
 .excl-type-chip.clear:hover {
   color: var(--status-error);
+}
+
+/* Scope chip active states */
+.excl-type-chip.scope-supply.active {
+  background: rgba(168, 85, 247, 0.12);
+  color: #a855f7;
+  border-color: #a855f7;
+}
+
+.excl-type-chip.scope-erect.active {
+  background: rgba(20, 184, 166, 0.12);
+  color: #14b8a6;
+  border-color: #14b8a6;
+}
+
+.excl-type-chip.scope-contractual.active {
+  background: rgba(148, 163, 184, 0.15);
+  color: var(--text-secondary);
+  border-color: var(--text-muted);
 }
 
 /* ── All-View Category Headers ───────────────────────────────────── */

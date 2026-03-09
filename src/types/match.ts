@@ -12,6 +12,7 @@ export interface MatchRow {
   erector_text:             string | null
   mfc_text:                 string | null
   mfc_item_type:            string | null
+  mfc_scope_type:           string | null
 }
 
 export interface MatchListResponse {

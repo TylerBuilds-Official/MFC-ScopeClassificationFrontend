@@ -231,10 +231,12 @@ interface AddExclusionState {
   text:       string
   categoryId: number | null
   itemType:   string
+  scopeType:  string
   saving:     boolean
 }
 
-const ITEM_TYPES = ['Exclusion', 'Condition', 'Clarification'] as const
+const ITEM_TYPES  = ['Exclusion', 'Condition', 'Clarification'] as const
+const SCOPE_TYPES = ['Supply', 'Erect', 'Contractual']         as const
 
 function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
   const [collapsed, setCollapsed]     = useState<Set<number>>(new Set())
@@ -242,20 +244,32 @@ function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
   const [busy, setBusy]               = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<MfcExclusion | null>(null)
   const [addModal, setAddModal]       = useState<AddExclusionState | null>(null)
-  const [activeTypes, setActiveTypes] = useState<Set<string>>(new Set())
+  const [activeTypes, setActiveTypes]   = useState<Set<string>>(new Set())
+  const [activeScopes, setActiveScopes] = useState<Set<string>>(new Set())
 
   const { data, loading, refetch } = useApi(() => getMfcExclusions(), [])
   const exclusions                 = data?.exclusions ?? []
 
-  const isSearching   = search.raw.length > 0
+  const isSearching    = search.raw.length > 0
   const isTypeFiltered = activeTypes.size > 0
-  const isFiltering    = isSearching || isTypeFiltered
+  const isScopeFiltered = activeScopes.size > 0
+  const isFiltering    = isSearching || isTypeFiltered || isScopeFiltered
 
   function toggleType(type: string) {
     setActiveTypes(prev => {
       const next = new Set(prev)
       if (next.has(type)) next.delete(type)
       else                next.add(type)
+
+      return next
+    })
+  }
+
+  function toggleScope(scope: string) {
+    setActiveScopes(prev => {
+      const next = new Set(prev)
+      if (next.has(scope)) next.delete(scope)
+      else                 next.add(scope)
 
       return next
     })
@@ -273,10 +287,11 @@ function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
 
   const catMap = new Map(categories.map(c => [c.Id, c.Name]))
 
-  // Filter exclusions based on search + type
+  // Filter exclusions based on search + type + scope
   const filtered = useMemo(() => {
     return exclusions.filter(exc => {
-      if (isTypeFiltered && !activeTypes.has(exc.ItemType)) return false
+      if (isTypeFiltered && !activeTypes.has(exc.ItemType))   return false
+      if (isScopeFiltered && !activeScopes.has(exc.ScopeType)) return false
 
       if (!isSearching) return true
 
@@ -284,7 +299,7 @@ function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
 
       return exc.Exclusion.toLowerCase().includes(search.text)
     })
-  }, [exclusions, search, isSearching, isTypeFiltered, activeTypes])
+  }, [exclusions, search, isSearching, isTypeFiltered, activeTypes, isScopeFiltered, activeScopes])
 
   // Group by category, maintain sort order
   const grouped = new Map<number, MfcExclusion[]>()
@@ -324,7 +339,7 @@ function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
   const matchedIds = isFiltering ? new Set(filtered.map(e => e.Id)) : null
 
   function openAddModal() {
-    setAddModal({ text: '', categoryId: null, itemType: 'Exclusion', saving: false })
+    setAddModal({ text: '', categoryId: null, itemType: 'Exclusion', scopeType: 'Supply', saving: false })
   }
 
   async function handleAddSave() {
@@ -336,6 +351,7 @@ function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
         category_id: addModal.categoryId,
         exclusion:   addModal.text.trim(),
         item_type:   addModal.itemType,
+        scope_type:  addModal.scopeType,
       })
       setAddModal(null)
       refetch()
@@ -365,6 +381,7 @@ function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
       </div>
 
       <div className="excl-type-filter-bar">
+        <span className="excl-filter-label">Type</span>
         {ITEM_TYPES.map(type => (
           <button
             key={type}
@@ -374,10 +391,24 @@ function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
             {type}
           </button>
         ))}
-        {isTypeFiltered && (
+
+        <span className="excl-filter-divider" />
+
+        <span className="excl-filter-label">Scope</span>
+        {SCOPE_TYPES.map(scope => (
+          <button
+            key={scope}
+            className={`excl-type-chip scope-${scope.toLowerCase()} ${activeScopes.has(scope) ? 'active' : ''}`}
+            onClick={() => toggleScope(scope)}
+          >
+            {scope}
+          </button>
+        ))}
+
+        {(isTypeFiltered || isScopeFiltered) && (
           <button
             className="excl-type-chip clear"
-            onClick={() => setActiveTypes(new Set())}
+            onClick={() => { setActiveTypes(new Set()); setActiveScopes(new Set()) }}
           >
             Clear
           </button>
@@ -424,10 +455,10 @@ function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
                   <InlineForm
                     key={exc.Id}
                     initial={exc}
-                    onSave={async (text, type) => {
+                    onSave={async (text, type, scope) => {
                       setBusy(true)
                       try {
-                        await updateMfcExclusion(exc.Id, { exclusion: text, item_type: type })
+                        await updateMfcExclusion(exc.Id, { exclusion: text, item_type: type, scope_type: scope })
                         setEditId(null)
                         refetch()
                       } finally {
@@ -499,6 +530,19 @@ function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
                   onChange={v => setAddModal({ ...addModal, itemType: v })}
                 />
               </label>
+
+              <label className="action-modal-label">
+                Scope Type
+                <CustomSelect
+                  options={[
+                    { value: 'Supply',       label: 'Supply' },
+                    { value: 'Erect',        label: 'Erect' },
+                    { value: 'Contractual',  label: 'Contractual' },
+                  ]}
+                  value={addModal.scopeType}
+                  onChange={v => setAddModal({ ...addModal, scopeType: v })}
+                />
+              </label>
             </div>
 
             <div className="action-modal-footer">
@@ -567,6 +611,7 @@ function ExclusionPanel({ category, search, allExclusions, categories, onNavigat
   const [busy, setBusy]                 = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<MfcExclusion | null>(null)
   const [activeTypes, setActiveTypes]   = useState<Set<string>>(new Set())
+  const [activeScopes, setActiveScopes] = useState<Set<string>>(new Set())
 
   const { data, loading, refetch } = useApi(
     () => getMfcExclusions(category.Id),
@@ -598,9 +643,10 @@ function ExclusionPanel({ category, search, allExclusions, categories, onNavigat
     return () => clearTimeout(timer)
   }, [highlightId, loading, exclusions.length]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const isSearching   = search.raw.length > 0
+  const isSearching    = search.raw.length > 0
   const isTypeFiltered = activeTypes.size > 0
-  const isFiltering    = isSearching || isTypeFiltered
+  const isScopeFiltered = activeScopes.size > 0
+  const isFiltering    = isSearching || isTypeFiltered || isScopeFiltered
 
   function toggleType(type: string) {
     setActiveTypes(prev => {
@@ -612,9 +658,20 @@ function ExclusionPanel({ category, search, allExclusions, categories, onNavigat
     })
   }
 
+  function toggleScope(scope: string) {
+    setActiveScopes(prev => {
+      const next = new Set(prev)
+      if (next.has(scope)) next.delete(scope)
+      else                 next.add(scope)
+
+      return next
+    })
+  }
+
   const filtered = useMemo(() => {
     return exclusions.filter(exc => {
-      if (isTypeFiltered && !activeTypes.has(exc.ItemType)) return false
+      if (isTypeFiltered && !activeTypes.has(exc.ItemType))   return false
+      if (isScopeFiltered && !activeScopes.has(exc.ScopeType)) return false
 
       if (!isSearching) return true
 
@@ -622,7 +679,7 @@ function ExclusionPanel({ category, search, allExclusions, categories, onNavigat
 
       return exc.Exclusion.toLowerCase().includes(search.text)
     })
-  }, [exclusions, search, isSearching, isTypeFiltered, activeTypes])
+  }, [exclusions, search, isSearching, isTypeFiltered, activeTypes, isScopeFiltered, activeScopes])
 
   // Cross-category hint: ID was searched but not found in this category
   const crossCatHint = useMemo(() => {
@@ -639,13 +696,14 @@ function ExclusionPanel({ category, search, allExclusions, categories, onNavigat
 
   const matchedIds = isFiltering ? new Set(filtered.map(e => e.Id)) : null
 
-  const handleCreate = useCallback(async (text: string, itemType: string) => {
+  const handleCreate = useCallback(async (text: string, itemType: string, scopeType: string) => {
     setBusy(true)
     try {
       await createMfcExclusion({
         category_id: category.Id,
         exclusion:   text,
         item_type:   itemType,
+        scope_type:  scopeType,
         sort_order:  exclusions.length + 1,
       })
       setAdding(false)
@@ -655,10 +713,10 @@ function ExclusionPanel({ category, search, allExclusions, categories, onNavigat
     }
   }, [category.Id, exclusions.length, refetch])
 
-  const handleUpdate = useCallback(async (id: number, text: string, itemType: string) => {
+  const handleUpdate = useCallback(async (id: number, text: string, itemType: string, scopeType: string) => {
     setBusy(true)
     try {
-      await updateMfcExclusion(id, { exclusion: text, item_type: itemType })
+      await updateMfcExclusion(id, { exclusion: text, item_type: itemType, scope_type: scopeType })
       setEditId(null)
       refetch()
     } finally {
@@ -695,6 +753,7 @@ function ExclusionPanel({ category, search, allExclusions, categories, onNavigat
       </div>
 
       <div className="excl-type-filter-bar">
+        <span className="excl-filter-label">Type</span>
         {ITEM_TYPES.map(type => (
           <button
             key={type}
@@ -704,10 +763,24 @@ function ExclusionPanel({ category, search, allExclusions, categories, onNavigat
             {type}
           </button>
         ))}
-        {isTypeFiltered && (
+
+        <span className="excl-filter-divider" />
+
+        <span className="excl-filter-label">Scope</span>
+        {SCOPE_TYPES.map(scope => (
+          <button
+            key={scope}
+            className={`excl-type-chip scope-${scope.toLowerCase()} ${activeScopes.has(scope) ? 'active' : ''}`}
+            onClick={() => toggleScope(scope)}
+          >
+            {scope}
+          </button>
+        ))}
+
+        {(isTypeFiltered || isScopeFiltered) && (
           <button
             className="excl-type-chip clear"
-            onClick={() => setActiveTypes(new Set())}
+            onClick={() => { setActiveTypes(new Set()); setActiveScopes(new Set()) }}
           >
             Clear
           </button>
@@ -764,7 +837,7 @@ function ExclusionPanel({ category, search, allExclusions, categories, onNavigat
             <InlineForm
               key={exc.Id}
               initial={exc}
-              onSave={(text, type) => handleUpdate(exc.Id, text, type)}
+              onSave={(text, type, scope) => handleUpdate(exc.Id, text, type, scope)}
               onCancel={() => setEditId(null)}
               busy={busy}
             />
@@ -818,6 +891,7 @@ function ExclusionRow({ exclusion, onEdit, onDelete, highlight }: ExclusionRowPr
         <div className="excl-text">{exclusion.Exclusion}</div>
         <div className="excl-meta">
           <span className={`excl-type-badge ${typeClass}`}>{exclusion.ItemType}</span>
+          <span className={`excl-scope-badge scope-${exclusion.ScopeType.toLowerCase()}`}>{exclusion.ScopeType}</span>
         </div>
       </div>
       <div className="excl-actions">
@@ -837,14 +911,15 @@ function ExclusionRow({ exclusion, onEdit, onDelete, highlight }: ExclusionRowPr
 
 interface InlineFormProps {
   initial?:  MfcExclusion
-  onSave:    (text: string, itemType: string) => void
+  onSave:    (text: string, itemType: string, scopeType: string) => void
   onCancel:  () => void
   busy:      boolean
 }
 
 function InlineForm({ initial, onSave, onCancel, busy }: InlineFormProps) {
-  const [text, setText]         = useState(initial?.Exclusion ?? '')
-  const [itemType, setItemType] = useState(initial?.ItemType ?? 'Exclusion')
+  const [text, setText]           = useState(initial?.Exclusion ?? '')
+  const [itemType, setItemType]   = useState(initial?.ItemType ?? 'Exclusion')
+  const [scopeType, setScopeType] = useState(initial?.ScopeType ?? 'Supply')
 
   const canSave = text.trim().length > 0 && !busy
 
@@ -866,13 +941,22 @@ function InlineForm({ initial, onSave, onCancel, busy }: InlineFormProps) {
           value={itemType}
           onChange={setItemType}
         />
+        <CustomSelect
+          options={[
+            { value: 'Supply',       label: 'Supply' },
+            { value: 'Erect',        label: 'Erect' },
+            { value: 'Contractual',  label: 'Contractual' },
+          ]}
+          value={scopeType}
+          onChange={setScopeType}
+        />
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
           <button className="btn-sm ghost" onClick={onCancel} disabled={busy}>
             <X size={13} /> Cancel
           </button>
           <button
             className="btn-sm primary"
-            onClick={() => onSave(text.trim(), itemType)}
+            onClick={() => onSave(text.trim(), itemType, scopeType)}
             disabled={!canSave}
           >
             <Check size={13} /> {initial ? 'Save' : 'Add'}
