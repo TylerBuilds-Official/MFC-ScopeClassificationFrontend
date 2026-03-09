@@ -2,7 +2,9 @@ import { msalInstance } from '../auth/msalInstance'
 import { apiTokenRequest } from '../auth/authConfig'
 
 
-const BASE_URL = '/api'
+const BASE_URL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : '/api'
 
 
 export class ApiError extends Error {
