@@ -21,7 +21,7 @@ const PHASE_DESCRIPTIONS: Record<string, string> = {
 
 
 export default function ProgressCard({ progress }: ProgressCardProps) {
-  const { status, is_active, error_message } = progress
+  const { status, error_message } = progress
   const done   = status === 'Complete'
   const failed = status === 'Error'
 

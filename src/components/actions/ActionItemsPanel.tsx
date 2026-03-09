@@ -15,7 +15,7 @@ import {
   generateActionItems,
 } from '../../api/actionItems'
 import { createMfcExclusion } from '../../api/exclusions'
-import type { ActionItem, ActionItemListResponse } from '../../types/actionItem'
+import type { ActionItem } from '../../types/actionItem'
 
 
 interface ActionItemsPanelProps {
@@ -88,7 +88,7 @@ export default function ActionItemsPanel({ sessionId, onViewMatch }: ActionItems
 
     for (const item of items) {
       s.total++
-      if (item.status in s) (s as Record<string, number>)[item.status]++
+      if (item.status in s) (s as unknown as Record<string, number>)[item.status]++
       s.by_section[item.section] = (s.by_section[item.section] ?? 0) + 1
     }
 

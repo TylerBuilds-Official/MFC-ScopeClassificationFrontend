@@ -1,6 +1,6 @@
 import { useMemo, useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { AlertTriangle, ClipboardList, CheckCircle, Circle, Loader2 } from 'lucide-react'
+import { AlertTriangle, ClipboardList, CheckCircle } from 'lucide-react'
 
 import Header from '../components/global/Header'
 import LoadingSpinner from '../components/global/LoadingSpinner'

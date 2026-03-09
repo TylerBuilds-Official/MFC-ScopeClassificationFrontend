@@ -51,7 +51,7 @@ export default function ExclusionsPage() {
   const [searchInput, setSearchInput]   = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>()
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   /* ── Deep-link highlight: ?highlight=<id> ────────────────────────── */
 

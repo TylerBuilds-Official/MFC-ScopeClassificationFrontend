@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
   GraduationCap, CheckCircle2, ArrowRight, AlertTriangle,
-  ChevronDown, Sparkles, Trophy, BarChart3,
+  Sparkles, Trophy, BarChart3,
 } from 'lucide-react'
 
 import Header from '../components/global/Header'
@@ -9,7 +9,7 @@ import LoadingSpinner from '../components/global/LoadingSpinner'
 import CustomSelect from '../components/global/CustomSelect'
 import { getTrainingQueue, submitVerification } from '../api/training'
 import { getCategories } from '../api/categories'
-import type { TrainingQueueItem, TrainingQueueResponse } from '../types/training'
+import type { TrainingQueueItem } from '../types/training'
 import type { Category } from '../types/category'
 
 import '../styles/training.css'
