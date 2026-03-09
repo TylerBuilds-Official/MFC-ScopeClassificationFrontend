@@ -20,13 +20,6 @@ const ROLE_OPTIONS = [
   { value: 'admin',     label: 'Admin' },
 ]
 
-const ROLE_BADGE_CLASS: Record<string, string> = {
-  pending:   'role-pending',
-  viewer:    'role-viewer',
-  estimator: 'role-estimator',
-  admin:     'role-admin',
-}
-
 
 interface RoleChangeState {
   user:    AdminUser
