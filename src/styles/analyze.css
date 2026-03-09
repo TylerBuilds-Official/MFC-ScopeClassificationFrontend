@@ -37,7 +37,7 @@
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  border-color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
 .form-group .hint {

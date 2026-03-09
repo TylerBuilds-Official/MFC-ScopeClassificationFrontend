@@ -135,6 +135,19 @@ input, select, textarea {
   font-size: inherit;
 }
 
+/* ── Focus Ring ────────────────────────────────────────────────── */
+
+*:focus {
+  outline: none;
+}
+
+/* Soft glow ring — replaces the harsh browser default */
+*:focus-visible {
+  outline:    none;
+  box-shadow: 0 0 0 2px var(--bg-primary),
+              0 0 0 3px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
 /* ── Scrollbar ────────────────────────────────────────────────────── */
 
 * {
@@ -232,6 +245,7 @@ input, select, textarea {
   color: var(--text-muted);
   cursor: pointer;
   transition: all 0.15s ease;
+  margin-bottom: -6px;
   flex-shrink: 0;
 }
 

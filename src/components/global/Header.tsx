@@ -12,6 +12,7 @@ export default function Header({ title, breadcrumb, children }: HeaderProps) {
 
   return (
     <header className="header">
+
       <div>
         {breadcrumb && breadcrumb.length > 0 && (
           <div className="header-breadcrumb">
@@ -25,12 +26,15 @@ export default function Header({ title, breadcrumb, children }: HeaderProps) {
         )}
         <div className="header-title">{title}</div>
       </div>
+
       <div className="header-actions">
+        {children}
+
         <button className="theme-toggle" onClick={toggleTheme} title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}>
           {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
         </button>
-        {children}
       </div>
+
     </header>
   )
 }

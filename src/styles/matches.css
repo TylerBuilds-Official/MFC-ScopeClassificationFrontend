@@ -293,7 +293,7 @@
 }
 
 .match-card.expanded {
-  border-color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
 }
 
 /* Header row */
@@ -438,7 +438,7 @@
 }
 
 .erector-group.expanded {
-  border-color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
 }
 
 /* Header */

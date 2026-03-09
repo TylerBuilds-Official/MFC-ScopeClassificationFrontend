@@ -488,7 +488,7 @@
 
 .action-modal-textarea:focus {
   outline: none;
-  border-color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
 .action-modal-footer {
@@ -565,7 +565,7 @@
 }
 
 .session-tab.active {
-  color: var(--accent);
+  color: color-mix(in srgb, var(--accent) 85%, var(--text-primary));
 }
 
 .session-tab.active::after {
@@ -575,7 +575,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--accent);
+  background: color-mix(in srgb, var(--accent) 65%, transparent);
   border-radius: 1px 1px 0 0;
 }
 

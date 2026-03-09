@@ -113,7 +113,7 @@
 .filter-bar select:focus,
 .filter-bar input:focus {
   outline: none;
-  border-color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
 .filter-select {
@@ -127,7 +127,7 @@
 
 .filter-select:focus {
   outline: none;
-  border-color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
 /* ── Filter Chips ─────────────────────────────────────────────────── */
@@ -283,7 +283,7 @@
   padding: 3px 8px;
   font-size: 13px;
   font-family: inherit;
-  border: 1px solid var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
   border-radius: var(--radius-sm);
   background: var(--bg-primary);
   color: var(--text-primary);
