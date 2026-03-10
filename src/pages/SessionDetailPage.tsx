@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
+import { Download } from 'lucide-react'
 import { useParams, useNavigate } from 'react-router-dom'
 
 import Header from '../components/global/Header'
@@ -14,6 +15,7 @@ import ContractualReviewPanel from '../components/matches/ContractualReviewPanel
 import ActionItemsPanel from '../components/actions/ActionItemsPanel'
 import { useApi } from '../hooks/useApi'
 import { useCategories } from '../hooks/useCategories'
+import { downloadScopeLetter } from '../api/export'
 import { getSession, getSessionProgress } from '../api/sessions'
 import { getSessionMatches } from '../api/matches'
 import { getSessionActionItems } from '../api/actionItems'
@@ -39,6 +41,35 @@ function MatchLegend({ viewMode }: { viewMode: ViewMode }) {
       <span className="match-legend-divider" />
       <span className="match-legend-item">RISK</span>
     </div>
+  )
+}
+
+/* ── Export Button ──────────────────────────────────────────────── */
+
+function ExportButton({ sessionId }: { sessionId: number }) {
+  const [busy, setBusy] = useState(false)
+
+  async function handleExport() {
+    setBusy(true)
+    try {
+      await downloadScopeLetter(sessionId)
+    } catch (err) {
+      console.error('Export failed:', err)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <button
+      className="btn-export"
+      onClick={handleExport}
+      disabled={busy}
+      title="Download highlighted scope letter"
+    >
+      <Download size={14} />
+      {busy ? 'Exporting...' : 'Scope Letter'}
+    </button>
   )
 }
 
@@ -229,7 +260,9 @@ export default function SessionDetailPage() {
               <>
                 <div className="page-header" style={{ marginTop: 16 }}>
                   <h2>Matches<span className="matches-view-label">: {{ erector: 'By Erector Item', accordion: 'By Category', table: 'Flat Table' }[viewMode]}</span></h2>
-                  <CustomSelect
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <ExportButton sessionId={sessionId} />
+                    <CustomSelect
                     options={[
                       { value: 'erector',   label: 'By Erector Item' },
                       { value: 'accordion', label: 'By Category' },
@@ -238,6 +271,7 @@ export default function SessionDetailPage() {
                     value={viewMode}
                     onChange={v => setViewMode(v as ViewMode)}
                   />
+                  </div>
                 </div>
 
                 {/* Filter chips */}

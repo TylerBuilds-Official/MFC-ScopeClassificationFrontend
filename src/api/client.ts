@@ -102,6 +102,26 @@ export async function del_<T>(path: string): Promise<T> {
 }
 
 
+export async function downloadBlob(path: string): Promise<{ blob: Blob; filename: string }> {
+  const auth     = await getAuthHeaders()
+  const response = await fetch(`${BASE_URL}${path}`, {
+    headers: { ...auth },
+  })
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({ detail: response.statusText }))
+    throw new ApiError(response.status, body.detail ?? response.statusText)
+  }
+
+  const disposition = response.headers.get('Content-Disposition') ?? ''
+  const match       = disposition.match(/filename="?([^"]+)"?/)
+  const filename    = match?.[1] ?? 'download.docx'
+  const blob        = await response.blob()
+
+  return { blob, filename }
+}
+
+
 export async function post<T>(path: string, body: FormData | Record<string, unknown>): Promise<T> {
   const isFormData = body instanceof FormData
   const auth       = await getAuthHeaders()
