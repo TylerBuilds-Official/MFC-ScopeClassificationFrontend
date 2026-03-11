@@ -13,6 +13,7 @@ import ExclusionsPage from './pages/ExclusionsPage'
 import TrainingPage from './pages/TrainingPage'
 import AnalyzePage from './pages/AnalyzePage'
 import AdminPage from './pages/AdminPage'
+import ScopeLetterEditorPage from './pages/ScopeLetterEditorPage'
 
 
 export default function App() {
@@ -45,6 +46,7 @@ export default function App() {
       <Routes>
         <Route path="/sessions"     element={<SessionsPage />} />
         <Route path="/sessions/:id" element={<SessionDetailPage />} />
+        <Route path="/sessions/:id/editor" element={<ScopeLetterEditorPage />} />
         <Route path="/high-risk"              element={<HighRiskPage />} />
         <Route path="/high-risk/session/:id"  element={<HighRiskSessionPage />} />
         <Route path="/exclusions"    element={<ExclusionsPage />} />

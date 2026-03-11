@@ -1,0 +1,373 @@
+/* ── Scope Letter Editor ──────────────────────────────────────────── */
+
+.editor-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.editor-back-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Meta bar ────────────────────────────────────────────────────── */
+
+.editor-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  margin-bottom: 4px;
+}
+
+.editor-meta-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.editor-meta-value {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.editor-meta-sep {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+/* ── Toolbar ─────────────────────────────────────────────────────── */
+
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  margin-bottom: 12px;
+}
+
+.editor-toolbar-stats {
+  display: flex;
+  gap: 12px;
+}
+
+.editor-stat {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+
+.editor-stat.aligned   { background: rgba(74, 222, 128, 0.12); color: var(--match-aligned); }
+.editor-stat.partial   { background: rgba(250, 204, 21, 0.12); color: var(--match-partial); }
+.editor-stat.unmatched { background: rgba(148, 163, 184, 0.1); color: var(--text-muted); }
+.editor-stat.removed   { background: rgba(248, 113, 113, 0.1); color: var(--status-error); }
+
+.editor-toolbar-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.editor-tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.editor-tool-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.editor-tool-btn.danger:hover {
+  border-color: var(--status-error);
+  color: var(--status-error);
+}
+
+.editor-tool-btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.editor-tool-btn.primary:hover {
+  opacity: 0.9;
+}
+
+.editor-tool-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Layout ──────────────────────────────────────────────────────── */
+
+.editor-layout {
+  display: flex;
+  gap: 16px;
+  min-height: 0;
+}
+
+.editor-doc {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px 32px;
+  max-height: calc(100vh - 260px);
+  overflow-y: auto;
+}
+
+.editor-sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 16px;
+  align-self: flex-start;
+}
+
+/* ── Paragraph rows ──────────────────────────────────────────────── */
+
+.editor-para-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  position: relative;
+  margin-bottom: 2px;
+}
+
+.editor-para-row:hover .editor-gutter-btn {
+  opacity: 1;
+}
+
+.editor-para-row.removed {
+  opacity: 0.3;
+}
+
+.editor-para-row.removed .editor-para {
+  text-decoration: line-through;
+  text-decoration-color: var(--text-muted);
+  pointer-events: none;
+}
+
+.editor-gutter {
+  width: 20px;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.editor-gutter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.1s ease;
+}
+
+.editor-gutter-btn:hover {
+  background: rgba(248, 113, 113, 0.15);
+  color: var(--status-error);
+}
+
+.editor-gutter-btn.restore {
+  opacity: 1;
+  color: var(--match-aligned);
+}
+
+.editor-gutter-btn.restore:hover {
+  background: rgba(74, 222, 128, 0.15);
+}
+
+/* ── Editable paragraph ──────────────────────────────────────────── */
+
+.editor-para {
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--text-primary);
+  min-height: 1.65em;
+  padding: 1px 2px;
+  border-radius: 2px;
+  outline: none;
+  width: 100%;
+  cursor: text;
+  white-space: pre-wrap;
+  tab-size: 48px;
+}
+
+.editor-para:focus {
+  box-shadow: inset 0 0 0 1px var(--accent-muted);
+}
+
+.editor-para-empty {
+  min-height: 0.6em;
+  margin-bottom: 0;
+}
+
+/* ── Text formatting from docx runs ──────────────────────────────── */
+
+.seg-bold      { font-weight: 700; }
+.seg-italic    { font-style: italic; }
+.seg-underline { text-decoration: underline; text-underline-offset: 2px; }
+
+/* ── Highlighted regions ─────────────────────────────────────────── */
+
+.editor-region {
+  position: relative;
+  padding: 1px 2px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: filter 0.1s ease;
+}
+
+.editor-region:hover {
+  filter: brightness(1.15);
+}
+
+.editor-region.aligned {
+  background: rgba(74, 222, 128, 0.18);
+  border-bottom: 2px solid rgba(74, 222, 128, 0.5);
+}
+
+.editor-region.partial {
+  background: rgba(250, 204, 21, 0.18);
+  border-bottom: 2px solid rgba(250, 204, 21, 0.5);
+}
+
+.editor-region.unmatched {
+  background: rgba(148, 163, 184, 0.08);
+  border-bottom: 1px dashed rgba(148, 163, 184, 0.3);
+}
+
+.editor-region-remove {
+  display: none;
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: none;
+  background: var(--status-error);
+  color: #fff;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.editor-region:hover .editor-region-remove {
+  display: flex;
+}
+
+/* ── Region detail sidebar ───────────────────────────────────────── */
+
+.region-detail {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.region-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.region-detail-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-transform: capitalize;
+}
+
+.region-detail-badge.aligned   { background: rgba(74, 222, 128, 0.15); color: var(--match-aligned); }
+.region-detail-badge.partial   { background: rgba(250, 204, 21, 0.15); color: var(--match-partial); }
+.region-detail-badge.unmatched { background: rgba(148, 163, 184, 0.1); color: var(--text-muted); }
+
+.region-detail-risk {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.region-detail-risk.critical,
+.region-detail-risk.high { background: rgba(248, 113, 113, 0.12); color: var(--risk-high); }
+.region-detail-risk.medium { background: rgba(250, 204, 21, 0.12); color: var(--match-partial); }
+.region-detail-risk.low { background: rgba(74, 222, 128, 0.12); color: var(--match-aligned); }
+
+.region-detail-close {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.region-detail-close:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.region-detail-body {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.region-detail-row label {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.region-detail-row p {
+  font-size: 12.5px;
+  color: var(--text-primary);
+  line-height: 1.55;
+  margin: 0;
+}

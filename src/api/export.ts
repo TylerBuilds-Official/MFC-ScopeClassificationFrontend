@@ -1,4 +1,5 @@
-import { downloadBlob } from './client'
+import { get, downloadBlob } from './client'
+import type { ScopeLetterData } from '../types/editor'
 
 
 export async function downloadScopeLetter(sessionId: number): Promise<void> {
@@ -15,4 +16,10 @@ export async function downloadScopeLetter(sessionId: number): Promise<void> {
   link.click()
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
+}
+
+
+export async function getScopeLetterData(sessionId: number): Promise<ScopeLetterData> {
+
+  return get<ScopeLetterData>(`/export/session/${sessionId}/scope-letter-data`)
 }

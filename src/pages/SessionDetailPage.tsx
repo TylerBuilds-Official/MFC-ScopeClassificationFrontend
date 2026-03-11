@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
-import { Download } from 'lucide-react'
+import { Download, ChevronDown, FilePenLine } from 'lucide-react'
 import { useParams, useNavigate } from 'react-router-dom'
 
 import Header from '../components/global/Header'
@@ -43,12 +43,16 @@ function MatchLegend({ viewMode }: { viewMode: ViewMode }) {
   )
 }
 
-/* ── Export Button ──────────────────────────────────────────────── */
+/* ── Export Button (split dropdown) ─────────────────────────────── */
 
 function ExportButton({ sessionId }: { sessionId: number }) {
-  const [busy, setBusy] = useState(false)
+  const navigate          = useNavigate()
+  const [busy, setBusy]   = useState(false)
+  const [open, setOpen]   = useState(false)
+  const ref               = useRef<HTMLDivElement>(null)
 
-  async function handleExport() {
+  async function handleDownload() {
+    setOpen(false)
     setBusy(true)
     try {
       await downloadScopeLetter(sessionId)
@@ -59,16 +63,52 @@ function ExportButton({ sessionId }: { sessionId: number }) {
     }
   }
 
+  function handleEditor() {
+    setOpen(false)
+    navigate(`/sessions/${sessionId}/editor`)
+  }
+
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+
+    document.addEventListener('mousedown', onClickOutside)
+
+    return () => document.removeEventListener('mousedown', onClickOutside)
+  }, [])
+
   return (
-    <button
-      className="btn-export"
-      onClick={handleExport}
-      disabled={busy}
-      title="Download highlighted scope letter"
-    >
-      <Download size={14} />
-      {busy ? 'Exporting...' : 'Scope Letter'}
-    </button>
+    <div className="export-split" ref={ref}>
+      <button
+        className="btn-export"
+        onClick={handleDownload}
+        disabled={busy}
+        title="Download highlighted scope letter"
+      >
+        <Download size={14} />
+        {busy ? 'Exporting...' : 'Scope Letter'}
+      </button>
+      <button
+        className="btn-export-toggle"
+        onClick={() => setOpen(!open)}
+        aria-label="Export options"
+      >
+        <ChevronDown size={13} />
+      </button>
+      {open && (
+        <div className="export-dropdown">
+          <button className="export-dropdown-item" onClick={handleDownload}>
+            <Download size={13} />
+            Download .docx
+          </button>
+          <button className="export-dropdown-item" onClick={handleEditor}>
+            <FilePenLine size={13} />
+            Open in Editor
+          </button>
+        </div>
+      )}
+    </div>
   )
 }
 
