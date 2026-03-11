@@ -14,6 +14,9 @@ import TrainingPage from './pages/TrainingPage'
 import AnalyzePage from './pages/AnalyzePage'
 import AdminPage from './pages/AdminPage'
 import ScopeLetterEditorPage from './pages/ScopeLetterEditorPage'
+import ComparisonsPage from './pages/ComparisonsPage'
+import CompareNewPage from './pages/CompareNewPage'
+import ComparisonDetailPage from './pages/ComparisonDetailPage'
 
 
 export default function App() {
@@ -44,6 +47,9 @@ export default function App() {
       <Sidebar />
 
       <Routes>
+        <Route path="/compare"         element={<ComparisonsPage />} />
+        <Route path="/compare/new"     element={isEstimator ? <CompareNewPage /> : <Navigate to="/compare" replace />} />
+        <Route path="/compare/:id"     element={<ComparisonDetailPage />} />
         <Route path="/sessions"     element={<SessionsPage />} />
         <Route path="/sessions/:id" element={<SessionDetailPage />} />
         <Route path="/sessions/:id/editor" element={<ScopeLetterEditorPage />} />

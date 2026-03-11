@@ -1,0 +1,711 @@
+/* ── Comparison page styles ───────────────────────────────────── */
+
+/* Shared input class for comparison forms */
+.field-input {
+  width:         100%;
+  background:    var(--bg-tertiary);
+  border:        1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding:       9px 12px;
+  color:         var(--text-primary);
+  font-size:     13.5px;
+  font-family:   var(--font-sans);
+  transition:    border-color 0.15s ease;
+}
+
+.field-input:focus {
+  outline:      none;
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.field-input::placeholder {
+  color: var(--text-muted);
+}
+
+
+/* Erector pills in the list */
+.erector-pills {
+  display:   flex;
+  flex-wrap: wrap;
+  gap:       4px;
+}
+
+.erector-pill {
+  display:       inline-block;
+  padding:       2px 8px;
+  font-size:     11.5px;
+  font-weight:   500;
+  border-radius: var(--radius-sm);
+  background:    var(--bg-tertiary);
+  border:        1px solid var(--border-subtle);
+  color:         var(--text-primary);
+  white-space:   nowrap;
+}
+
+
+/* ── New comparison form ─────────────────────────────────────── */
+
+.compare-new-form {
+  max-width:      640px;
+  display:        flex;
+  flex-direction: column;
+  gap:            24px;
+}
+
+.compare-section {
+  background:    var(--bg-secondary);
+  border:        1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding:       20px 24px;
+}
+
+.compare-section-label {
+  font-size:      12px;
+  font-weight:    600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color:          var(--text-muted);
+  margin-bottom:  14px;
+  display:        flex;
+  align-items:    center;
+  gap:            8px;
+}
+
+.compare-count {
+  font-weight: 400;
+  font-size:   12px;
+  color:       var(--text-muted);
+}
+
+.compare-field-row {
+  display: flex;
+  gap:     12px;
+}
+
+.compare-field {
+  flex:           1;
+  display:        flex;
+  flex-direction: column;
+  gap:            6px;
+}
+
+.compare-field label {
+  font-size:   12px;
+  font-weight: 600;
+  color:       var(--text-muted);
+}
+
+.compare-empty-drop {
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  gap:             8px;
+  padding:         40px 20px;
+  border:          2px dashed var(--border-default);
+  border-radius:   var(--radius-lg);
+  color:           var(--text-muted);
+  cursor:          pointer;
+  position:        relative;
+  transition:      border-color 0.15s, background 0.15s;
+}
+
+.compare-empty-drop:hover {
+  border-color: var(--accent);
+  background:   var(--accent-muted);
+}
+
+.compare-empty-drop p {
+  margin:    0;
+  font-size: 13px;
+}
+
+.compare-empty-sub {
+  font-size: 12px !important;
+  color:     var(--text-muted);
+}
+
+.compare-file-input {
+  position: absolute;
+  inset:    0;
+  opacity:  0;
+  cursor:   pointer;
+}
+
+.compare-entries {
+  display:        flex;
+  flex-direction: column;
+  gap:            8px;
+}
+
+.compare-entry {
+  display:       flex;
+  align-items:   center;
+  gap:           12px;
+  padding:       10px 14px;
+  background:    var(--bg-tertiary);
+  border:        1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.compare-entry-file {
+  display:     flex;
+  align-items: center;
+  gap:         8px;
+  min-width:   0;
+  flex:        1;
+}
+
+.compare-entry-index {
+  font-size:       11px;
+  font-weight:     600;
+  width:           22px;
+  height:          22px;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  border-radius:   50%;
+  background:      var(--accent);
+  color:           #fff;
+  flex-shrink:     0;
+}
+
+.compare-entry-name {
+  font-size:      13px;
+  font-weight:    500;
+  overflow:       hidden;
+  text-overflow:  ellipsis;
+  white-space:    nowrap;
+  min-width:      0;
+  color:          var(--text-primary);
+}
+
+.compare-entry-size {
+  font-size:   11px;
+  color:       var(--text-muted);
+  flex-shrink: 0;
+}
+
+.compare-entry-erector {
+  width:      200px;
+  flex-shrink: 0;
+}
+
+.compare-entry-erector .field-input {
+  width: 100%;
+}
+
+.compare-entry-remove {
+  background:  none;
+  border:      none;
+  color:       var(--text-muted);
+  cursor:      pointer;
+  padding:     4px;
+  flex-shrink: 0;
+  transition:  color 0.15s;
+}
+
+.compare-entry-remove:hover {
+  color: var(--status-error);
+}
+
+.compare-add-more {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             6px;
+  padding:         10px;
+  background:      none;
+  border:          1px dashed var(--border-default);
+  border-radius:   var(--radius-md);
+  color:           var(--text-muted);
+  font-size:       12.5px;
+  cursor:          pointer;
+  transition:      border-color 0.15s, color 0.15s;
+}
+
+.compare-add-more:hover {
+  border-color: var(--accent);
+  color:        var(--accent);
+}
+
+.compare-error {
+  padding:       10px 14px;
+  background:    rgba(248, 113, 113, 0.08);
+  border:        1px solid rgba(248, 113, 113, 0.2);
+  border-radius: var(--radius-md);
+  color:         var(--status-error);
+  font-size:     13px;
+}
+
+.compare-submit {
+  align-self: flex-start;
+}
+
+.compare-submit:disabled {
+  opacity: 0.4;
+}
+
+
+/* ── Summary bar ─────────────────────────────────────────────── */
+
+.compare-summary {
+  display:       flex;
+  gap:           32px;
+  padding:       16px 20px;
+  background:    var(--bg-secondary);
+  border:        1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  margin-bottom: 16px;
+}
+
+.compare-summary-item {
+  display:        flex;
+  flex-direction: column;
+  gap:            2px;
+}
+
+.compare-summary-label {
+  font-size:      11px;
+  font-weight:    600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color:          var(--text-muted);
+}
+
+.compare-summary-value {
+  font-size:   18px;
+  font-weight: 600;
+  color:       var(--text-primary);
+}
+
+.compare-summary-sub {
+  font-size: 12px;
+  color:     var(--text-secondary);
+}
+
+
+/* ── Toolbar ─────────────────────────────────────────────────── */
+
+.compare-toolbar {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  margin-bottom:   16px;
+  gap:             12px;
+}
+
+.compare-toolbar-left {
+  display:     flex;
+  align-items: center;
+  gap:         8px;
+}
+
+/* ── View toggle (All Items / Gaps & Differences) ──────────── */
+
+.compare-view-toggle {
+  display:       flex;
+  border:        1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  overflow:      hidden;
+}
+
+.view-toggle-btn {
+  display:     flex;
+  align-items: center;
+  gap:         6px;
+  padding:     6px 14px;
+  background:  transparent;
+  border:      none;
+  border-right: 1px solid var(--border-default);
+  font-size:   12.5px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  color:       var(--text-muted);
+  cursor:      pointer;
+  transition:  background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.view-toggle-btn:last-child {
+  border-right: none;
+}
+
+.view-toggle-btn:hover {
+  background: var(--bg-hover);
+}
+
+.view-toggle-btn.active {
+  background: var(--accent-muted);
+  color:      var(--accent);
+  font-weight: 600;
+}
+
+.view-toggle-count {
+  font-size:      11px;
+  font-weight:    600;
+  padding:        1px 6px;
+  border-radius:  99px;
+  background:     var(--bg-tertiary);
+  color:          var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.view-toggle-btn.active .view-toggle-count {
+  background: rgba(78, 140, 255, 0.2);
+  color:      var(--accent);
+}
+
+.compare-toolbar-sep {
+  width:      1px;
+  height:     24px;
+  background: var(--border-subtle);
+  margin:     0 4px;
+}
+
+
+.compare-category-select {
+  font-size:     12.5px;
+  font-family:   var(--font-sans);
+  padding:       5px 10px;
+  border:        1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background:    var(--bg-tertiary);
+  color:         var(--text-primary);
+  cursor:        pointer;
+}
+
+
+/* ── Add erector panel ───────────────────────────────────────── */
+
+.add-erector-panel {
+  padding:       16px 20px;
+  background:    var(--bg-secondary);
+  border:        1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  margin-bottom: 16px;
+}
+
+.add-erector-panel h4 {
+  margin:         0 0 12px;
+  font-size:      12px;
+  font-weight:    600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color:          var(--text-muted);
+}
+
+.add-erector-fields {
+  display:     flex;
+  align-items: center;
+  gap:         10px;
+}
+
+.add-erector-fields .field-input {
+  max-width: 220px;
+}
+
+.add-erector-file-btn {
+  display:       flex;
+  align-items:   center;
+  gap:           6px;
+  padding:       9px 14px;
+  background:    var(--bg-tertiary);
+  border:        1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color:         var(--text-secondary);
+  font-size:     13px;
+  font-family:   var(--font-sans);
+  cursor:        pointer;
+  white-space:   nowrap;
+  max-width:     240px;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  transition:    border-color 0.15s;
+}
+
+.add-erector-file-btn:hover {
+  border-color: var(--accent);
+}
+
+
+/* ── Coverage matrix ─────────────────────────────────────────── */
+
+.compare-matrix-wrapper {
+  overflow-x:    auto;
+  background:    var(--bg-secondary);
+  border:        1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+.compare-matrix {
+  width:           100%;
+  border-collapse: collapse;
+  font-size:       13px;
+}
+
+.compare-matrix thead th {
+  position:        sticky;
+  top:             0;
+  background:      var(--bg-secondary);
+  padding:         12px 14px;
+  font-size:       12px;
+  font-weight:     600;
+  text-transform:  uppercase;
+  letter-spacing:  0.03em;
+  color:           var(--text-muted);
+  border-bottom:   2px solid var(--border-default);
+  text-align:      left;
+  white-space:     nowrap;
+}
+
+.matrix-item-col {
+  min-width: 280px;
+}
+
+.matrix-erector-col {
+  min-width:  130px;
+  text-align: center !important;
+}
+
+.matrix-category-row td {
+  padding:        10px 14px 8px;
+  font-size:      11.5px;
+  font-weight:    700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color:          var(--text-muted);
+  background:     var(--bg-tertiary);
+  border-bottom:  1px solid var(--border-subtle);
+}
+
+.matrix-category-count {
+  font-weight: 400;
+  font-size:   11px;
+  margin-left: 6px;
+  color:       var(--text-muted);
+}
+
+.matrix-item-row td {
+  padding:        10px 14px;
+  border-bottom:  1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+
+.matrix-item-row:hover td {
+  background: var(--bg-hover);
+}
+
+.matrix-item-desc {
+  font-size: 13px;
+  color:     var(--text-primary);
+}
+
+
+/* Coverage pills */
+.cov-cell {
+  text-align: center;
+  cursor:     pointer;
+}
+
+.cov-pill {
+  display:       inline-block;
+  padding:       3px 12px;
+  font-size:     11px;
+  font-weight:   600;
+  border-radius: 99px;
+  white-space:   nowrap;
+}
+
+.cov-pill.excludes {
+  background: rgba(52, 211, 153, 0.12);
+  color:      var(--status-complete);
+  border:     1px solid rgba(52, 211, 153, 0.25);
+}
+
+.cov-pill.includes {
+  background: rgba(78, 140, 255, 0.12);
+  color:      var(--accent);
+  border:     1px solid rgba(78, 140, 255, 0.25);
+}
+
+.cov-pill.not-mentioned {
+  background:  transparent;
+  color:       var(--text-muted);
+  border:      1px solid transparent;
+  font-weight: 400;
+}
+
+
+/* ── Raw text popover ────────────────────────────────────────── */
+
+.cov-popover {
+  position:       fixed;
+  bottom:         20px;
+  right:          20px;
+  width:          380px;
+  max-height:     260px;
+  background:     var(--bg-secondary);
+  border:         1px solid var(--border-default);
+  border-radius:  var(--radius-lg);
+  box-shadow:     0 8px 32px rgba(0, 0, 0, 0.4);
+  z-index:        100;
+  overflow:       hidden;
+  display:        flex;
+  flex-direction: column;
+}
+
+.cov-popover-header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  padding:         12px 16px;
+  border-bottom:   1px solid var(--border-subtle);
+  background:      var(--bg-tertiary);
+}
+
+.cov-popover-erector {
+  font-size:   13px;
+  font-weight: 600;
+  color:       var(--text-primary);
+}
+
+.cov-popover-close {
+  background: none;
+  border:     none;
+  color:      var(--text-muted);
+  cursor:     pointer;
+  padding:    2px;
+}
+
+.cov-popover-close:hover {
+  color: var(--text-primary);
+}
+
+.cov-popover-body {
+  padding:    14px 16px;
+  overflow-y: auto;
+}
+
+.cov-popover-text {
+  margin:      0;
+  font-size:   13px;
+  line-height: 1.6;
+  color:       var(--text-primary);
+}
+
+.cov-popover-empty {
+  margin:     0;
+  font-size:  13px;
+  color:      var(--text-muted);
+  font-style: italic;
+}
+
+
+/* ── Column highlight / dim ─────────────────────────────────── */
+
+.col-dimmed {
+  opacity: 0.35;
+}
+
+.col-highlighted {
+  color: var(--accent) !important;
+}
+
+.cov-dimmed {
+  opacity: 0.25;
+}
+
+
+/* ── Row expand ─────────────────────────────────────────────── */
+
+.matrix-item-row {
+  cursor: pointer;
+}
+
+.matrix-item-row.expanded td {
+  background:    var(--bg-hover);
+  border-bottom: none;
+}
+
+.matrix-expand-icon {
+  display:      inline-block;
+  width:        16px;
+  font-size:    11px;
+  color:        var(--text-muted);
+  margin-right: 6px;
+}
+
+
+/* ── Expanded row detail ────────────────────────────────────── */
+
+.matrix-expanded-row td {
+  padding:       0 14px 14px;
+  background:    var(--bg-hover);
+  border-bottom: 2px solid var(--border-default);
+}
+
+.expanded-detail {
+  display:        flex;
+  flex-direction: column;
+  gap:            10px;
+  padding:        12px 16px;
+  background:     var(--bg-tertiary);
+  border-radius:  var(--radius-md);
+}
+
+.expanded-erector {
+  display:     flex;
+  align-items: baseline;
+  gap:         10px;
+  flex-wrap:   wrap;
+}
+
+.expanded-erector-name {
+  font-size:   13px;
+  font-weight: 600;
+  color:       var(--text-primary);
+  min-width:   100px;
+}
+
+.expanded-type-badge {
+  font-size:      10.5px;
+  font-weight:    600;
+  padding:        2px 8px;
+  border-radius:  99px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.expanded-type-badge.excludes {
+  background: rgba(52, 211, 153, 0.12);
+  color:      var(--status-complete);
+}
+
+.expanded-type-badge.includes {
+  background: rgba(78, 140, 255, 0.12);
+  color:      var(--accent);
+}
+
+.expanded-type-badge.notmentioned {
+  background: rgba(100, 116, 139, 0.12);
+  color:      var(--text-muted);
+}
+
+.expanded-raw-text {
+  margin:       0;
+  font-size:    12.5px;
+  line-height:  1.5;
+  color:        var(--text-secondary);
+  flex-basis:   100%;
+  padding-left: 110px;
+}
+
+.expanded-raw-empty {
+  margin:       0;
+  font-size:    12.5px;
+  color:        var(--text-muted);
+  font-style:   italic;
+  flex-basis:   100%;
+  padding-left: 110px;
+}
