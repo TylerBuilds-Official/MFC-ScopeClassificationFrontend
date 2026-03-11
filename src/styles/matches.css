@@ -666,21 +666,63 @@
   color: var(--text-primary);
 }
 
-/* ── Contractual Review Panel ────────────────────────────────────── */
+/* ── Contractual Review ─────────────────────────────────────────── */
+
+.contractual-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 16px;
+  margin-bottom: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.contractual-trigger:hover {
+  color: var(--text-secondary);
+  border-color: var(--border-default);
+  background: var(--bg-hover);
+}
+
+.contractual-trigger-count {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg-active);
+  padding: 1px 8px;
+  border-radius: 999px;
+}
+
+.contractual-trigger-count.complete {
+  background: rgba(74, 222, 128, 0.12);
+  color: var(--match-aligned);
+}
 
 .contractual-panel {
   background: var(--bg-secondary);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  margin-top: 16px;
+  margin-bottom: 12px;
   overflow: hidden;
 }
 
 .contractual-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-subtle);
   cursor: pointer;
   user-select: none;
   transition: background 0.1s ease;
@@ -690,46 +732,70 @@
   background: var(--bg-hover);
 }
 
-.contractual-header-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.contractual-count {
+.contractual-progress {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-muted);
-  background: var(--bg-active);
-  padding: 1px 8px;
-  border-radius: 999px;
+  margin-left: auto;
 }
 
-.contractual-body {
-  padding: 0 16px 14px;
-}
-
-.contractual-hint {
-  font-size: 12.5px;
-  color: var(--text-muted);
-  margin-bottom: 10px;
-  line-height: 1.5;
+.contractual-progress.complete {
+  color: var(--match-aligned);
 }
 
 .contractual-item {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  padding: 8px 12px;
-  border-radius: var(--radius-md);
-  transition: background 0.1s ease;
+  gap: 12px;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  transition: all 0.15s ease;
+}
+
+.contractual-item:last-child {
+  border-bottom: none;
 }
 
 .contractual-item:hover {
   background: var(--bg-hover);
+}
+
+.contractual-item.reviewed {
+  opacity: 0.45;
+}
+
+.contractual-item.reviewed .contractual-text {
+  text-decoration: line-through;
+  text-decoration-color: var(--text-muted);
+}
+
+.contractual-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border-default);
+  background: transparent;
+  color: transparent;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  padding: 0;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.contractual-check:hover {
+  border-color: var(--accent);
+  background: var(--accent-muted);
+}
+
+.contractual-check.checked {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
 }
 
 .contractual-id {
@@ -738,7 +804,7 @@
   color: var(--text-muted);
   min-width: 36px;
   flex-shrink: 0;
-  padding-top: 1px;
+  padding-top: 2px;
 }
 
 .contractual-text {
@@ -746,6 +812,7 @@
   color: var(--text-primary);
   line-height: 1.5;
   flex: 1;
+  min-width: 0;
 }
 
 .contractual-notes {
@@ -753,6 +820,8 @@
   color: var(--text-muted);
   font-style: italic;
   flex-shrink: 0;
-  max-width: 200px;
+  max-width: 260px;
   text-align: right;
+  padding-left: 16px;
+  line-height: 1.4;
 }

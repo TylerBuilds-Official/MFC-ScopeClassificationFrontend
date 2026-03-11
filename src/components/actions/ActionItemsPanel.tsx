@@ -3,6 +3,7 @@ import { ChevronDown, ChevronRight, RefreshCw } from 'lucide-react'
 
 import ActionSummaryBar from './ActionSummaryBar'
 import ActionItemRow from './ActionItemRow'
+import ContractualReviewPanel from '../matches/ContractualReviewPanel'
 import LoadingSpinner from '../global/LoadingSpinner'
 import EmptyState from '../global/EmptyState'
 import CustomSelect from '../global/CustomSelect'
@@ -216,8 +217,6 @@ export default function ActionItemsPanel({ sessionId, onViewMatch }: ActionItems
 
   return (
     <div className="action-items-panel">
-      <ActionSummaryBar summary={summary} />
-
       <div className="action-items-toolbar">
         <button
           className="action-regen-btn"
@@ -229,6 +228,9 @@ export default function ActionItemsPanel({ sessionId, onViewMatch }: ActionItems
           {regenerating ? 'Regenerating...' : 'Regenerate'}
         </button>
       </div>
+
+      <ActionSummaryBar summary={summary} />
+      <ContractualReviewPanel />
 
       {/* Main sections */}
       {sectionOrder.map(sectionKey => {

@@ -11,7 +11,6 @@ import ProgressCard from '../components/sessions/ProgressCard'
 import ErectorAccordion from '../components/matches/ErectorAccordion'
 import CategoryAccordion from '../components/matches/CategoryAccordion'
 import MatchTable from '../components/matches/MatchTable'
-import ContractualReviewPanel from '../components/matches/ContractualReviewPanel'
 import ActionItemsPanel from '../components/actions/ActionItemsPanel'
 import { useApi } from '../hooks/useApi'
 import { useCategories } from '../hooks/useCategories'
@@ -315,8 +314,6 @@ export default function SessionDetailPage() {
                     {filtered.length} / {matchRows.length}
                   </span>
                 </div>
-
-                <ContractualReviewPanel />
 
                 {matches.loading && <LoadingSpinner message="Loading matches..." />}
 
