@@ -14,6 +14,9 @@ import TrainingPage from './pages/TrainingPage'
 import AnalyzePage from './pages/AnalyzePage'
 import AdminPage from './pages/AdminPage'
 import ScopeLetterEditorPage from './pages/ScopeLetterEditorPage'
+import ScopeReviewsPage from './pages/ScopeReviewsPage'
+import ScopeReviewDetailPage from './pages/ScopeReviewDetailPage'
+import NewReviewPage from './pages/NewReviewPage'
 import ComparisonsPage from './pages/ComparisonsPage'
 import CompareNewPage from './pages/CompareNewPage'
 import ComparisonDetailPage from './pages/ComparisonDetailPage'
@@ -47,20 +50,27 @@ export default function App() {
       <Sidebar />
 
       <Routes>
+        {/* Estimator tools */}
         <Route path="/compare"         element={<ComparisonsPage />} />
-        <Route path="/compare/new"     element={isEstimator ? <CompareNewPage /> : <Navigate to="/compare" replace />} />
+        <Route path="/compare/new"     element={isEstimator ? <CompareNewPage /> : <Navigate to="/reviews" replace />} />
         <Route path="/compare/:id"     element={<ComparisonDetailPage />} />
-        <Route path="/sessions"     element={<SessionsPage />} />
-        <Route path="/sessions/:id" element={<SessionDetailPage />} />
+        <Route path="/reviews"         element={<ScopeReviewsPage />} />
+        <Route path="/reviews/new"     element={isEstimator ? <NewReviewPage /> : <Navigate to="/reviews" replace />} />
+        <Route path="/reviews/:id"     element={<ScopeReviewDetailPage />} />
+        <Route path="/analyze"         element={isAdmin ? <AnalyzePage /> : <Navigate to="/reviews" replace />} />
+        <Route path="/exclusions"      element={<ExclusionsPage />} />
+        <Route path="/training"        element={isAdmin ? <TrainingPage /> : <Navigate to="/reviews" replace />} />
+
+        {/* Admin views — raw data + risk */}
+        <Route path="/sessions"            element={isAdmin ? <SessionsPage />         : <Navigate to="/reviews" replace />} />
+        <Route path="/sessions/:id"        element={isAdmin ? <SessionDetailPage />   : <Navigate to="/reviews" replace />} />
         <Route path="/sessions/:id/editor" element={<ScopeLetterEditorPage />} />
-        <Route path="/high-risk"              element={<HighRiskPage />} />
-        <Route path="/high-risk/session/:id"  element={<HighRiskSessionPage />} />
-        <Route path="/exclusions"    element={<ExclusionsPage />} />
-        <Route path="/training"     element={isEstimator ? <TrainingPage />  : <Navigate to="/sessions" replace />} />
-        <Route path="/analyze"      element={isEstimator ? <AnalyzePage />   : <Navigate to="/sessions" replace />} />
-        <Route path="/admin"        element={isAdmin     ? <AdminPage />     : <Navigate to="/sessions" replace />} />
-        <Route path="/auth/callback" element={<Navigate to="/sessions" replace />} />
-        <Route path="*"             element={<Navigate to="/sessions" replace />} />
+        <Route path="/high-risk"              element={isAdmin ? <HighRiskPage />        : <Navigate to="/reviews" replace />} />
+        <Route path="/high-risk/session/:id"  element={isAdmin ? <HighRiskSessionPage /> : <Navigate to="/reviews" replace />} />
+        <Route path="/admin"               element={isAdmin ? <AdminPage />            : <Navigate to="/reviews" replace />} />
+
+        <Route path="/auth/callback" element={<Navigate to="/reviews" replace />} />
+        <Route path="*"             element={<Navigate to="/reviews" replace />} />
       </Routes>
 
       <ProgressToast />

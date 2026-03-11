@@ -1,10 +1,6 @@
-// FIXME: Dead code — this page is no longer in the sidebar navigation.
-// Kept temporarily because admin Sessions page links to /analyze for "New Session".
-// Should be replaced by inlining the form into SessionsPage or a dedicated admin route,
-// then this file and its route can be removed.
-
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ArrowLeft } from 'lucide-react'
 
 import Header from '../components/global/Header'
 import AnalyzeForm from '../components/analysis/AnalyzeForm'
@@ -15,9 +11,9 @@ import { useRunningSessions } from '../hooks/useRunningSessions'
 import '../styles/analyze.css'
 
 
-export default function AnalyzePage() {
-  const navigate = useNavigate()
-  const { track } = useRunningSessions()
+export default function NewReviewPage() {
+  const navigate      = useNavigate()
+  const { track }     = useRunningSessions()
 
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState<string | null>(null)
@@ -36,9 +32,8 @@ export default function AnalyzePage() {
         file:        data.file ?? undefined,
       })
 
-      // Track for toast + navigate to session detail
       track(res.session_id)
-      navigate(`/sessions/${res.session_id}`)
+      navigate(`/reviews/${res.session_id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to launch analysis')
       setLoading(false)
@@ -47,28 +42,26 @@ export default function AnalyzePage() {
 
   return (
     <>
-      <Header title="Analyze Scope Letter" />
+      <Header title="New Scope Review">
+        <button
+          className="btn-analyze"
+          style={{ padding: '6px 14px', fontSize: '12.5px', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+          onClick={() => navigate('/reviews')}
+        >
+          <ArrowLeft size={14} />
+          Back
+        </button>
+      </Header>
 
       <main className="page-content">
         <div className="page-header">
-          <h2>Run Analysis</h2>
+          <h2>Analyze Erector Scope Letter</h2>
         </div>
 
         <AnalyzeForm onSubmit={handleSubmit} loading={loading} />
 
         {error && (
-          <div
-            style={{
-              marginTop:    20,
-              maxWidth:     640,
-              padding:      '12px 16px',
-              background:   'rgba(248, 113, 113, 0.08)',
-              border:       '1px solid rgba(248, 113, 113, 0.2)',
-              borderRadius: 'var(--radius-md)',
-              color:        'var(--status-error)',
-              fontSize:     '13px',
-            }}
-          >
+          <div className="compare-error" style={{ marginTop: 20, maxWidth: 640 }}>
             {error}
           </div>
         )}

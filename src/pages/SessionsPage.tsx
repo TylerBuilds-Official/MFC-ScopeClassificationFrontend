@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Trash2 } from 'lucide-react'
+import { Trash2, Plus } from 'lucide-react'
 
 import { useAuth } from '../auth'
 import Header from '../components/global/Header'
@@ -87,7 +87,12 @@ export default function SessionsPage() {
 
   return (
     <>
-      <Header title="Analysis Sessions" />
+      <Header title="Analysis Sessions">
+        <button className="btn-analyze" onClick={() => navigate('/analyze')}>
+          <Plus size={14} />
+          New Session
+        </button>
+      </Header>
 
       <main className="page-content">
         <div className="page-header">

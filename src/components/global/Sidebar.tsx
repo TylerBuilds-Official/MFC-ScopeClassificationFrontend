@@ -1,5 +1,8 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutGrid, Search, AlertTriangle, GraduationCap, Upload, FileText, Shield, LogOut, GitCompareArrows } from 'lucide-react'
+import {
+  LayoutGrid, Search, AlertTriangle, GraduationCap,
+  FileText, Shield, LogOut, GitCompareArrows, FileCheck,
+} from 'lucide-react'
 import { useAuth } from '../../auth'
 
 export default function Sidebar() {
@@ -14,32 +17,17 @@ export default function Sidebar() {
         <h1>Scope Analysis</h1>
       </div>
 
+      {/* ── Estimator tools ──────────────────────────────── */}
       <div className="sidebar-section-label">Tools</div>
       <nav className="sidebar-nav">
         <NavLink to="/compare" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
           <GitCompareArrows size={18} />
           Compare Erectors
         </NavLink>
-        {user?.is_estimator && (
-          <NavLink to="/analyze" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            <Upload size={18} />
-            Analyze PDF
-          </NavLink>
-        )}
-      </nav>
-
-      <div className="sidebar-section-label">Review</div>
-      <nav className="sidebar-nav">
-        <NavLink to="/sessions" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-          <LayoutGrid size={18} />
-          Sessions
+        <NavLink to="/reviews" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <FileCheck size={18} />
+          Erector vs MFC
         </NavLink>
-        {user?.is_estimator && (
-          <NavLink to="/training" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            <GraduationCap size={18} />
-            Train
-          </NavLink>
-        )}
       </nav>
 
       <div className="sidebar-section-label">Reference</div>
@@ -50,21 +38,26 @@ export default function Sidebar() {
         </NavLink>
       </nav>
 
+      {/* ── Admin views ──────────────────────────────────── */}
       {user?.is_admin && (
         <>
-          <div className="sidebar-section-label">Insights</div>
+          <div className="sidebar-section-label">Admin</div>
           <nav className="sidebar-nav">
+            <NavLink to="/sessions" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+              <LayoutGrid size={18} />
+              Sessions
+            </NavLink>
             <NavLink to="/high-risk" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
               <AlertTriangle size={18} />
-              Template Health
+              High Risk
             </NavLink>
-          </nav>
-
-          <div className="sidebar-section-label">System</div>
-          <nav className="sidebar-nav">
+            <NavLink to="/training" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+              <GraduationCap size={18} />
+              Train
+            </NavLink>
             <NavLink to="/admin" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
               <Shield size={18} />
-              Admin
+              Users
             </NavLink>
           </nav>
         </>

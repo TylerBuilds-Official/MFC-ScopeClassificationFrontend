@@ -21,6 +21,7 @@ import type { ActionItem } from '../../types/actionItem'
 
 interface ActionItemsPanelProps {
   sessionId:   number
+  showRisk?:   boolean
   onViewMatch: (matchId: number) => void
 }
 
@@ -34,14 +35,14 @@ interface AddToMfcState {
 }
 
 
-const SECTION_CONFIG: Record<string, { title: string; accent: string }> = {
-  high_risk:       { title: 'Critical & High Risk',         accent: 'var(--risk-high)' },
-  erector_only:    { title: 'Erector-Only (Coverage Gaps)',  accent: 'var(--match-erector-only)' },
-  partial_review:  { title: 'Partial Matches to Review',    accent: 'var(--match-partial)' },
+const SECTION_CONFIG: Record<string, { title: string; titleClean: string; accent: string }> = {
+  high_risk:       { title: 'Critical & High Risk',         titleClean: 'Coverage Gaps',             accent: 'var(--risk-high)' },
+  erector_only:    { title: 'Erector-Only (Coverage Gaps)',  titleClean: 'Erector-Only (Unmatched)',  accent: 'var(--match-erector-only)' },
+  partial_review:  { title: 'Partial Matches to Review',    titleClean: 'Partial Matches to Review', accent: 'var(--match-partial)' },
 }
 
 
-export default function ActionItemsPanel({ sessionId, onViewMatch }: ActionItemsPanelProps) {
+export default function ActionItemsPanel({ sessionId, showRisk = true, onViewMatch }: ActionItemsPanelProps) {
   const { data, loading, error, refetch } = useApi(
     () => getSessionActionItems(sessionId),
     [sessionId],
@@ -246,7 +247,7 @@ export default function ActionItemsPanel({ sessionId, onViewMatch }: ActionItems
                 className="action-section-accent"
                 style={{ background: config.accent }}
               />
-              <h3>{config.title}</h3>
+              <h3>{showRisk ? config.title : config.titleClean}</h3>
               <span className="action-section-count">{sectionItems.length}</span>
             </div>
             <div className="action-section-list">
@@ -255,6 +256,7 @@ export default function ActionItemsPanel({ sessionId, onViewMatch }: ActionItems
                   key={item.id}
                   item={item}
                   categoryMap={categoryMap}
+                  showRisk={showRisk}
                   onStatus={handleStatus}
                   onNotes={handleNotes}
                   onViewMatch={onViewMatch}
@@ -286,6 +288,7 @@ export default function ActionItemsPanel({ sessionId, onViewMatch }: ActionItems
                   key={item.id}
                   item={item}
                   categoryMap={categoryMap}
+                  showRisk={showRisk}
                   onStatus={handleStatus}
                   onNotes={handleNotes}
                   onViewMatch={onViewMatch}

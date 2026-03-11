@@ -10,6 +10,7 @@ import type { MatchRow } from '../../types/match'
 interface ErectorAccordionProps {
   matches:           MatchRow[]
   categoryMap?:      Map<number, string>
+  showRisk?:         boolean
   highlightMatchId?: number | null
   onHighlightDone?:  () => void
 }
@@ -28,7 +29,7 @@ interface ErectorGroup {
 const RISK_ORDER: Record<string, number> = { Critical: 0, High: 1, Medium: 2, Low: 3 }
 
 
-export default function ErectorAccordion({ matches, categoryMap, highlightMatchId, onHighlightDone }: ErectorAccordionProps) {
+export default function ErectorAccordion({ matches, categoryMap, showRisk = true, highlightMatchId, onHighlightDone }: ErectorAccordionProps) {
   const [openIds, setOpenIds] = useState<Set<number | null>>(new Set())
 
   const groups = useMemo(() => buildGroups(matches), [matches])
@@ -100,7 +101,7 @@ export default function ErectorAccordion({ matches, categoryMap, highlightMatchI
                     {formatMatchType(g.bestType)}
                   </span>
                 )}
-                <RiskBadge level={g.bestRisk} />
+                {showRisk && <RiskBadge level={g.bestRisk} />}
               </div>
             </div>
 
@@ -115,6 +116,7 @@ export default function ErectorAccordion({ matches, categoryMap, highlightMatchI
                     total={g.matches.length}
                     categoryMap={categoryMap}
                     showMultiLabel={g.multiMatch}
+                    showRisk={showRisk}
                   />
                 ))}
               </div>
@@ -135,9 +137,10 @@ interface MfcMatchCardProps {
   total:          number
   categoryMap?:   Map<number, string>
   showMultiLabel: boolean
+  showRisk?:      boolean
 }
 
-function MfcMatchCard({ match: m, index, total, categoryMap, showMultiLabel }: MfcMatchCardProps) {
+function MfcMatchCard({ match: m, index, total, categoryMap, showMultiLabel, showRisk = true }: MfcMatchCardProps) {
   const [showReasoning, setShowReasoning] = useState(false)
 
   return (
@@ -151,7 +154,7 @@ function MfcMatchCard({ match: m, index, total, categoryMap, showMultiLabel }: M
           {formatMatchType(m.match_type)}
         </span>
         <ConfidenceBar value={m.confidence} />
-        <RiskBadge level={m.risk_level} />
+        {showRisk && <RiskBadge level={m.risk_level} />}
         {m.category_id != null && categoryMap && (
           <span className="match-card-category">
             {categoryMap.get(m.category_id) ?? `Category ${m.category_id}`}
@@ -202,7 +205,7 @@ function MfcMatchCard({ match: m, index, total, categoryMap, showMultiLabel }: M
                   <p className="detail-text"><AiText text={m.ai_reasoning} /></p>
                 </div>
               )}
-              {m.risk_notes && (
+              {showRisk && m.risk_notes && (
                 <div className="detail-section">
                   <span className="detail-label">Risk Notes</span>
                   <p className="detail-text risk"><AiText text={m.risk_notes} /></p>

@@ -8,6 +8,7 @@ import type { MatchRow } from '../../types/match.ts'
 interface CategoryAccordionProps {
   matches:           MatchRow[]
   categoryMap?:      Map<number, string>
+  showRisk?:         boolean
   highlightMatchId?: number | null
   onHighlightDone?:  () => void
 }
@@ -20,7 +21,7 @@ interface CategoryGroup {
 }
 
 
-export default function CategoryAccordion({ matches, categoryMap, highlightMatchId, onHighlightDone }: CategoryAccordionProps) {
+export default function CategoryAccordion({ matches, categoryMap, showRisk = true, highlightMatchId, onHighlightDone }: CategoryAccordionProps) {
   const [openIds, setOpenIds] = useState<Set<number | null>>(new Set())
 
   const groups = groupByCategory(matches, categoryMap)
@@ -70,6 +71,7 @@ export default function CategoryAccordion({ matches, categoryMap, highlightMatch
                   matches={g.matches}
                   categoryMap={categoryMap}
                   showCategory={false}
+                  showRisk={showRisk}
                   highlightMatchId={highlightMatchId}
                   onHighlightDone={onHighlightDone}
                 />

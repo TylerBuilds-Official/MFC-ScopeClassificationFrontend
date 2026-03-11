@@ -20,6 +20,7 @@ import type { ActionItem } from '../../types/actionItem'
 interface ActionItemRowProps {
   item:         ActionItem
   categoryMap:  Map<number, string>
+  showRisk?:    boolean
   onStatus:     (id: number, status: string) => void
   onNotes:      (id: number, notes: string) => void
   onViewMatch:  (matchId: number) => void
@@ -44,6 +45,7 @@ const STATUS_LABELS: Record<string, string> = {
 export default function ActionItemRow({
   item,
   categoryMap,
+  showRisk = true,
   onStatus,
   onNotes,
   onViewMatch,
@@ -131,7 +133,7 @@ export default function ActionItemRow({
               <span className="bar-label">{pct}%</span>
             </div>
           )}
-          <RiskBadge level={item.risk_level} />
+          {showRisk && <RiskBadge level={item.risk_level} />}
         </div>
 
         {/* Actions */}
@@ -212,7 +214,7 @@ export default function ActionItemRow({
               <p className="detail-text"><AiText text={item.ai_reasoning} /></p>
             </div>
           )}
-          {item.risk_notes && (
+          {showRisk && item.risk_notes && (
             <div className="detail-section">
               <span className="detail-label">Risk Notes</span>
               <p className="detail-text risk"><AiText text={item.risk_notes} /></p>

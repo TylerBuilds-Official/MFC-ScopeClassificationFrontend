@@ -12,6 +12,7 @@ interface MatchTableProps {
   matches:              MatchRow[]
   showSession?:         boolean
   showCategory?:        boolean
+  showRisk?:            boolean
   sessionMeta?:         Record<number, { erector?: string; job?: string; file?: string }>
   categoryMap?:         Map<number, string>
   highlightMatchId?:    number | null
@@ -22,7 +23,7 @@ interface MatchTableProps {
 }
 
 
-export default function MatchTable({ matches, showSession, showCategory = true, sessionMeta, categoryMap, highlightMatchId, onHighlightDone, actionByMatchId, busyActionIds, onToggleAddressed }: MatchTableProps) {
+export default function MatchTable({ matches, showSession, showCategory = true, showRisk = true, sessionMeta, categoryMap, highlightMatchId, onHighlightDone, actionByMatchId, busyActionIds, onToggleAddressed }: MatchTableProps) {
   const hasTriage = actionByMatchId != null && onToggleAddressed != null
   const [expandedId, setExpandedId] = useState<number | null>(null)
 
@@ -73,7 +74,7 @@ export default function MatchTable({ matches, showSession, showCategory = true, 
               </span>
 
               <ConfidenceBar value={m.confidence} />
-              <RiskBadge level={m.risk_level} />
+              {showRisk && <RiskBadge level={m.risk_level} />}
 
               {showCategory && (
                 <span className="match-card-category">
@@ -158,7 +159,7 @@ export default function MatchTable({ matches, showSession, showCategory = true, 
                     <p className="detail-text"><AiText text={m.ai_reasoning} /></p>
                   </div>
                 )}
-                {m.risk_notes && (
+                {showRisk && m.risk_notes && (
                   <div className="detail-section">
                     <span className="detail-label">Risk Notes</span>
                     <p className="detail-text risk"><AiText text={m.risk_notes} /></p>
