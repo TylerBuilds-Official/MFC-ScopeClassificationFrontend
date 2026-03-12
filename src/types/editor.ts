@@ -27,12 +27,24 @@ export interface EditorRegion {
   erector_text: string | null
 }
 
+export interface TabStop {
+  position_in: number
+  alignment:   string
+}
+
 export interface EditorParagraph {
-  index:    number
-  text:     string
-  indent:   number | null
-  segments: EditorSegment[]
-  regions:  EditorRegion[]
+  index:        number
+  text:         string
+  indent:       number | null
+  hanging:      number | null
+  first_line:   number | null
+  alignment:    'left' | 'center' | 'right' | 'justify' | null
+  space_before: number | null
+  space_after:  number | null
+  line_spacing: number | null
+  tab_stops:    TabStop[] | null
+  segments:     EditorSegment[]
+  regions:      EditorRegion[]
 }
 
 export interface ScopeLetterData {

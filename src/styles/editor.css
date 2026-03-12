@@ -56,8 +56,8 @@
   justify-content: space-between;
   padding: 10px 14px;
   background: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
   margin-bottom: 12px;
 }
 
@@ -126,20 +126,25 @@
 /* ── Layout ──────────────────────────────────────────────────────── */
 
 .editor-layout {
-  display: flex;
-  gap: 16px;
+  display:    flex;
+  gap:        16px;
   min-height: 0;
+  justify-content: center;
 }
 
 .editor-doc {
-  flex: 1;
-  min-width: 0;
+  /* US Letter: 8.5" at 96dpi = 816px, 0.75" margins = 72px */
+  width:      816px;
+  max-width:  816px;
+  min-width:  0;
+  margin:     0 auto;
   background: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
+  border:     1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 24px 32px;
+  padding:    72px 72px;
   max-height: calc(100vh - 260px);
   overflow-y: auto;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
 }
 
 .editor-sidebar {
@@ -153,11 +158,8 @@
 /* ── Paragraph rows ──────────────────────────────────────────────── */
 
 .editor-para-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  position: relative;
-  margin-bottom: 2px;
+  position:      relative;
+  margin-bottom: 0;
 }
 
 .editor-para-row:hover .editor-gutter-btn {
@@ -175,25 +177,26 @@
 }
 
 .editor-gutter {
-  width: 20px;
-  flex-shrink: 0;
-  padding-top: 2px;
+  position:  absolute;
+  left:      -28px;
+  top:       0;
+  width:     20px;
 }
 
 .editor-gutter-btn {
-  display: flex;
-  align-items: center;
+  display:         flex;
+  align-items:     center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
-  border: none;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 14px;
-  cursor: pointer;
-  opacity: 0;
-  transition: all 0.1s ease;
+  width:           18px;
+  height:          18px;
+  border:          none;
+  border-radius:   var(--radius-sm);
+  background:      transparent;
+  color:           var(--text-muted);
+  font-size:       14px;
+  cursor:          pointer;
+  opacity:         0;
+  transition:      all 0.1s ease;
 }
 
 .editor-gutter-btn:hover {
@@ -213,18 +216,18 @@
 /* ── Editable paragraph ──────────────────────────────────────────── */
 
 .editor-para {
-  font-family: inherit;
-  font-size: 13px;
-  line-height: 1.65;
-  color: var(--text-primary);
-  min-height: 1.65em;
-  padding: 1px 2px;
+  font-family: 'Shruti', 'Nirmala UI', sans-serif;
+  font-size:   12pt;
+  line-height: 1.15;
+  color:       var(--text-primary);
+  min-height:  1.15em;
+  padding:     0 2px;
   border-radius: 2px;
-  outline: none;
-  width: 100%;
-  cursor: text;
+  outline:     none;
+  width:       100%;
+  cursor:      text;
   white-space: pre-wrap;
-  tab-size: 48px;
+  tab-size:    48px;
 }
 
 .editor-para:focus {
@@ -232,7 +235,7 @@
 }
 
 .editor-para-empty {
-  min-height: 0.6em;
+  min-height:    12pt;
   margin-bottom: 0;
 }
 

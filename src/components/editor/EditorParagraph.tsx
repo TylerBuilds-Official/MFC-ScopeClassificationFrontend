@@ -50,22 +50,51 @@ export default function EditorParagraph({
     onTextChange(paragraph.index, ref.current.innerText)
   }
 
-  // Find full region data by mfc_id
   function findRegion(mfcId: number): EditorRegion | undefined {
 
     return paragraph.regions.find(r => r.mfc_id === mfcId)
   }
 
-  // Empty paragraph = spacer
+  // Empty paragraph = spacer (preserve docx spacing)
   if (!paragraph.text.trim() && paragraph.segments.length === 0) {
+    const emptyStyle: React.CSSProperties = {}
+    if (paragraph.space_before) emptyStyle.marginTop    = `${paragraph.space_before}pt`
+    if (paragraph.space_after)  emptyStyle.marginBottom = `${paragraph.space_after}pt`
 
-    return <div className="editor-para editor-para-empty" />
+    return <div className="editor-para editor-para-empty" style={emptyStyle} />
   }
 
-  // Paragraph indent
+  // Paragraph-level styles from docx formatting
   const paraStyle: React.CSSProperties = {}
+
   if (paragraph.indent) {
-    paraStyle.paddingLeft = `${paragraph.indent * 72}px`
+    paraStyle.paddingLeft = `${paragraph.indent * 96}px`
+  }
+  if (paragraph.hanging) {
+    // Hanging indent: first line is pulled back from the left indent
+    paraStyle.textIndent = `-${paragraph.hanging * 96}px`
+  }
+  if (paragraph.first_line) {
+    // First line indent: first line is pushed further in
+    paraStyle.textIndent = `${paragraph.first_line * 96}px`
+  }
+  // Only apply justify — left is default, and right/center from docx are
+  // usually tab-stop positioning rather than true paragraph alignment.
+  if (paragraph.alignment === 'justify') {
+    paraStyle.textAlign = 'justify'
+  }
+  if (paragraph.space_before) {
+    paraStyle.marginTop = `${paragraph.space_before}pt`
+  }
+  if (paragraph.space_after) {
+    paraStyle.marginBottom = `${paragraph.space_after}pt`
+  }
+  if (paragraph.line_spacing && paragraph.line_spacing > 0) {
+    if (paragraph.line_spacing <= 3) {
+      paraStyle.lineHeight = String(paragraph.line_spacing)
+    } else {
+      paraStyle.lineHeight = `${paragraph.line_spacing}pt`
+    }
   }
 
   return (
@@ -106,7 +135,6 @@ export default function EditorParagraph({
 
           if (isRemoved) return null
 
-          // Build className for text formatting
           const classes: string[] = []
           if (seg.bold)      classes.push('seg-bold')
           if (seg.italic)    classes.push('seg-italic')
@@ -121,7 +149,6 @@ export default function EditorParagraph({
             )
           }
 
-          // Region segment — clickable with highlight
           const fullRegion = findRegion(seg.region!.mfc_id)
           classes.push('editor-region')
           classes.push(matchColor(seg.region!.match_type))
