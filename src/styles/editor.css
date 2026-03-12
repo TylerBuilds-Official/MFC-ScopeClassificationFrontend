@@ -1,18 +1,19 @@
 /* ── Scope Letter Editor ──────────────────────────────────────────── */
 
 .editor-back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border: 1px solid var(--border-default);
+  display:       inline-flex;
+  align-items:   center;
+  gap:           6px;
+  padding:       5px 12px;
+  margin-right:  16px;
+  border:        1px solid var(--border-default);
   border-radius: var(--radius-md);
-  background: var(--bg-secondary);
-  color: var(--text-secondary);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.12s ease;
+  background:    transparent;
+  color:         var(--text-secondary);
+  font-size:     12px;
+  font-weight:   500;
+  cursor:        pointer;
+  transition:    all 0.12s ease;
 }
 
 .editor-back-btn:hover {
@@ -20,45 +21,72 @@
   color: var(--accent);
 }
 
-/* ── Meta bar ────────────────────────────────────────────────────── */
+/* ── Unified editor header ──────────────────────────────────────── */
+
+.editor-header {
+  background:     var(--bg-secondary);
+  border-bottom:  1px solid var(--border-subtle);
+  padding:        14px 0 10px;
+  margin-bottom:  14px;
+  display:        flex;
+  flex-direction: column;
+  gap:            13px;
+}
+
+.editor-header-top {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+}
+
+.editor-header-title {
+  display:     flex;
+  align-items: baseline;
+  gap:         14px;
+  margin-left: 1.5rem;
+  padding-top: 5px;
+}
+
+.editor-header-title h2 {
+  font-size:   15px;
+  font-weight: 650;
+  color:       var(--text-primary);
+  margin:      0;
+  white-space: nowrap;
+}
 
 .editor-meta {
-  display: flex;
+  display:     flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 0;
-  margin-bottom: 4px;
+  gap:         8px;
 }
 
 .editor-meta-label {
-  font-size: 14px;
+  font-size:   13px;
   font-weight: 600;
-  color: var(--text-primary);
+  color:       var(--text-secondary);
 }
 
 .editor-meta-value {
-  font-size: 13px;
-  color: var(--text-secondary);
+  font-size: 12.5px;
+  color:     var(--text-muted);
 }
 
 .editor-meta-sep {
-  width: 3px;
-  height: 3px;
+  width:         3px;
+  height:        3px;
   border-radius: 50%;
-  background: var(--text-muted);
+  background:    var(--text-muted);
 }
 
-/* ── Toolbar ─────────────────────────────────────────────────────── */
+/* ── Toolbar (inside editor-header) ──────────────────────────────── */
 
 .editor-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px;
-  background: var(--bg-secondary);
-  border-top: 1px solid var(--border-subtle);
-  border-bottom: 1px solid var(--border-subtle);
-  margin-bottom: 12px;
+  display:          flex;
+  align-items:      center;
+  justify-content:  space-between;
+  padding:          14px 16px 4px 1.5rem;
+  border-top:       1px solid var(--border-subtle);
 }
 
 .editor-toolbar-stats {
@@ -227,7 +255,6 @@
   width:       100%;
   cursor:      text;
   white-space: pre-wrap;
-  tab-size:    48px;
 }
 
 .editor-para:focus {

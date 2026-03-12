@@ -2,7 +2,6 @@ import { useState, useMemo, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 
-import Header from '../components/global/Header'
 import LoadingSpinner from '../components/global/LoadingSpinner'
 import EmptyState from '../components/global/EmptyState'
 import EditorParagraph from '../components/editor/EditorParagraph'
@@ -10,7 +9,7 @@ import EditorToolbar from '../components/editor/EditorToolbar'
 import RegionDetail from '../components/editor/RegionDetail'
 import { useApi } from '../hooks/useApi'
 import { getScopeLetterData, downloadScopeLetter } from '../api/export'
-import type { EditorRegion, EditorParagraph as ParaType } from '../types/editor'
+import type { EditorRegion } from '../types/editor'
 
 import '../styles/editor.css'
 
@@ -117,47 +116,59 @@ export default function ScopeLetterEditorPage() {
 
   if (loading) return (
     <div className="page-container">
-      <Header title="Scope Letter Editor" />
+      <div className="editor-header">
+        <div className="editor-header-top">
+          <div className="editor-header-title"><h2>Scope Letter Editor</h2></div>
+        </div>
+      </div>
       <LoadingSpinner message="Loading scope letter..." />
     </div>
   )
 
   if (error || !data) return (
     <div className="page-container">
-      <Header title="Scope Letter Editor" />
+      <div className="editor-header">
+        <div className="editor-header-top">
+          <div className="editor-header-title"><h2>Scope Letter Editor</h2></div>
+        </div>
+      </div>
       <EmptyState title="Failed to load" message={error ?? 'No data returned.'} />
     </div>
   )
 
   return (
     <div className="page-container">
-      <Header title="Scope Letter Editor">
-        <button className="editor-back-btn" onClick={() => navigate(`/sessions/${sessionId}`)}>
-          <ArrowLeft size={14} />
-          Back to Session
-        </button>
-      </Header>
+      <div className="editor-header">
+        <div className="editor-header-top">
+          <div className="editor-header-title">
+            <h2>Scope Letter Editor</h2>
+            <div className="editor-meta">
+              <span className="editor-meta-label">{data.session.erector}</span>
+              <span className="editor-meta-sep" />
+              <span className="editor-meta-value">{data.session.job}</span>
+              {data.session.job_name && (
+                <>
+                  <span className="editor-meta-sep" />
+                  <span className="editor-meta-value">{data.session.job_name}</span>
+                </>
+              )}
+            </div>
+          </div>
+          <button className="editor-back-btn" onClick={() => navigate(`/reviews/${sessionId}`)}>
+            <ArrowLeft size={14} />
+            Back
+          </button>
+        </div>
 
-      <div className="editor-meta">
-        <span className="editor-meta-label">{data.session.erector}</span>
-        <span className="editor-meta-sep" />
-        <span className="editor-meta-value">{data.session.job}</span>
-        {data.session.job_name && (
-          <>
-            <span className="editor-meta-sep" />
-            <span className="editor-meta-value">{data.session.job_name}</span>
-          </>
-        )}
+        <EditorToolbar
+          stats={stats}
+          showUnmatched={showUnmatched}
+          onToggleUnmatched={() => setShowUnmatched(!showUnmatched)}
+          onRemoveAllUnmatched={handleRemoveAllUnmatched}
+          onExport={handleExport}
+          exporting={exporting}
+        />
       </div>
-
-      <EditorToolbar
-        stats={stats}
-        showUnmatched={showUnmatched}
-        onToggleUnmatched={() => setShowUnmatched(!showUnmatched)}
-        onRemoveAllUnmatched={handleRemoveAllUnmatched}
-        onExport={handleExport}
-        exporting={exporting}
-      />
 
       <div className="editor-layout">
         <div className="editor-doc">

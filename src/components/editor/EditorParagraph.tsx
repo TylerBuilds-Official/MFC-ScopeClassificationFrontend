@@ -1,10 +1,11 @@
-import { useRef } from 'react'
+import { useRef, useMemo } from 'react'
 import { X } from 'lucide-react'
 import type {
   EditorParagraph as EditorParagraphType,
   EditorSegment,
   EditorRegion,
 } from '../../types/editor'
+import { resolveTabSpacers, type ResolvedSegment } from '../../utils/tabResolver'
 
 
 interface Props {
@@ -44,6 +45,12 @@ export default function EditorParagraph({
 
   const ref = useRef<HTMLDivElement>(null)
 
+  // Resolve tab characters into precise pixel spacers
+  const resolved = useMemo(
+    () => resolveTabSpacers(paragraph),
+    [paragraph],
+  )
+
   function handleBlur() {
     if (!ref.current) return
 
@@ -71,15 +78,11 @@ export default function EditorParagraph({
     paraStyle.paddingLeft = `${paragraph.indent * 96}px`
   }
   if (paragraph.hanging) {
-    // Hanging indent: first line is pulled back from the left indent
     paraStyle.textIndent = `-${paragraph.hanging * 96}px`
   }
   if (paragraph.first_line) {
-    // First line indent: first line is pushed further in
     paraStyle.textIndent = `${paragraph.first_line * 96}px`
   }
-  // Only apply justify — left is default, and right/center from docx are
-  // usually tab-stop positioning rather than true paragraph alignment.
   if (paragraph.alignment === 'justify') {
     paraStyle.textAlign = 'justify'
   }
@@ -128,7 +131,20 @@ export default function EditorParagraph({
         onBlur={handleBlur}
         spellCheck={false}
       >
-        {paragraph.segments.map((seg, i) => {
+        {resolved.map((item, i) => {
+          // Tab spacer — precise pixel width computed by Canvas measureText
+          if (item.type === 'spacer') {
+
+            return (
+              <span
+                key={`sp-${i}`}
+                style={{ display: 'inline-block', width: `${item.spacer_px}px` }}
+              />
+            )
+          }
+
+          // Text / region segment
+          const seg = item.seg!
           const isRegion   = !!seg.region
           const regionKey  = isRegion ? `${paragraph.index}:${seg.region!.mfc_id}` : null
           const isRemoved  = regionKey ? removedRegions.has(regionKey) : false
