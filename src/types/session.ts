@@ -5,6 +5,7 @@ export interface SessionListItem {
   job_name:           string | null
   source_file_name:   string | null
   status:             string | null
+  session_type:       string
   total_extracted:    number | null
   total_classified:   number | null
   total_aligned:      number | null

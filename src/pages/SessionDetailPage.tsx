@@ -65,7 +65,7 @@ function ExportButton({ sessionId }: { sessionId: number }) {
 
   function handleEditor() {
     setOpen(false)
-    navigate(`/sessions/${sessionId}/editor`)
+    navigate(`/reviews/${sessionId}/editor`)
   }
 
   useEffect(() => {
@@ -162,14 +162,14 @@ export default function SessionDetailPage() {
   // Poll progress while running
   useEffect(() => {
     if (!isRunning && !progress) return
-    if (progress && TERMINAL.has(progress.status)) return
+    if (progress && (TERMINAL.has(progress.status) || !progress.is_active)) return
 
     async function poll() {
       try {
         const p = await getSessionProgress(sessionId)
         setProgress(p)
 
-        if (TERMINAL.has(p.status)) {
+        if (TERMINAL.has(p.status) || !p.is_active) {
           // Refetch full data now that it's done
           session.refetch()
           matches.refetch()
@@ -251,8 +251,8 @@ export default function SessionDetailPage() {
   const sess    = session.data?.session as Record<string, unknown> | undefined
   const summary = session.data?.match_summary
 
-  const showProgress = progress && !TERMINAL.has(progress.status)
-  const showResults  = sess && TERMINAL.has(String(sess.Status ?? ''))
+  const showProgress = progress && progress.is_active
+  const showResults  = sess && (TERMINAL.has(String(sess.Status ?? '')) || (progress && !progress.is_active))
 
   return (
     <>
@@ -267,8 +267,8 @@ export default function SessionDetailPage() {
       </Header>
 
       <main className="page-content">
-        {/* Progress card while running */}
-        {progress && <ProgressCard progress={progress} />}
+        {/* Progress card while actively running */}
+        {progress && progress.is_active && <ProgressCard progress={progress} />}
 
         {/* Session summary + tabs once complete */}
         {showResults && sess && summary && (

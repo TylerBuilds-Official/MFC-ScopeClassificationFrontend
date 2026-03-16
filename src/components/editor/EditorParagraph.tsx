@@ -6,6 +6,7 @@ import type {
   EditorRegion,
 } from '../../types/editor'
 import { resolveTabSpacers, type ResolvedSegment } from '../../utils/tabResolver'
+import { handleEditorKeyDown } from '../../utils/editorNavigation'
 
 
 interface Props {
@@ -129,6 +130,7 @@ export default function EditorParagraph({
         contentEditable={!removed}
         suppressContentEditableWarning
         onBlur={handleBlur}
+        onKeyDown={handleEditorKeyDown}
         spellCheck={false}
       >
         {resolved.map((item, i) => {

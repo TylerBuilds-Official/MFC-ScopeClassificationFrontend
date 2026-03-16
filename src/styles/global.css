@@ -28,6 +28,7 @@
   /* Accent — steel blue */
   --accent:         #4e8cff;
   --accent-hover:   #6ba0ff;
+  --accent-dull: #639cc8;
   --accent-muted:   rgba(78, 140, 255, 0.12);
 
   /* Status */
@@ -234,19 +235,18 @@ input, select, textarea {
 /* ── Theme Toggle ───────────────────────────────────────────────── */
 
 .theme-toggle {
-  display: flex;
-  align-items: center;
+  display:         flex;
+  align-items:     center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-default);
-  background: transparent;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all 0.15s ease;
-  margin-bottom: -6px;
-  flex-shrink: 0;
+  width:           26px;
+  height:          26px;
+  border-radius:   var(--radius-md);
+  border:          1px solid var(--border-default);
+  background:      transparent;
+  color:           var(--text-muted);
+  cursor:          pointer;
+  transition:      all 0.15s ease;
+  flex-shrink:     0;
 }
 
 .theme-toggle:hover {

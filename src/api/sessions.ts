@@ -6,10 +6,12 @@ export async function getSessions(
   limit  = 50,
   offset = 0,
   status?: string,
+  sessionType?: string,
 ): Promise<SessionListResponse> {
 
   const params: Record<string, string | number> = { limit, offset }
-  if (status) params.status = status
+  if (status)      params.status       = status
+  if (sessionType) params.session_type = sessionType
 
   return get<SessionListResponse>('/sessions', params)
 }

@@ -1,15 +1,16 @@
 // ── Comparison list ──────────────────────────────────────────────
 
 export interface ComparisonListItem {
-  id:             number
-  job_number:     string | null
-  job_name:       string | null
-  status:         string
-  total_erectors: number
-  total_unified:  number
-  initiated_by:   string | null
-  created_at:     string | null
-  erector_names:  string[]
+  id:                  number
+  job_number:          string | null
+  job_name:            string | null
+  status:              string
+  total_erectors:      number
+  total_unified:       number
+  initiated_by:        string | null
+  created_at:          string | null
+  erector_names:       string[]
+  selected_session_id: number | null
 }
 
 export interface ComparisonListResponse {
@@ -44,16 +45,18 @@ export interface UnifiedItem {
 }
 
 export interface ComparisonSession {
-  Id:             number
-  JobNumber:      string | null
-  JobName:        string | null
-  InitiatedBy:    string | null
-  Status:         string
-  TotalErectors:  number
-  TotalUnified:   number
-  CreatedAt:      string | null
-  CompletedAt:    string | null
-  ErrorMessage:   string | null
+  Id:                number
+  JobNumber:         string | null
+  JobName:           string | null
+  InitiatedBy:       string | null
+  Status:            string
+  TotalErectors:     number
+  TotalUnified:      number
+  CreatedAt:         string | null
+  CompletedAt:       string | null
+  ErrorMessage:      string | null
+  SelectedSessionId: number | null
+  SelectedAt:        string | null
 }
 
 export interface ComparisonResult {
@@ -66,12 +69,13 @@ export interface ComparisonResult {
 // ── Progress ────────────────────────────────────────────────────
 
 export interface ComparisonProgress {
-  comparison_id:      number
-  status:             string
-  is_active:          boolean
-  current_phase:      string
-  erectors_analyzed:  number
-  total_erectors:     number
-  total_unified:      number
-  error_message:      string | null
+  comparison_id:       number
+  status:              string
+  is_active:           boolean
+  current_phase:       string
+  erectors_analyzed:   number
+  total_erectors:      number
+  total_unified:       number
+  error_message:       string | null
+  selected_session_id: number | null
 }

@@ -364,15 +364,78 @@
 }
 
 
-.compare-category-select {
-  font-size:     12.5px;
-  font-family:   var(--font-sans);
+/* ── Toolbar dropdown (shared by category / erector / select) ──── */
+
+.toolbar-dropdown-wrapper {
+  position: relative;
+}
+
+.toolbar-dropdown-trigger {
+  display:       inline-flex;
+  align-items:   center;
+  gap:           6px;
   padding:       5px 10px;
   border:        1px solid var(--border-default);
   border-radius: var(--radius-md);
-  background:    var(--bg-tertiary);
-  color:         var(--text-primary);
+  background:    var(--bg-secondary);
+  color:         var(--text-secondary);
+  font-size:     12px;
+  font-weight:   500;
+  font-family:   var(--font-sans);
   cursor:        pointer;
+  transition:    all 0.12s ease;
+  white-space:   nowrap;
+}
+
+.toolbar-dropdown-trigger:hover {
+  border-color: var(--accent);
+  color:        var(--accent);
+}
+
+.toolbar-dropdown-trigger svg {
+  opacity:    0.6;
+  flex-shrink: 0;
+}
+
+.toolbar-dropdown-menu {
+  position:      absolute;
+  top:           calc(100% + 4px);
+  left:          0;
+  min-width:     180px;
+  padding:       4px;
+  background:    var(--bg-secondary);
+  border:        1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow:    0 8px 24px rgba(0, 0, 0, 0.35);
+  z-index:       100;
+}
+
+.toolbar-dropdown-item {
+  display:       flex;
+  align-items:   center;
+  width:         100%;
+  padding:       7px 12px;
+  border:        none;
+  border-radius: var(--radius-sm);
+  background:    transparent;
+  color:         var(--text-secondary);
+  font-size:     12.5px;
+  font-family:   var(--font-sans);
+  font-weight:   500;
+  cursor:        pointer;
+  transition:    background 0.1s ease, color 0.1s ease;
+  text-align:    left;
+}
+
+.toolbar-dropdown-item:hover {
+  background: var(--bg-hover);
+  color:      var(--text-primary);
+}
+
+.toolbar-dropdown-item.active {
+  background: var(--accent-muted);
+  color:      var(--accent);
+  font-weight: 600;
 }
 
 
@@ -386,13 +449,39 @@
   margin-bottom: 16px;
 }
 
+.add-erector-header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  margin-bottom:   12px;
+}
+
 .add-erector-panel h4 {
-  margin:         0 0 12px;
+  margin:         0;
   font-size:      12px;
   font-weight:    600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color:          var(--text-muted);
+}
+
+.add-erector-close {
+  display:     flex;
+  align-items: center;
+  justify-content: center;
+  width:       22px;
+  height:      22px;
+  border:      none;
+  border-radius: var(--radius-sm);
+  background:  transparent;
+  color:       var(--text-muted);
+  cursor:      pointer;
+  transition:  all 0.12s ease;
+}
+
+.add-erector-close:hover {
+  background: var(--bg-hover);
+  color:      var(--status-error);
 }
 
 .add-erector-fields {
@@ -708,4 +797,133 @@
   font-style:   italic;
   flex-basis:   100%;
   padding-left: 110px;
+}
+
+
+/* ── Toolbar right section ───────────────────────────────────── */
+
+.compare-toolbar-right {
+  display:     flex;
+  align-items: center;
+  gap:         8px;
+}
+
+.select-erector-wrapper {
+  position: relative;
+}
+
+.select-erector-trigger {
+  gap: 6px !important;
+}
+
+.select-erector-trigger svg:last-child {
+  margin-left: 2px;
+  opacity:     0.7;
+}
+
+.select-erector-dropdown {
+  position:      absolute;
+  top:           calc(100% + 4px);
+  right:         0;
+  min-width:     180px;
+  padding:       4px;
+  background:    var(--bg-secondary);
+  border:        1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow:    0 8px 24px rgba(0, 0, 0, 0.35);
+  z-index:       100;
+}
+
+.select-erector-option {
+  display:       flex;
+  align-items:   center;
+  width:         100%;
+  padding:       7px 12px;
+  border:        none;
+  border-radius: var(--radius-sm);
+  background:    transparent;
+  color:         var(--text-secondary);
+  font-size:     12.5px;
+  font-family:   var(--font-sans);
+  font-weight:   500;
+  cursor:        pointer;
+  transition:    background 0.1s ease, color 0.1s ease;
+  text-align:    left;
+  white-space:   nowrap;
+}
+
+.select-erector-option:hover {
+  background: var(--bg-hover);
+  color:      var(--text-primary);
+}
+
+
+/* ── Selection banner ──────────────────────────────────────── */
+
+.compare-selection-banner {
+  display:       flex;
+  align-items:   center;
+  justify-content: space-between;
+  gap:            16px;
+  padding:       12px 18px;
+  margin-bottom: 16px;
+  border-radius: var(--radius-lg);
+  background:    rgba(74, 222, 128, 0.06);
+  border:        1px solid rgba(74, 222, 128, 0.2);
+}
+
+.compare-selection-banner.selecting {
+  background: var(--bg-tertiary);
+  border-color: var(--border-subtle);
+}
+
+.compare-selection-info {
+  display:     flex;
+  align-items: center;
+  gap:         10px;
+}
+
+.compare-selection-icon {
+  color:      var(--match-aligned);
+  flex-shrink: 0;
+}
+
+.compare-selection-text {
+  font-size: 13px;
+  color:     var(--text-secondary);
+}
+
+.compare-selection-text strong {
+  color:       var(--text-primary);
+  font-weight: 600;
+}
+
+.compare-selection-actions {
+  display:     flex;
+  align-items: center;
+  gap:         6px;
+}
+
+
+/* ── Matrix selected / not-selected states ────────────────── */
+
+.col-selected {
+  color: var(--match-aligned) !important;
+}
+
+.matrix-selected-check {
+  display:      inline;
+  margin-right: 4px;
+  vertical-align: -1px;
+  color:        var(--match-aligned);
+}
+
+.matrix-not-selected-tag {
+  display:        block;
+  font-size:      9px;
+  font-weight:    600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color:          var(--text-muted);
+  margin-top:     2px;
 }

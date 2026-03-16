@@ -56,7 +56,8 @@ export default function App() {
         <Route path="/compare/:id"     element={<ComparisonDetailPage />} />
         <Route path="/reviews"         element={<ScopeReviewsPage />} />
         <Route path="/reviews/new"     element={isEstimator ? <NewReviewPage /> : <Navigate to="/reviews" replace />} />
-        <Route path="/reviews/:id"     element={<ScopeReviewDetailPage />} />
+        <Route path="/reviews/:id"         element={<ScopeReviewDetailPage />} />
+        <Route path="/reviews/:id/editor"  element={<ScopeLetterEditorPage />} />
         <Route path="/analyze"         element={isAdmin ? <AnalyzePage /> : <Navigate to="/reviews" replace />} />
         <Route path="/exclusions"      element={<ExclusionsPage />} />
         <Route path="/training"        element={isAdmin ? <TrainingPage /> : <Navigate to="/reviews" replace />} />
@@ -64,7 +65,8 @@ export default function App() {
         {/* Admin views — raw data + risk */}
         <Route path="/sessions"            element={isAdmin ? <SessionsPage />         : <Navigate to="/reviews" replace />} />
         <Route path="/sessions/:id"        element={isAdmin ? <SessionDetailPage />   : <Navigate to="/reviews" replace />} />
-        <Route path="/sessions/:id/editor" element={<ScopeLetterEditorPage />} />
+        {/* Legacy redirect — editor now lives under /reviews */}
+        <Route path="/sessions/:id/editor" element={<Navigate to="/reviews" replace />} />
         <Route path="/high-risk"              element={isAdmin ? <HighRiskPage />        : <Navigate to="/reviews" replace />} />
         <Route path="/high-risk/session/:id"  element={isAdmin ? <HighRiskSessionPage /> : <Navigate to="/reviews" replace />} />
         <Route path="/admin"               element={isAdmin ? <AdminPage />            : <Navigate to="/reviews" replace />} />

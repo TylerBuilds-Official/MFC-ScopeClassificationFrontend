@@ -25,14 +25,15 @@ export default function SessionsPage() {
   const { user }   = useAuth()
   const isAdmin    = user?.is_admin ?? false
 
-  const [statusFilter, setStatusFilter] = useState<string>('')
-  const [sortKey, setSortKey]           = useState<SortKey>('id')
-  const [sortDir, setSortDir]           = useState<SortDir>('desc')
-  const [deleteTarget, setDeleteTarget] = useState<SessionListItem | null>(null)
+  const [statusFilter, setStatusFilter]     = useState<string>('')
+  const [typeFilter, setTypeFilter]         = useState<string>('')
+  const [sortKey, setSortKey]               = useState<SortKey>('id')
+  const [sortDir, setSortDir]               = useState<SortDir>('desc')
+  const [deleteTarget, setDeleteTarget]     = useState<SessionListItem | null>(null)
 
   const { data, loading, error, refetch } = useApi(
-    () => getSessions(100, 0, statusFilter || undefined),
-    [statusFilter],
+    () => getSessions(100, 0, statusFilter || undefined, typeFilter || undefined),
+    [statusFilter, typeFilter],
   )
 
   const sessions = data?.sessions ?? []
@@ -110,6 +111,15 @@ export default function SessionsPage() {
               value={statusFilter}
               onChange={setStatusFilter}
             />
+            <CustomSelect
+              options={[
+                { value: '',           label: 'All Types' },
+                { value: 'Standard',   label: 'Standard' },
+                { value: 'Comparison', label: 'Comparison' },
+              ]}
+              value={typeFilter}
+              onChange={setTypeFilter}
+            />
           </div>
         </div>
 
@@ -132,6 +142,7 @@ export default function SessionsPage() {
                 <th onClick={() => toggleSort('job_number')}>Job #{sortIndicator('job_number')}</th>
                 <th onClick={() => toggleSort('source_file_name')}>Source File{sortIndicator('source_file_name')}</th>
                 <th onClick={() => toggleSort('status')}>Status{sortIndicator('status')}</th>
+                <th onClick={() => toggleSort('session_type')}>Type{sortIndicator('session_type')}</th>
                 <th onClick={() => toggleSort('total_aligned')}>Aligned{sortIndicator('total_aligned')}</th>
                 <th onClick={() => toggleSort('total_erector_only')}>Erector Only{sortIndicator('total_erector_only')}</th>
                 <th onClick={() => toggleSort('total_mfc_only')}>MFC Only{sortIndicator('total_mfc_only')}</th>
@@ -147,6 +158,7 @@ export default function SessionsPage() {
                   <td className="mono">{s.job_number ?? '—'}</td>
                   <td className="truncate" style={{ maxWidth: '220px' }}>{s.source_file_name ?? '—'}</td>
                   <td><StatusBadge status={s.status} /></td>
+                  <td><span className={`session-type-badge ${s.session_type?.toLowerCase() ?? 'standard'}`}>{s.session_type ?? 'Standard'}</span></td>
                   <td>{s.total_aligned ?? '—'}</td>
                   <td>{s.total_erector_only ?? '—'}</td>
                   <td>{s.total_mfc_only ?? '—'}</td>

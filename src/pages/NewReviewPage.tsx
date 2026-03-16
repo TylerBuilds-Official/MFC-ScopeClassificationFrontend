@@ -44,8 +44,7 @@ export default function NewReviewPage() {
     <>
       <Header title="New Scope Review">
         <button
-          className="btn-analyze"
-          style={{ padding: '6px 14px', fontSize: '12.5px', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+          className="btn-analyze secondary"
           onClick={() => navigate('/reviews')}
         >
           <ArrowLeft size={14} />

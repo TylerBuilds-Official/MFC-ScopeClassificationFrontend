@@ -94,7 +94,7 @@ export default function CompareNewPage() {
   return (
     <>
       <Header title="New Comparison">
-        <button className="btn-analyze" style={{ padding: '6px 14px', fontSize: '12.5px' }} onClick={() => navigate('/compare')}>
+        <button className="btn-analyze secondary" onClick={() => navigate('/compare')}>
           <ArrowLeft size={14} />
           Back
         </button>

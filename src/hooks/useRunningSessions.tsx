@@ -52,7 +52,7 @@ export function RunningSessionsProvider({ children }: { children: React.ReactNod
 
   useEffect(() => {
     const activeSessions = sessions.filter(
-      s => !s.progress || s.progress.is_active || !['Complete', 'Error'].includes(s.progress.status)
+      s => !s.progress || s.progress.is_active
     )
 
     if (activeSessions.length === 0) {

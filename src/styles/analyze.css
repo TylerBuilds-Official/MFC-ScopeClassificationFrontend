@@ -139,22 +139,33 @@
 /* ── Submit Button ───────────────────────────────────────────────── */
 
 .btn-analyze {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 24px;
-  background: var(--accent);
-  color: #fff;
-  border: none;
+  display:       inline-flex;
+  align-items:   center;
+  gap:           5px;
+  padding:       5px 10px;
+  background:    var(--accent);
+  color:         #fff;
+  border:        1px solid var(--accent);
   border-radius: var(--radius-md);
-  font-size: 13.5px;
-  font-weight: 600;
-  transition: background 0.15s ease;
-  margin-top: 8px;
+  font-size:     12px;
+  font-weight:   500;
+  cursor:        pointer;
+  transition:    all 0.12s ease;
 }
 
 .btn-analyze:hover {
   background: var(--accent-hover);
+}
+
+.btn-analyze.secondary {
+  background:   var(--bg-secondary);
+  border-color: var(--border-default);
+  color:        var(--text-secondary);
+}
+
+.btn-analyze.secondary:hover {
+  border-color: var(--accent);
+  color:        var(--accent);
 }
 
 .btn-analyze:disabled {

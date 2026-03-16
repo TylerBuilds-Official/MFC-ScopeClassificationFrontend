@@ -32,19 +32,32 @@ export interface TabStop {
   alignment:   string
 }
 
+export type TemplateSection = 'erector_exclusions'
+
+export type EditorViewMode = 'full' | 'erector_exclusions'
+
+export type HighlightIntensity = 'dim' | 'standard' | 'bright'
+
 export interface EditorParagraph {
-  index:        number
-  text:         string
-  indent:       number | null
-  hanging:      number | null
-  first_line:   number | null
-  alignment:    'left' | 'center' | 'right' | 'justify' | null
-  space_before: number | null
-  space_after:  number | null
-  line_spacing: number | null
-  tab_stops:    TabStop[] | null
-  segments:     EditorSegment[]
-  regions:      EditorRegion[]
+  index:            number
+  text:             string
+  indent:           number | null
+  hanging:          number | null
+  first_line:       number | null
+  alignment:        'left' | 'center' | 'right' | 'justify' | null
+  space_before:     number | null
+  space_after:      number | null
+  line_spacing:     number | null
+  tab_stops:        TabStop[] | null
+  segments:         EditorSegment[]
+  regions:          EditorRegion[]
+  template_section: TemplateSection | null
+}
+
+export interface EditorPersistedState {
+  removed_regions:    { mfc_exclusion_id: number; para_index: number }[]
+  removed_paragraphs: number[]
+  text_edits:         { para_index: number; edited_text: string }[]
 }
 
 export interface ScopeLetterData {
@@ -54,5 +67,6 @@ export interface ScopeLetterData {
     job:      string
     job_name: string
   }
-  paragraphs: EditorParagraph[]
+  paragraphs:   EditorParagraph[]
+  editor_state: EditorPersistedState
 }

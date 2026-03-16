@@ -137,15 +137,13 @@ export default function ScopeReviewDetailPage() {
         <div style={{ display: 'flex', gap: 8 }}>
           <button
             className="btn-analyze"
-            style={{ padding: '6px 14px', fontSize: '12.5px' }}
-            onClick={() => navigate(`/sessions/${sessionId}/editor`)}
+            onClick={() => navigate(`/reviews/${sessionId}/editor`)}
           >
             <FilePenLine size={14} />
             Open Editor
           </button>
           <button
-            className="btn-analyze"
-            style={{ padding: '6px 14px', fontSize: '12.5px', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+            className="btn-analyze secondary"
             onClick={handleExport}
             disabled={exporting}
           >
@@ -153,8 +151,7 @@ export default function ScopeReviewDetailPage() {
             {exporting ? 'Exporting...' : 'Download'}
           </button>
           <button
-            className="btn-analyze"
-            style={{ padding: '6px 14px', fontSize: '12.5px', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+            className="btn-analyze secondary"
             onClick={() => navigate('/reviews')}
           >
             <ArrowLeft size={14} />

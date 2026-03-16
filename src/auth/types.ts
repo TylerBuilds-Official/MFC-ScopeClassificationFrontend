@@ -1,11 +1,12 @@
 export interface User {
-  id:           number
-  email:        string
-  display_name: string
-  role:         'pending' | 'viewer' | 'estimator' | 'admin'
-  is_active:    boolean
-  is_estimator: boolean
-  is_admin:     boolean
+  id:                  number
+  email:               string
+  display_name:        string
+  role:                'pending' | 'viewer' | 'estimator' | 'admin'
+  is_active:           boolean
+  is_estimator:        boolean
+  is_admin:            boolean
+  highlight_intensity: 'dim' | 'standard' | 'bright'
 }
 
 export interface AuthContextType {

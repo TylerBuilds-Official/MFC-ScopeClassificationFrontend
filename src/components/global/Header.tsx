@@ -31,7 +31,7 @@ export default function Header({ title, breadcrumb, children }: HeaderProps) {
         {children}
 
         <button className="theme-toggle" onClick={toggleTheme} title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}>
-          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          {theme === 'dark' ? <Sun size={12} /> : <Moon size={12} />}
         </button>
       </div>
 

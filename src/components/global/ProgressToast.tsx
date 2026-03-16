@@ -24,11 +24,12 @@ export default function ProgressToast() {
   return (
     <div className="toast-stack">
       {visible.map(({ sessionId, progress }) => {
-        const status = progress?.status ?? 'Ingested'
-        const done   = status === 'Complete'
-        const error  = status === 'Error'
-        const label  = PHASE_LABELS[status] ?? 'Processing...'
-        const name   = progress?.erector_name_raw ?? `Session #${sessionId}`
+        const status   = progress?.status ?? 'Ingested'
+        const isActive = progress?.is_active ?? true
+        const done     = status === 'Complete' || (!isActive && status !== 'Error')
+        const error    = status === 'Error'
+        const label    = done ? 'Complete' : error ? 'Failed' : (PHASE_LABELS[status] ?? 'Processing...')
+        const name     = progress?.erector_name_raw ?? `Session #${sessionId}`
 
         return (
           <div

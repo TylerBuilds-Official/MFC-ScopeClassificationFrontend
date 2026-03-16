@@ -94,3 +94,20 @@ export async function deleteComparison(id: number): Promise<{ deleted: number }>
 
   return del_<{ deleted: number }>(`/comparison/${id}`)
 }
+
+
+export async function selectErector(
+  comparisonId: number,
+  sessionId:    number,
+): Promise<{ comparison_id: number; session_id: number; status: string; message: string }> {
+
+  return post(`/comparison/${comparisonId}/select-erector`, { session_id: sessionId })
+}
+
+
+export async function deselectErector(
+  comparisonId: number,
+): Promise<{ comparison_id: number; deselected_session_id: number; status: string }> {
+
+  return post(`/comparison/${comparisonId}/deselect-erector`, {})
+}
