@@ -20,6 +20,7 @@ import NewReviewPage from './pages/NewReviewPage'
 import ComparisonsPage from './pages/ComparisonsPage'
 import CompareNewPage from './pages/CompareNewPage'
 import ComparisonDetailPage from './pages/ComparisonDetailPage'
+import MappingPage from './pages/MappingPage'
 
 
 export default function App() {
@@ -69,6 +70,7 @@ export default function App() {
         <Route path="/sessions/:id/editor" element={<Navigate to="/reviews" replace />} />
         <Route path="/high-risk"              element={isAdmin ? <HighRiskPage />        : <Navigate to="/reviews" replace />} />
         <Route path="/high-risk/session/:id"  element={isAdmin ? <HighRiskSessionPage /> : <Navigate to="/reviews" replace />} />
+        <Route path="/mapping"             element={isAdmin ? <MappingPage />           : <Navigate to="/reviews" replace />} />
         <Route path="/admin"               element={isAdmin ? <AdminPage />            : <Navigate to="/reviews" replace />} />
 
         <Route path="/auth/callback" element={<Navigate to="/reviews" replace />} />

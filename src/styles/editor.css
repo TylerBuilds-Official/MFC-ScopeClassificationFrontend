@@ -617,7 +617,7 @@
 
 /* AI reasoning — muted, smaller */
 .region-detail-row.reasoning label { color: var(--accent-dull); }
-.region-detail-row.reasoning p { font-size: 12px; color: var(--text-muted); }
+.region-detail-row.reasoning p { font-size: 12px; color: var(--text-secondary-dark); }
 
 /* Risk notes — red label */
 .region-detail-row.risk label { color: var(--status-error); }

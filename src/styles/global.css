@@ -28,6 +28,7 @@
   /* Accent — steel blue */
   --accent:         #4e8cff;
   --accent-hover:   #6ba0ff;
+  --accent-transparent: rgba(78, 140, 255, 0.75);
   --accent-dull: #639cc8;
   --accent-muted:   rgba(78, 140, 255, 0.12);
 
@@ -81,10 +82,11 @@
   /* Text */
   --text-primary:   #111827;
   --text-secondary: #4b5263;
+  --text-secondary-dark: #374151;
   --text-muted:     #8b91a0;
 
   /* Accent — slightly deeper blue for light bg contrast */
-  --accent:         #2d6fd4;
+  --accent: rgba(45, 111, 212, 0.5);
   --accent-hover:   #1a5bbf;
   --accent-muted:   rgba(45, 111, 212, 0.10);
 

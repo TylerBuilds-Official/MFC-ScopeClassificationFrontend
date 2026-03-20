@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import {
   LayoutGrid, Search, AlertTriangle, GraduationCap,
-  FileText, Shield, LogOut, GitCompareArrows, FileCheck,
+  FileText, Shield, LogOut, GitCompareArrows, FileCheck, Link2,
 } from 'lucide-react'
 import { useAuth } from '../../auth'
 
@@ -43,6 +43,10 @@ export default function Sidebar() {
         <>
           <div className="sidebar-section-label">Admin</div>
           <nav className="sidebar-nav">
+            <NavLink to="/mapping" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+              <Link2 size={18} />
+              Erector Mapping
+            </NavLink>
             <NavLink to="/sessions" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
               <LayoutGrid size={18} />
               Sessions
