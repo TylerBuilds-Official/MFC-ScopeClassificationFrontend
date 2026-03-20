@@ -38,15 +38,20 @@ export default function Sidebar() {
         </NavLink>
       </nav>
 
+      {/* ── Tuning ───────────────────────────────────────── */}
+      <div className="sidebar-section-label">Tuning</div>
+      <nav className="sidebar-nav">
+        <NavLink to="/mapping" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <Link2 size={18} />
+          Erector Mapping
+        </NavLink>
+      </nav>
+
       {/* ── Admin views ──────────────────────────────────── */}
       {user?.is_admin && (
         <>
           <div className="sidebar-section-label">Admin</div>
           <nav className="sidebar-nav">
-            <NavLink to="/mapping" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-              <Link2 size={18} />
-              Erector Mapping
-            </NavLink>
             <NavLink to="/sessions" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
               <LayoutGrid size={18} />
               Sessions
