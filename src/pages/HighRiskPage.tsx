@@ -163,6 +163,7 @@ function AllHighRisk({ categoryMap }: { categoryMap: Map<number, string> }) {
     erector_text:           raw.ErectorExclusionText,
     mfc_text:               raw.MfcExclusionText,
     mfc_item_type:          raw.MfcItemType,
+    mfc_scope_type:         null,
   }))
 
   const sessionMeta: Record<number, { erector?: string; job?: string; file?: string }> = {}

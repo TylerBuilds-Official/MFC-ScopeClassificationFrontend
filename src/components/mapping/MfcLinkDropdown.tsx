@@ -164,7 +164,6 @@ export default function MfcLinkDropdown({
           )}
 
           {grouped.map(([category, items]) => {
-            const showHeader = showAll || grouped.length > 1
             const collapsible = showAll || grouped.length > 1
             const isOpen      = search.trim() || !collapsible || !collapsed.has(category)
 

@@ -5,7 +5,7 @@ import type {
   EditorSegment,
   EditorRegion,
 } from '../../types/editor'
-import { resolveTabSpacers, type ResolvedSegment } from '../../utils/tabResolver'
+import { resolveTabSpacers } from '../../utils/tabResolver'
 import { handleEditorKeyDown } from '../../utils/editorNavigation'
 
 
