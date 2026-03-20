@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
-import { X, Link, Check } from 'lucide-react'
+import { X, Link, Check, StickyNote } from 'lucide-react'
 import MfcLinkDropdown from './MfcLinkDropdown'
-import { createLink, deleteLink, updateDisposition } from '../../api/mapping'
+import { createLink, deleteLink, updateDisposition, updateNotes } from '../../api/mapping'
 import type { ErectorExclusionItem, MfcOption, Disposition } from '../../types/mapping'
 
 
@@ -38,6 +38,9 @@ export default function MappingRow({
   const [busy, setBusy]                         = useState(false)
   const [pillFading, setPillFading]              = useState(false)
   const [removingLinkId, setRemovingLinkId]     = useState<number | null>(null)
+  const [editingNotes, setEditingNotes]         = useState(false)
+  const [localNotes, setLocalNotes]             = useState(item.Notes ?? '')
+  const notesRef                                 = useRef<HTMLTextAreaElement>(null)
   const prevDisp                                 = useRef(item.Disposition)
   const prevMappingIds                           = useRef<Set<number>>(new Set(item.mappings.map(m => m.link_id)))
   const newLinkIds                               = useRef<Set<number>>(new Set())
@@ -115,6 +118,21 @@ export default function MappingRow({
 
     setPillFading(true)
     handleDisposition(d)
+  }
+
+  async function handleNotesSave() {
+    setEditingNotes(false)
+
+    const trimmed = localNotes.trim() || null
+    if (trimmed === (item.Notes ?? null)) return
+
+    try {
+      await updateNotes(item.Id, trimmed)
+      setLocalNotes(trimmed ?? '')
+    } catch (err) {
+      console.error('Failed to save notes:', err)
+      setLocalNotes(item.Notes ?? '')
+    }
   }
 
   async function handleDisposition(d: Disposition) {
@@ -224,6 +242,47 @@ export default function MappingRow({
             onClose={() => setShowLinkDropdown(false)}
           />
         )}
+      </td>
+
+      <td className="mapping-col-notes">
+        <div className="mapping-notes-cell">
+          {editingNotes ? (
+            <textarea
+              ref={notesRef}
+              className="mapping-notes-editor"
+              value={localNotes}
+              onChange={e => setLocalNotes(e.target.value)}
+              onBlur={handleNotesSave}
+              onKeyDown={e => {
+                if (e.key === 'Escape') {
+                  setLocalNotes(item.Notes ?? '')
+                  setEditingNotes(false)
+                }
+              }}
+              rows={3}
+              placeholder="Add a note..."
+              maxLength={500}
+            />
+          ) : (
+            <>
+              {localNotes && (
+                <span className="mapping-notes-preview" title={localNotes}>
+                  {localNotes}
+                </span>
+              )}
+              <button
+                className={`mapping-notes-btn ${localNotes ? 'has-notes' : ''}`}
+                onClick={() => {
+                  setEditingNotes(true)
+                  requestAnimationFrame(() => notesRef.current?.focus())
+                }}
+                title={localNotes ? 'Edit note' : 'Add note'}
+              >
+                <StickyNote size={13} />
+              </button>
+            </>
+          )}
+        </div>
       </td>
 
     </tr>

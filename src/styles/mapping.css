@@ -209,10 +209,11 @@
   max-width: 36px;
   padding:   10px 8px !important;
 }
-.mapping-col-erector     { width: 100px; }
+.mapping-col-erector     { width: 90px; }
 .mapping-col-exclusion   { /* flex column — takes remaining space */ }
-.mapping-col-disposition { width: 110px; }
-.mapping-col-mappings    { width: 280px; }
+.mapping-col-disposition { width: 100px; }
+.mapping-col-mappings    { width: 280px; padding-left: 20px !important; }
+.mapping-col-notes       { width: 180px; padding-left: 20px !important; }
 
 .mapping-category-row td {
   padding:        10px 14px 8px;
@@ -478,6 +479,85 @@
   background:   var(--accent-muted);
   color:        var(--accent);
 }
+
+/* ── Notes column ───────────────────────────────────── */
+
+.mapping-notes-cell {
+  display:     flex;
+  align-items: flex-start;
+  gap:         6px;
+  min-height:  24px;
+}
+
+.mapping-notes-preview {
+  flex:           1;
+  font-size:      12px;
+  color:          var(--text-secondary);
+  line-height:    1.4;
+  display:        -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow:       hidden;
+  cursor:         default;
+}
+
+.mapping-notes-btn {
+  display:       flex;
+  align-items:   center;
+  justify-content: center;
+  flex-shrink:   0;
+  width:         24px;
+  height:        24px;
+  border:        none;
+  border-radius: var(--radius-sm);
+  background:    transparent;
+  color:         var(--text-muted);
+  cursor:        pointer;
+  opacity:       0.4;
+  transition:    opacity 0.12s, color 0.12s, background 0.12s;
+}
+
+.mapping-notes-btn:hover {
+  opacity:    1;
+  color:      var(--accent);
+  background: var(--accent-muted);
+}
+
+.mapping-notes-btn.has-notes {
+  opacity: 0.7;
+  color:   var(--accent);
+}
+
+.mapping-notes-btn.has-notes:hover {
+  opacity: 1;
+}
+
+.mapping-notes-editor {
+  width:         100%;
+  min-height:    60px;
+  padding:       6px 8px;
+  border:        1px solid var(--accent-transparent);
+  border-radius: var(--radius-md);
+  background:    var(--bg-tertiary);
+  color:         var(--text-primary);
+  font-size:     12px;
+  font-family: var(--font-sans), sans-serif;
+  line-height:   1.4;
+  resize:        vertical;
+  outline:       none;
+}
+
+.mapping-notes-editor:focus,
+.mapping-notes-editor:focus-visible {
+  outline:    none;
+  box-shadow: none;
+  border-color: var(--accent-dull);
+}
+
+.mapping-notes-editor::placeholder {
+  color: var(--text-muted);
+}
+
 
 /* ── MFC link bottom sheet ────────────────────────────────── */
 

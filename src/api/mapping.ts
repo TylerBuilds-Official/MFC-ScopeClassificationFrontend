@@ -52,6 +52,17 @@ export async function updateDisposition(
 }
 
 
+// ── Notes ───────────────────────────────────────────────
+
+export async function updateNotes(
+  erectorExclusionId: number,
+  notes:              string | null,
+): Promise<{ erector_exclusion_id: number; notes: string | null }> {
+
+  return patch(`/mapping/erector-exclusions/${erectorExclusionId}/notes`, { notes })
+}
+
+
 // ── Single link ─────────────────────────────────────────────
 
 export async function createLink(

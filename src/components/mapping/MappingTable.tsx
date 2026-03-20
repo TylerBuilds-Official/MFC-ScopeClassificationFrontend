@@ -55,6 +55,7 @@ export default function MappingTable({
             <th className="mapping-col-exclusion">Exclusion</th>
             <th className="mapping-col-disposition">Status</th>
             <th className="mapping-col-mappings">Mapped To</th>
+            <th className="mapping-col-notes">Notes</th>
           </tr>
         </thead>
         <tbody>
@@ -97,7 +98,7 @@ function CategoryGroup({
   return (
     <>
       <tr className="mapping-category-row">
-        <td colSpan={5}>
+        <td colSpan={6}>
           {category}
           <span className="mapping-category-count">{items.length}</span>
         </td>
