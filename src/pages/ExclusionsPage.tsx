@@ -484,7 +484,7 @@ function AllExclusionsPanel({ categories, search }: AllExclusionsPanelProps) {
       </div>
 
       {addModal && (
-        <div className="action-modal-overlay" onClick={() => setAddModal(null)}>
+        <div className="action-modal-overlay">
           <div className="action-modal" onClick={e => e.stopPropagation()}>
             <div className="action-modal-header">
               <h3>Add MFC Exclusion</h3>

@@ -30,17 +30,6 @@ export default function AddExclusionDialog({ open, categories, onClose, onAdded 
     }
   }, [open])
 
-  useEffect(() => {
-    if (!open) return
-
-    function handleKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose()
-    }
-
-    document.addEventListener('keydown', handleKey)
-
-    return () => document.removeEventListener('keydown', handleKey)
-  }, [open, onClose])
 
   async function handleSave() {
     if (!categoryId || !text.trim()) return
@@ -63,7 +52,7 @@ export default function AddExclusionDialog({ open, categories, onClose, onAdded 
   if (!open) return null
 
   return (
-    <div className="action-modal-overlay" onClick={onClose}>
+    <div className="action-modal-overlay">
       <div className="action-modal" onClick={e => e.stopPropagation()}>
         <div className="action-modal-header">
           <h3>Add MFC Exclusion</h3>
