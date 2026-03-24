@@ -49,16 +49,19 @@ export default function MappingStatsBar({ stats, loading }: Props) {
       </div>
 
       <div className="mapping-stats-erectors">
-        {Object.entries(display?.by_erector ?? {}).map(([name, counts]) => (
-          <div key={name} className="mapping-erector-stat">
-            <span className="mapping-erector-name">{name}</span>
-            <span className="mapping-erector-count">
-              {(counts.Mapped ?? 0) + (counts.PMReportOnly ?? 0)}
-              {' / '}
-              {counts.total}
-            </span>
-          </div>
-        ))}
+        {Object.entries(display?.by_erector ?? {}).map(([name, counts]) => {
+          const erectorResolved = (counts.Mapped ?? 0) + (counts.PMReportOnly ?? 0)
+          const erectorTotal    = counts.total ?? 0
+
+          return (
+            <div key={name} className="mapping-erector-stat">
+              <span className="mapping-erector-name">{name}</span>
+              <span className="mapping-erector-count">
+                {erectorResolved} / {erectorTotal}
+              </span>
+            </div>
+          )
+        })}
       </div>
     </div>
   )

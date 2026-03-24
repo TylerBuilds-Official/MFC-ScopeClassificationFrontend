@@ -1,7 +1,8 @@
 import { get, post, patch, del_ } from './client'
 import type {
-  ErectorExclusionListResponse,
+  AtomicExclusionListResponse,
   MfcOptionListResponse,
+  ErectorListResponse,
   MappingStats,
   CreateLinkResponse,
   DeleteLinkResponse,
@@ -10,21 +11,19 @@ import type {
 } from '../types/mapping'
 
 
-// ── Erector exclusions (main feed) ──────────────────────────
+// ── Atomic exclusions (main feed) ───────────────────────────
 
-export async function getErectorExclusions(filters?: {
-  category_id?: number
+export async function getAtomicExclusions(filters?: {
   erector_id?:  number
   disposition?: string
-}): Promise<ErectorExclusionListResponse> {
+}): Promise<AtomicExclusionListResponse> {
 
   const params: Record<string, string | number> = {}
 
-  if (filters?.category_id) params.category_id = filters.category_id
   if (filters?.erector_id)  params.erector_id  = filters.erector_id
   if (filters?.disposition) params.disposition  = filters.disposition
 
-  return get<ErectorExclusionListResponse>('/mapping/erector-exclusions', params)
+  return get<AtomicExclusionListResponse>('/mapping/atomic-exclusions', params)
 }
 
 
@@ -41,38 +40,46 @@ export async function getMfcOptions(
 }
 
 
-// ── Disposition ─────────────────────────────────────────────
+// ── Erectors (filter data) ──────────────────────────────────
 
-export async function updateDisposition(
-  erectorExclusionId: number,
-  disposition:        Disposition,
-): Promise<{ erector_exclusion_id: number; disposition: string }> {
+export async function getErectors(): Promise<ErectorListResponse> {
 
-  return patch(`/mapping/erector-exclusions/${erectorExclusionId}/disposition`, { disposition })
+  return get<ErectorListResponse>('/mapping/erectors')
 }
 
 
-// ── Notes ───────────────────────────────────────────────
+// ── Disposition ─────────────────────────────────────────────
+
+export async function updateDisposition(
+  atomicExclusionId: number,
+  disposition:       Disposition,
+): Promise<{ atomic_exclusion_id: number; disposition: string }> {
+
+  return patch(`/mapping/atomic-exclusions/${atomicExclusionId}/disposition`, { disposition })
+}
+
+
+// ── Notes ───────────────────────────────────────────────────
 
 export async function updateNotes(
-  erectorExclusionId: number,
-  notes:              string | null,
-): Promise<{ erector_exclusion_id: number; notes: string | null }> {
+  atomicExclusionId: number,
+  notes:             string | null,
+): Promise<{ atomic_exclusion_id: number; notes: string | null }> {
 
-  return patch(`/mapping/erector-exclusions/${erectorExclusionId}/notes`, { notes })
+  return patch(`/mapping/atomic-exclusions/${atomicExclusionId}/notes`, { notes })
 }
 
 
 // ── Single link ─────────────────────────────────────────────
 
 export async function createLink(
-  erectorExclusionId: number,
-  mfcExclusionId:     number,
+  atomicExclusionId: number,
+  mfcExclusionId:    number,
 ): Promise<CreateLinkResponse> {
 
   return post('/mapping/links', {
-    erector_exclusion_id: erectorExclusionId,
-    mfc_exclusion_id:     mfcExclusionId,
+    atomic_exclusion_id: atomicExclusionId,
+    mfc_exclusion_id:    mfcExclusionId,
   })
 }
 
@@ -86,13 +93,13 @@ export async function deleteLink(linkId: number): Promise<DeleteLinkResponse> {
 // ── Bulk link ───────────────────────────────────────────────
 
 export async function bulkLink(
-  erectorExclusionIds: number[],
-  mfcExclusionId:      number,
+  atomicExclusionIds: number[],
+  mfcExclusionId:     number,
 ): Promise<BulkLinkResponse> {
 
   return post('/mapping/bulk-link', {
-    erector_exclusion_ids: erectorExclusionIds,
-    mfc_exclusion_id:      mfcExclusionId,
+    atomic_exclusion_ids: atomicExclusionIds,
+    mfc_exclusion_id:     mfcExclusionId,
   })
 }
 

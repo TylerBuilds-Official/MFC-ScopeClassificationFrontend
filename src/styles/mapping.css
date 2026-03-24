@@ -131,8 +131,9 @@
 }
 
 
-/* ── Bulk toggle button ──────────────────────────────────────── */
+/* ── Toolbar action buttons ──────────────────────────────────── */
 
+.mapping-add-btn,
 .mapping-bulk-btn {
   display:       inline-flex;
   align-items:   center;
@@ -149,6 +150,7 @@
   transition:    all 0.12s ease;
 }
 
+.mapping-add-btn:hover,
 .mapping-bulk-btn:hover {
   border-color: var(--accent);
   color:        var(--accent);
@@ -286,6 +288,12 @@
 
 
 /* ── Erector badge ───────────────────────────────────────── */
+
+.erector-badge-group {
+  display:   flex;
+  flex-wrap: wrap;
+  gap:       3px;
+}
 
 .erector-badge {
   display:        inline-block;

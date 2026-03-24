@@ -1,31 +1,19 @@
 import { useMemo } from 'react'
-import { Filter } from 'lucide-react'
+import { Filter, Plus } from 'lucide-react'
 import CustomSelect from '../global/CustomSelect'
-import type { Disposition } from '../../types/mapping'
+import type { Disposition, ErectorOption } from '../../types/mapping'
 
-
-interface CategoryOption {
-  id:   number
-  name: string
-}
-
-interface ErectorOption {
-  id:        number
-  shortName: string
-}
 
 interface Props {
-  categories:      CategoryOption[]
   erectors:        ErectorOption[]
-  categoryFilter:  number | null
   erectorFilter:   number | null
   dispositionFilter: Disposition | null
-  onCategoryChange:    (id: number | null) => void
   onErectorChange:     (id: number | null) => void
   onDispositionChange: (d: Disposition | null) => void
   bulkMode:        boolean
   onToggleBulk:    () => void
   bulkCount:       number
+  onAddExclusion:  () => void
 }
 
 
@@ -36,23 +24,15 @@ const DISPOSITIONS: { value: Disposition; label: string }[] = [
 ]
 
 
-/**
- * Filter bar + bulk mode toggle for the mapping page.
- */
 export default function MappingToolbar({
-    categories, erectors,
-    categoryFilter, erectorFilter, dispositionFilter,
-    onCategoryChange, onErectorChange, onDispositionChange,
-    bulkMode, onToggleBulk, bulkCount }: Props) {
-
-  const categoryOpts = useMemo(() => [
-    { value: '', label: 'All Categories' },
-    ...categories.map(c => ({ value: String(c.id), label: c.name })),
-  ], [categories])
+    erectors,
+    erectorFilter, dispositionFilter,
+    onErectorChange, onDispositionChange,
+    bulkMode, onToggleBulk, bulkCount, onAddExclusion }: Props) {
 
   const erectorOpts = useMemo(() => [
     { value: '', label: 'All Erectors' },
-    ...erectors.map(e => ({ value: String(e.id), label: e.shortName })),
+    ...erectors.map(e => ({ value: String(e.Id), label: e.ShortName })),
   ], [erectors])
 
   const dispositionOpts = useMemo(() => [
@@ -64,14 +44,6 @@ export default function MappingToolbar({
     <div className="mapping-toolbar">
       <div className="mapping-toolbar-left">
         <Filter size={14} />
-
-        <CustomSelect
-          options={categoryOpts}
-          value={categoryFilter != null ? String(categoryFilter) : ''}
-          onChange={v => onCategoryChange(v ? Number(v) : null)}
-          placeholder="All Categories"
-          className="mapping-filter-select"
-        />
 
         <CustomSelect
           options={erectorOpts}
@@ -91,6 +63,11 @@ export default function MappingToolbar({
       </div>
 
       <div className="mapping-toolbar-right">
+        <button className="mapping-add-btn" onClick={onAddExclusion}>
+          <Plus size={14} />
+          Add Exclusion
+        </button>
+
         <button
           className={`mapping-bulk-btn ${bulkMode ? 'active' : ''}`}
           onClick={onToggleBulk}

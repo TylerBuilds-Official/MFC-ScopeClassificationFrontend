@@ -2,22 +2,18 @@ import { useState } from 'react'
 import { Link2, X } from 'lucide-react'
 import MfcLinkDropdown from './MfcLinkDropdown'
 import { bulkLink } from '../../api/mapping'
-import type { MfcOption, ErectorExclusionItem } from '../../types/mapping'
+import type { MfcOption, AtomicExclusionItem } from '../../types/mapping'
 
 
 interface Props {
   selectedIds:   Set<number>
-  items:         ErectorExclusionItem[]
+  items:         AtomicExclusionItem[]
   mfcOptions:    MfcOption[]
   onComplete:    () => void
   onClearSelection: () => void
 }
 
 
-/**
- * Panel for Todd's "this = this = this" workflow.
- * Shows selected erector exclusions and lets user pick one MFC item to map them all to.
- */
 export default function BulkLinkPanel({
     selectedIds, items, mfcOptions,
     onComplete, onClearSelection }: Props) {
@@ -53,7 +49,7 @@ export default function BulkLinkPanel({
       <div className="bulk-link-panel">
         <div className="bulk-link-empty">
           <Link2 size={16} />
-          Select erector exclusions from the table to bulk-link them to one MFC item.
+          Select exclusions from the table to bulk-link them to one MFC item.
         </div>
       </div>
     )
@@ -71,7 +67,9 @@ export default function BulkLinkPanel({
       <div className="bulk-link-selected">
         {selected.map(item => (
           <div key={item.Id} className="bulk-link-chip">
-            <span className="bulk-link-chip-erector">{item.ErectorShortName}</span>
+            <span className="bulk-link-chip-erector">
+              {item.sources.map(s => s.erector_short_name).join(', ')}
+            </span>
             <span className="bulk-link-chip-text">{item.Exclusion}</span>
           </div>
         ))}
@@ -91,7 +89,6 @@ export default function BulkLinkPanel({
           <MfcLinkDropdown
             options={mfcOptions}
             existingMfcIds={[]}
-            defaultCategoryId={selected[0]?.CategoryId ?? 0}
             onSelect={handleBulkLink}
             onClose={() => setShowDropdown(false)}
           />

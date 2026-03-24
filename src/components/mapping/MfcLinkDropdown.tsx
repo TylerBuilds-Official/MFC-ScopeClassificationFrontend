@@ -5,11 +5,10 @@ import type { MfcOption } from '../../types/mapping'
 
 
 interface Props {
-  options:           MfcOption[]
-  existingMfcIds:    number[]
-  defaultCategoryId: number
-  onSelect:          (mfcId: number) => void
-  onClose:           () => void
+  options:        MfcOption[]
+  existingMfcIds: number[]
+  onSelect:       (mfcId: number) => void
+  onClose:        () => void
 }
 
 
@@ -19,11 +18,10 @@ interface Props {
  * Slides up from viewport bottom, backdrop click or Escape to close.
  */
 export default function MfcLinkDropdown({
-    options, existingMfcIds, defaultCategoryId,
+    options, existingMfcIds,
     onSelect, onClose }: Props) {
 
   const [search, setSearch]         = useState('')
-  const [showAll, setShowAll]       = useState(false)
   const [visible, setVisible]       = useState(false)
   const [sheetHeight, setSheetHeight] = useState<number | null>(null)
   const [dragging, setDragging]     = useState(false)
@@ -86,10 +84,6 @@ export default function MfcLinkDropdown({
   const filtered = useMemo(() => {
     let pool = options.filter(o => !existingSet.has(o.Id))
 
-    if (!showAll) {
-      pool = pool.filter(o => o.CategoryId === defaultCategoryId)
-    }
-
     if (search.trim()) {
       const q = search.toLowerCase()
       pool = pool.filter(o =>
@@ -99,7 +93,7 @@ export default function MfcLinkDropdown({
     }
 
     return pool
-  }, [options, existingSet, showAll, defaultCategoryId, search])
+  }, [options, existingSet, search])
 
   // Group filtered results by category (preserves original order)
   const grouped = useMemo(() => {
@@ -142,20 +136,7 @@ export default function MfcLinkDropdown({
             </button>
           </div>
 
-          <div className="mfc-link-toggle">
-            <button
-              className={`mfc-link-scope-btn ${!showAll ? 'active' : ''}`}
-              onClick={() => setShowAll(false)}
-            >
-              Same Category
-            </button>
-            <button
-              className={`mfc-link-scope-btn ${showAll ? 'active' : ''}`}
-              onClick={() => setShowAll(true)}
-            >
-              All Categories
-            </button>
-          </div>
+
         </div>
 
         <div className="mfc-link-list">
@@ -164,7 +145,7 @@ export default function MfcLinkDropdown({
           )}
 
           {grouped.map(([category, items]) => {
-            const collapsible = showAll || grouped.length > 1
+            const collapsible = grouped.length > 1
             const isOpen      = search.trim() || !collapsible || !collapsed.has(category)
 
             return (

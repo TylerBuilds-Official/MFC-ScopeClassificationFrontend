@@ -1,4 +1,12 @@
-// ── Erector exclusion with nested MFC mapping links ─────────
+// ── Source erector info ──────────────────────────────────────
+
+export interface SourceErector {
+  erector_id:         number
+  erector_short_name: string
+}
+
+
+// ── Atomic exclusion with nested MFC mapping links ──────────
 
 export interface MfcMappingLink {
   link_id:           number
@@ -6,29 +14,26 @@ export interface MfcMappingLink {
   mfc_exclusion:     string
   mfc_category_id:   number
   mfc_category_name: string
-  created_by:        string
   created_at:        string
 }
 
-export interface ErectorExclusionItem {
-  Id:               number
-  ErectorId:        number
-  ErectorName:      string
-  ErectorShortName: string
-  CategoryId:       number
-  CategoryName:     string
-  Exclusion:        string
-  IsStandard:       boolean
-  ItemType:         string
-  Disposition:      string
-  MappedBy:         string | null
-  MappedAt:         string | null
-  Notes:            string | null
-  mappings:         MfcMappingLink[]
+export interface AtomicExclusionItem {
+  Id:           number
+  Exclusion:    string
+  CategoryId:   number | null
+  CategoryName: string | null
+  ItemType:     string
+  ScopeType:    string
+  Disposition:  string
+  MappedBy:     string | null
+  MappedAt:     string | null
+  Notes:        string | null
+  sources:      SourceErector[]
+  mappings:     MfcMappingLink[]
 }
 
-export interface ErectorExclusionListResponse {
-  items: ErectorExclusionItem[]
+export interface AtomicExclusionListResponse {
+  items: AtomicExclusionItem[]
   count: number
 }
 
@@ -49,6 +54,18 @@ export interface MfcOptionListResponse {
 }
 
 
+// ── Erector list (for filter) ───────────────────────────────
+
+export interface ErectorOption {
+  Id:        number
+  ShortName: string
+}
+
+export interface ErectorListResponse {
+  items: ErectorOption[]
+}
+
+
 // ── Disposition update ──────────────────────────────────────
 
 export type Disposition =
@@ -60,11 +77,10 @@ export type Disposition =
 // ── Link responses ──────────────────────────────────────────
 
 export interface CreateLinkResponse {
-  Id:                  number
-  ErectorExclusionId:  number
-  MfcExclusionId:      number
-  CreatedBy:           string
-  CreatedAt:           string
+  Id:                 number
+  AtomicExclusionId:  number
+  MfcExclusionId:     number
+  CreatedAt:          string
 }
 
 export interface DeleteLinkResponse {

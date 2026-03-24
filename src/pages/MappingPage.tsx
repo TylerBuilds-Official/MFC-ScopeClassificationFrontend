@@ -5,8 +5,10 @@ import MappingStatsBar from '../components/mapping/MappingStatsBar'
 import MappingToolbar from '../components/mapping/MappingToolbar'
 import MappingTable from '../components/mapping/MappingTable'
 import BulkLinkPanel from '../components/mapping/BulkLinkPanel'
+import AddExclusionDialog from '../components/mapping/AddExclusionDialog'
 import { useApi } from '../hooks/useApi'
-import { getErectorExclusions, getMfcOptions, getMappingStats } from '../api/mapping'
+import { getAtomicExclusions, getMfcOptions, getErectors, getMappingStats } from '../api/mapping'
+import { getCategories } from '../api/categories'
 import type { Disposition } from '../types/mapping'
 
 import '../styles/mapping.css'
@@ -15,7 +17,6 @@ import '../styles/mapping.css'
 export default function MappingPage() {
 
   // ── Filters ─────────────────────────────────────────────────
-  const [categoryFilter, setCategoryFilter]     = useState<number | null>(null)
   const [erectorFilter, setErectorFilter]       = useState<number | null>(null)
   const [dispositionFilter, setDispositionFilter] = useState<Disposition | null>(null)
 
@@ -23,51 +24,39 @@ export default function MappingPage() {
   const [bulkMode, setBulkMode]         = useState(false)
   const [bulkSelected, setBulkSelected] = useState<Set<number>>(new Set())
 
+  // ── Add dialog ──────────────────────────────────────────────
+  const [showAddDialog, setShowAddDialog] = useState(false)
+
   // ── Data fetching ───────────────────────────────────────────
   const filters = useMemo(() => ({
-    category_id: categoryFilter ?? undefined,
     erector_id:  erectorFilter ?? undefined,
     disposition: dispositionFilter ?? undefined,
-  }), [categoryFilter, erectorFilter, dispositionFilter])
+  }), [erectorFilter, dispositionFilter])
 
-  const { data: eeData, refetch: refetchEE } = useApi(
-    () => getErectorExclusions(filters),
-    [categoryFilter, erectorFilter, dispositionFilter],
+  const { data: aeData, refetch: refetchAE } = useApi(
+    () => getAtomicExclusions(filters),
+    [erectorFilter, dispositionFilter],
   )
 
-  const { data: mfcData } = useApi(() => getMfcOptions(), [])
+  const { data: mfcData, refetch: refetchMfc } = useApi(() => getMfcOptions(), [])
+  const { data: erectorData }  = useApi(() => getErectors(), [])
+  const { data: categoryData } = useApi(() => getCategories(), [])
 
   const { data: stats, loading: statsLoading, refetch: refetchStats } = useApi(
     () => getMappingStats(), [],
   )
 
-  const items      = eeData?.items ?? []
-  const mfcOptions = mfcData?.items ?? []
-
-  // ── Derived filter options ──────────────────────────────────
-  const categoryOptions = useMemo(() => {
-    const seen = new Map<number, string>()
-    for (const item of items) {
-      if (!seen.has(item.CategoryId)) seen.set(item.CategoryId, item.CategoryName)
-    }
-
-    return Array.from(seen.entries()).map(([id, name]) => ({ id, name }))
-  }, [items])
-
-  const erectorOptions = useMemo(() => {
-    const seen = new Map<number, string>()
-    for (const item of items) {
-      if (!seen.has(item.ErectorId)) seen.set(item.ErectorId, item.ErectorShortName)
-    }
-
-    return Array.from(seen.entries()).map(([id, shortName]) => ({ id, shortName }))
-  }, [items])
+  const items         = aeData?.items ?? []
+  const mfcOptions    = mfcData?.items ?? []
+  const erectorOpts   = erectorData?.items ?? []
+  const categoryOpts  = categoryData?.categories ?? []
 
   // ── Handlers ────────────────────────────────────────────────
   const handleRefreshAll = useCallback(() => {
-    refetchEE()
+    refetchAE()
     refetchStats()
-  }, [refetchEE, refetchStats])
+    refetchMfc()
+  }, [refetchAE, refetchStats, refetchMfc])
 
   function handleToggleBulk(id: number) {
     setBulkSelected(prev => {
@@ -91,23 +80,28 @@ export default function MappingPage() {
 
   return (
     <>
-      <Header title="Erector Exclusion Mapping" />
+      <Header title="Exclusion Mapping" />
 
       <main className="page-content">
         <MappingStatsBar stats={stats ?? null} loading={statsLoading} />
 
         <MappingToolbar
-          categories={categoryOptions}
-          erectors={erectorOptions}
-          categoryFilter={categoryFilter}
+          erectors={erectorOpts}
           erectorFilter={erectorFilter}
           dispositionFilter={dispositionFilter}
-          onCategoryChange={setCategoryFilter}
           onErectorChange={setErectorFilter}
           onDispositionChange={setDispositionFilter}
           bulkMode={bulkMode}
           onToggleBulk={handleToggleBulkMode}
           bulkCount={bulkSelected.size}
+          onAddExclusion={() => setShowAddDialog(true)}
+        />
+
+        <AddExclusionDialog
+          open={showAddDialog}
+          categories={categoryOpts}
+          onClose={() => setShowAddDialog(false)}
+          onAdded={handleRefreshAll}
         />
 
         <div className={`bulk-panel-wrap ${bulkMode ? 'open' : ''}`}>

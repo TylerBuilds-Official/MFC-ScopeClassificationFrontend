@@ -2,18 +2,18 @@ import { useState, useRef, useEffect } from 'react'
 import { X, Link, Check, StickyNote } from 'lucide-react'
 import MfcLinkDropdown from './MfcLinkDropdown'
 import { createLink, deleteLink, updateDisposition, updateNotes } from '../../api/mapping'
-import type { ErectorExclusionItem, MfcOption, Disposition } from '../../types/mapping'
+import type { AtomicExclusionItem, MfcOption, Disposition } from '../../types/mapping'
 
 
 interface Props {
-  item:           ErectorExclusionItem
+  item:           AtomicExclusionItem
   mfcOptions:     MfcOption[]
   bulkMode:       boolean
   bulkSelected:   boolean
   onToggleBulk:   () => void
   onLinkCreated:  () => void
   onDispositionChanged: () => void
-  onErectorClick: () => void
+  onErectorClick: (erectorId: number) => void
 }
 
 
@@ -24,10 +24,6 @@ const DISPOSITION_LABELS: Record<string, { label: string; className: string }> =
 }
 
 
-/**
- * Single erector exclusion row.
- * Shows: erector badge, exclusion text, disposition pill, linked MFC items, actions.
- */
 export default function MappingRow({
     item, mfcOptions,
     bulkMode, bulkSelected, onToggleBulk,
@@ -45,7 +41,6 @@ export default function MappingRow({
   const prevMappingIds                           = useRef<Set<number>>(new Set(item.mappings.map(m => m.link_id)))
   const newLinkIds                               = useRef<Set<number>>(new Set())
 
-  // Track which links are newly added since last render
   useEffect(() => {
     const currentIds = new Set(item.mappings.map(m => m.link_id))
     const fresh      = new Set<number>()
@@ -60,7 +55,6 @@ export default function MappingRow({
 
   const disp = DISPOSITION_LABELS[item.Disposition] ?? DISPOSITION_LABELS.Unmapped
 
-  // Fade pill back in after any data refresh (disposition change OR new link added)
   useEffect(() => {
     if (!pillFading) return
 
@@ -68,7 +62,6 @@ export default function MappingRow({
       prevDisp.current = item.Disposition
     }
 
-    // Render one frame at opacity 0 with new class, then remove fading to trigger transition
     requestAnimationFrame(() => setPillFading(false))
   }, [item.Disposition, item.mappings])
 
@@ -90,7 +83,6 @@ export default function MappingRow({
   function handleRemoveLink(linkId: number) {
     setRemovingLinkId(linkId)
 
-    // Let the fade-out animation play, then fire the actual delete
     setTimeout(async () => {
       setBusy(true)
 
@@ -110,7 +102,6 @@ export default function MappingRow({
     setShowDispMenu(false)
 
     if (d === 'Mapped') {
-      // "Mapped" means pick an MFC exclusion — backend auto-sets disposition on link creation
       setShowLinkDropdown(true)
 
       return
@@ -162,9 +153,17 @@ export default function MappingRow({
       </td>
 
       <td className="mapping-col-erector">
-        <span className="erector-badge clickable" onClick={onErectorClick}>
-          {item.ErectorShortName}
-        </span>
+        <div className="erector-badge-group">
+          {item.sources.map(src => (
+            <span
+              key={src.erector_id}
+              className="erector-badge clickable"
+              onClick={() => onErectorClick(src.erector_id)}
+            >
+              {src.erector_short_name}
+            </span>
+          ))}
+        </div>
       </td>
 
       <td className="mapping-col-exclusion">
@@ -237,7 +236,6 @@ export default function MappingRow({
           <MfcLinkDropdown
             options={mfcOptions}
             existingMfcIds={item.mappings.map(m => m.mfc_exclusion_id)}
-            defaultCategoryId={item.CategoryId}
             onSelect={handleCreateLink}
             onClose={() => setShowLinkDropdown(false)}
           />
