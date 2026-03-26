@@ -1,11 +1,11 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate }    from 'react-router-dom'
 import { FileText, Plus } from 'lucide-react'
 
-import Header from '../components/global/Header'
-import LoadingSpinner from '../components/global/LoadingSpinner'
-import EmptyState from '../components/global/EmptyState'
-import { useApi } from '../hooks/useApi'
-import { getSessions } from '../api/sessions'
+import Header             from '../components/global/Header'
+import LoadingSpinner     from '../components/global/LoadingSpinner'
+import EmptyState         from '../components/global/EmptyState'
+import { useApi }         from '../hooks/useApi'
+import { getSessions }    from '../api/sessions'
 
 import '../styles/sessions.css'
 

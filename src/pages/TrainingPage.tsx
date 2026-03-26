@@ -1,16 +1,15 @@
 import { useState, useEffect, useCallback } from 'react'
-import {
-  GraduationCap, CheckCircle2, ArrowRight, AlertTriangle,
-  Sparkles, Trophy, BarChart3,
-} from 'lucide-react'
+import { GraduationCap, CheckCircle2, ArrowRight, AlertTriangle,
+  Sparkles, Trophy, BarChart3 } from 'lucide-react'
 
-import Header from '../components/global/Header'
-import LoadingSpinner from '../components/global/LoadingSpinner'
-import CustomSelect from '../components/global/CustomSelect'
-import { getTrainingQueue, submitVerification } from '../api/training'
-import { getCategories } from '../api/categories'
+import Header                     from '../components/global/Header'
+import LoadingSpinner             from '../components/global/LoadingSpinner'
+import CustomSelect               from '../components/global/CustomSelect'
+import { getCategories }          from '../api/categories'
+import type { Category }          from '../types/category'
 import type { TrainingQueueItem } from '../types/training'
-import type { Category } from '../types/category'
+
+import { getTrainingQueue, submitVerification } from '../api/training'
 
 import '../styles/training.css'
 
@@ -26,23 +25,23 @@ const CONFIDENCE_OPTIONS = [
 
 
 export default function TrainingPage() {
-  const [queue, setQueue]               = useState<TrainingQueueItem[]>([])
-  const [totalPending, setTotalPending] = useState(0)
-  const [totalVerified, setTotalVerified]     = useState(0)
-  const [totalOverridden, setTotalOverridden] = useState(0)
-  const [categories, setCategories]     = useState<Category[]>([])
-  const [maxConfidence, setMaxConfidence] = useState(0.72)
-  const [loading, setLoading]           = useState(true)
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [slideDir, setSlideDir]         = useState<'in' | 'out' | null>(null)
-  const [correcting, setCorrecting]     = useState(false)
-  const [selectedCatId, setSelectedCatId] = useState<number | null>(null)
-  const [saving, setSaving]             = useState(false)
-  const [sessionVerified, setSessionVerified] = useState(0)
-  const [sessionCorrected, setSessionCorrected] = useState(0)
-  const [showIntro, setShowIntro]       = useState(true)
-  const [confirmingSkip, setConfirmingSkip]   = useState(false)
-  const [suppressSkipWarn, setSuppressSkipWarn] = useState(false)
+  const [queue, setQueue]                         = useState<TrainingQueueItem[]>([])
+  const [totalPending, setTotalPending]           = useState(0)
+  const [totalVerified, setTotalVerified]         = useState(0)
+  const [totalOverridden, setTotalOverridden]     = useState(0)
+  const [categories, setCategories]               = useState<Category[]>([])
+  const [maxConfidence, setMaxConfidence]         = useState(0.72)
+  const [loading, setLoading]                     = useState(true)
+  const [currentIndex, setCurrentIndex]           = useState(0)
+  const [slideDir, setSlideDir]                   = useState<'in' | 'out' | null>(null)
+  const [correcting, setCorrecting]               = useState(false)
+  const [selectedCatId, setSelectedCatId]         = useState<number | null>(null)
+  const [saving, setSaving]                       = useState(false)
+  const [sessionVerified, setSessionVerified]     = useState(0)
+  const [sessionCorrected, setSessionCorrected]   = useState(0)
+  const [showIntro, setShowIntro]                 = useState(true)
+  const [confirmingSkip, setConfirmingSkip]       = useState(false)
+  const [suppressSkipWarn, setSuppressSkipWarn]   = useState(false)
 
   const currentItem = queue[currentIndex] ?? null
   const accuracyRate = totalVerified > 0

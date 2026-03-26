@@ -1,15 +1,16 @@
 import { useState, useMemo, useCallback } from 'react'
 
-import Header from '../components/global/Header'
-import MappingStatsBar from '../components/mapping/MappingStatsBar'
-import MappingToolbar from '../components/mapping/MappingToolbar'
-import MappingTable from '../components/mapping/MappingTable'
-import BulkLinkPanel from '../components/mapping/BulkLinkPanel'
-import AddExclusionDialog from '../components/mapping/AddExclusionDialog'
-import { useApi } from '../hooks/useApi'
+import Header                 from '../components/global/Header'
+import MappingStatsBar        from '../components/mapping/MappingStatsBar'
+import MappingToolbar         from '../components/mapping/MappingToolbar'
+import MappingTable           from '../components/mapping/MappingTable'
+import BulkLinkPanel          from '../components/mapping/BulkLinkPanel'
+import AddExclusionDialog     from '../components/mapping/AddExclusionDialog'
+import { useApi }             from '../hooks/useApi'
+import { getCategories }      from '../api/categories'
+import type { Disposition }   from '../types/mapping'
+
 import { getAtomicExclusions, getMfcOptions, getErectors, getMappingStats } from '../api/mapping'
-import { getCategories } from '../api/categories'
-import type { Disposition } from '../types/mapping'
 
 import '../styles/mapping.css'
 
