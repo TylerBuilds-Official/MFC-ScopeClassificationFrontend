@@ -115,7 +115,7 @@ function ExportButton({ sessionId }: { sessionId: number }) {
 type ViewMode   = 'erector' | 'accordion' | 'table'
 type SessionTab = 'matches' | 'action-items'
 
-const MATCH_TYPES = ['Aligned', 'Partial', 'ErectorOnly', 'MfcOnly'] as const
+const MATCH_TYPES = ['Aligned', 'Deterministic', 'Partial', 'ErectorOnly', 'MfcOnly'] as const
 const RISK_LEVELS = ['Critical', 'High', 'Medium', 'Low']              as const
 
 const TERMINAL = new Set(['Complete', 'Error'])

@@ -15,6 +15,7 @@ interface SessionSummaryCardProps {
 export default function SessionSummaryCard({ session, matchSummary, onUpdated }: SessionSummaryCardProps) {
   const total = matchSummary.Aligned + matchSummary.Partial
     + matchSummary.ErectorOnly + matchSummary.MfcOnly
+    + (matchSummary.Deterministic ?? 0)
 
   const sessionId = session.Id as number
 
@@ -44,11 +45,12 @@ export default function SessionSummaryCard({ session, matchSummary, onUpdated }:
 
       {/* Match counts */}
       <div className="session-detail-grid">
-        <StatCard label="Aligned"       value={matchSummary.Aligned}      cls="aligned" />
-        <StatCard label="Partial"       value={matchSummary.Partial}      cls="partial" />
-        <StatCard label="Erector Only"  value={matchSummary.ErectorOnly}  cls="erector-only" />
-        <StatCard label="MFC Only"      value={matchSummary.MfcOnly}      cls="mfc-only" />
-        <StatCard label="Total Matches" value={total}                     cls="" />
+        <StatCard label="Aligned"        value={matchSummary.Aligned}                cls="aligned" />
+        <StatCard label="Deterministic"  value={matchSummary.Deterministic ?? 0}     cls="deterministic" />
+        <StatCard label="Partial"        value={matchSummary.Partial}                cls="partial" />
+        <StatCard label="Erector Only"   value={matchSummary.ErectorOnly}            cls="erector-only" />
+        <StatCard label="MFC Only"       value={matchSummary.MfcOnly}                cls="mfc-only" />
+        <StatCard label="Total Matches"  value={total}                               cls="" />
       </div>
     </>
   )

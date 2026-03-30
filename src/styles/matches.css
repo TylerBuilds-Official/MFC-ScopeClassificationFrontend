@@ -75,10 +75,11 @@
   letter-spacing: 0.02em;
 }
 
-.match-type-pill.aligned      { background: var(--accent-muted); color: var(--match-aligned); }
-.match-type-pill.partial      { background: var(--accent-muted); color: var(--match-partial); }
-.match-type-pill.erector-only { background: var(--accent-muted); color: var(--match-erector-only); }
-.match-type-pill.mfc-only     { background: var(--accent-muted); color: var(--match-mfc-only); }
+.match-type-pill.aligned       { background: var(--accent-muted); color: var(--match-aligned); }
+.match-type-pill.partial       { background: var(--accent-muted); color: var(--match-partial); }
+.match-type-pill.erector-only  { background: var(--accent-muted); color: var(--match-erector-only); }
+.match-type-pill.mfc-only      { background: var(--accent-muted); color: var(--match-mfc-only); }
+.match-type-pill.deterministic { background: rgba(52, 211, 153, 0.12); color: var(--match-aligned); }
 
 /* ── Confidence Bar ──────────────────────────────────────────────── */
 
@@ -237,10 +238,11 @@
   font-weight: 700;
 }
 
-.mini-stat-value.aligned      { color: var(--match-aligned); }
-.mini-stat-value.partial      { color: var(--match-partial); }
-.mini-stat-value.erector-only { color: var(--match-erector-only); }
-.mini-stat-value.mfc-only     { color: var(--match-mfc-only); }
+.mini-stat-value.aligned       { color: var(--match-aligned); }
+.mini-stat-value.partial       { color: var(--match-partial); }
+.mini-stat-value.erector-only  { color: var(--match-erector-only); }
+.mini-stat-value.mfc-only      { color: var(--match-mfc-only); }
+.mini-stat-value.deterministic { color: var(--match-aligned); }
 
 .mini-stat-label {
   font-size: 10px;

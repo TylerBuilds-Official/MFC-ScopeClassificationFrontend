@@ -44,8 +44,9 @@ export interface SessionProgress {
 }
 
 export interface MatchSummary {
-  Aligned:      number
-  Partial:      number
-  ErectorOnly:  number
-  MfcOnly:      number
+  Aligned:       number
+  Partial:       number
+  ErectorOnly:   number
+  MfcOnly:       number
+  Deterministic: number
 }
