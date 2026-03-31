@@ -16,6 +16,7 @@ export interface EditorSegment {
 
 export interface EditorRegion {
   mfc_id:       number
+  match_id:     number | null
   start:        number
   end:          number
   snippet:      string

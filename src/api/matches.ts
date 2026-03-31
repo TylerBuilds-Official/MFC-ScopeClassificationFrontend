@@ -1,4 +1,4 @@
-import { get } from './client'
+import { get, patch } from './client'
 import type { MatchListResponse, HighRiskResponse } from '../types/match'
 
 
@@ -18,4 +18,22 @@ export async function getSessionMatches(
 export async function getHighRisk(limit = 100): Promise<HighRiskResponse> {
 
   return get<HighRiskResponse>('/matches/high-risk', { limit })
+}
+
+
+export interface ValidateMatchResponse {
+  match_id:      number
+  match_type:    string
+  previous_type: string
+  reviewed_by:   string
+}
+
+
+export async function validateMatch(
+  matchId:   number,
+  matchType: string ): Promise<ValidateMatchResponse> {
+
+  return patch<ValidateMatchResponse>(`/matches/${matchId}/validate`, {
+    match_type: matchType,
+  })
 }

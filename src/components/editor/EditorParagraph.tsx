@@ -23,9 +23,10 @@ interface Props {
 
 function matchColor(type: string | null): string {
   switch (type) {
-    case 'Aligned': return 'aligned'
-    case 'Partial': return 'partial'
-    default:        return 'unmatched'
+    case 'Aligned':       return 'aligned'
+    case 'Deterministic': return 'deterministic'
+    case 'Partial':       return 'partial'
+    default:              return 'unmatched'
   }
 }
 

@@ -485,7 +485,8 @@
   filter: brightness(1.15);
 }
 
-.editor-region.aligned {
+.editor-region.aligned,
+.editor-region.deterministic {
   background: linear-gradient(to top, var(--hl-aligned) 75%, transparent 40%);
 }
 
@@ -543,9 +544,10 @@
   text-transform: capitalize;
 }
 
-.region-detail-badge.aligned   { background: rgba(74, 222, 128, 0.15); color: var(--match-aligned); }
-.region-detail-badge.partial   { background: rgba(250, 204, 21, 0.15); color: var(--match-partial); }
-.region-detail-badge.unmatched { background: rgba(148, 163, 184, 0.1); color: var(--text-muted); }
+.region-detail-badge.aligned,
+.region-detail-badge.deterministic { background: rgba(74, 222, 128, 0.15); color: var(--match-aligned); }
+.region-detail-badge.partial       { background: rgba(250, 204, 21, 0.15); color: var(--match-partial); }
+.region-detail-badge.unmatched     { background: rgba(148, 163, 184, 0.1); color: var(--text-muted); }
 
 .region-detail-risk {
   font-size: 11px;
@@ -644,6 +646,100 @@
   color:                var(--text-secondary);
   margin-bottom: 1px;
   font-variant-numeric: tabular-nums;
+}
+
+/* ── Region Validate Actions ─────────────────────────────────────── */
+
+.region-validate-actions {
+  padding:    10px 14px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.region-validate-label {
+  display:        block;
+  font-size:      10.5px;
+  font-weight:    700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color:          var(--text-muted);
+  margin-bottom:  8px;
+}
+
+.region-validate-btns {
+  display: flex;
+  gap:     8px;
+}
+
+.region-validate-btn {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            5px;
+  padding:        6px 14px;
+  border-radius:  var(--radius-md);
+  font-size:      12.5px;
+  font-weight:    600;
+  border:         1px solid var(--border-default);
+  background:     transparent;
+  cursor:         pointer;
+  transition:     all 0.15s ease;
+  flex:           1;
+  justify-content: center;
+}
+
+.region-validate-btn:disabled {
+  opacity: 0.5;
+  cursor:  not-allowed;
+}
+
+.region-validate-btn.active {
+  opacity: 1;
+  cursor:  default;
+}
+
+.region-validate-btn.aligned.active {
+  background:   rgba(52, 211, 153, 0.12);
+  border-color: var(--match-aligned);
+}
+
+.region-validate-btn.partial.active {
+  background:   rgba(251, 191, 36, 0.12);
+  border-color: var(--match-partial);
+}
+
+.region-validate-btn.aligned {
+  color: var(--match-aligned);
+}
+
+.region-validate-btn.aligned:hover:not(:disabled) {
+  background:   rgba(52, 211, 153, 0.12);
+  border-color: var(--match-aligned);
+}
+
+.region-validate-btn.partial {
+  color: var(--match-partial);
+}
+
+.region-validate-btn.partial:hover:not(:disabled) {
+  background:   rgba(251, 191, 36, 0.12);
+  border-color: var(--match-partial);
+}
+
+.validate-spinner {
+  animation: spin 0.8s linear infinite;
+}
+
+.region-validated-banner {
+  display:       flex;
+  align-items:   center;
+  gap:           8px;
+  padding:       10px 14px;
+  margin:        0 14px 14px;
+  border-radius: var(--radius-md);
+  background:    rgba(52, 211, 153, 0.08);
+  border:        1px solid rgba(52, 211, 153, 0.2);
+  color:         var(--match-aligned);
+  font-size:     12.5px;
+  font-weight:   600;
 }
 
 /* ── Removed items panel ─────────────────────────────────────────── */

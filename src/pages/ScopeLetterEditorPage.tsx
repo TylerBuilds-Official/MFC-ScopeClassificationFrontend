@@ -12,6 +12,7 @@ import RemovedItemsPanel from '../components/editor/RemovedItemsPanel'
 import type { RemovedItem } from '../components/editor/RemovedItemsPanel'
 import { useApi } from '../hooks/useApi'
 import { getScopeLetterData, downloadEditorExport } from '../api/export'
+import { validateMatch as apiValidateMatch } from '../api/matches'
 import {
   removeRegion as apiRemoveRegion,
   restoreRegion as apiRestoreRegion,
@@ -51,6 +52,7 @@ export default function ScopeLetterEditorPage() {
   )
   const [exporting, setExporting]             = useState(false)
   const [showResetConfirm, setShowResetConfirm] = useState(false)
+  const [matchTypeOverrides, setMatchTypeOverrides] = useState<Map<number, string>>(new Map())
 
   // Debounce timer ref for text edits
   const textEditTimers = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map())
@@ -89,9 +91,36 @@ export default function ScopeLetterEditorPage() {
     return data.paragraphs.map(p => {
       const text = textOverrides.get(p.index) ?? p.text
 
-      return { ...p, text }
+      if (matchTypeOverrides.size === 0) return { ...p, text }
+
+      // Patch regions with any optimistic match-type overrides
+      const regions = p.regions.map(r => {
+        if (r.match_id != null && matchTypeOverrides.has(r.match_id)) {
+          return { ...r, match_type: matchTypeOverrides.get(r.match_id)! }
+        }
+        return r
+      })
+
+      // Build mfc_id → overridden type for segment patching
+      const overriddenMfc = new Map<number, string>()
+      for (const r of regions) {
+        if (r.match_id != null && matchTypeOverrides.has(r.match_id)) {
+          overriddenMfc.set(r.mfc_id, matchTypeOverrides.get(r.match_id)!)
+        }
+      }
+
+      const segments = overriddenMfc.size > 0
+        ? p.segments.map(s => {
+            if (s.region && overriddenMfc.has(s.region.mfc_id)) {
+              return { ...s, region: { ...s.region, match_type: overriddenMfc.get(s.region.mfc_id)! } }
+            }
+            return s
+          })
+        : p.segments
+
+      return { ...p, text, regions, segments }
     })
-  }, [data, textOverrides])
+  }, [data, textOverrides, matchTypeOverrides])
 
   // Filter paragraphs based on view mode
   const visibleParagraphs = useMemo(() => {
@@ -112,7 +141,7 @@ export default function ScopeLetterEditorPage() {
       for (const r of p.regions) {
         if (removedRegions.has(`${p.index}:${r.mfc_id}`)) continue
 
-        if (r.match_type === 'Aligned')      aligned++
+        if (r.match_type === 'Aligned' || r.match_type === 'Deterministic') aligned++
         else if (r.match_type === 'Partial') partial++
         else                                 unmatched++
       }
@@ -223,13 +252,30 @@ export default function ScopeLetterEditorPage() {
     )
   }, [sessionId])
 
+  const handleValidate = useCallback(async (matchId: number, matchType: string) => {
+    // Optimistic update — patch color immediately, no full refetch
+    setMatchTypeOverrides(prev => new Map(prev).set(matchId, matchType))
+    setActiveRegion(prev => prev ? { ...prev, match_type: matchType } : null)
+
+    // Persist to backend with rollback on failure
+    apiValidateMatch(matchId, matchType).catch(err => {
+      setMatchTypeOverrides(prev => {
+        const next = new Map(prev)
+        next.delete(matchId)
+
+        return next
+      })
+      console.error('Validation failed:', err)
+    })
+  }, [])
+
   const handleRemoveAllUnmatched = useCallback(() => {
     const newRemoved = new Set(removedRegions)
     const additions: { paraIndex: number; mfcId: number }[] = []
 
     for (const p of visibleParagraphs) {
       for (const r of p.regions) {
-        if (r.match_type !== 'Aligned' && r.match_type !== 'Partial') {
+        if (r.match_type !== 'Aligned' && r.match_type !== 'Partial' && r.match_type !== 'Deterministic') {
           const key = `${p.index}:${r.mfc_id}`
           if (!newRemoved.has(key)) {
             newRemoved.add(key)
@@ -257,6 +303,7 @@ export default function ScopeLetterEditorPage() {
       setRemovedRegions(new Set())
       setRemovedParas(new Set())
       setTextOverrides(new Map())
+      setMatchTypeOverrides(new Map())
       setActiveRegion(null)
       setShowResetConfirm(false)
 
@@ -372,6 +419,7 @@ export default function ScopeLetterEditorPage() {
               <RegionDetail
                 region={activeRegion}
                 onClose={() => setActiveRegion(null)}
+                onValidate={handleValidate}
               />
             )}
             <RemovedItemsPanel
