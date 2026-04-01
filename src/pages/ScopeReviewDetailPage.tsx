@@ -1,5 +1,5 @@
-import { useState, useMemo, useCallback } from 'react'
-import { FilePenLine, Download, ArrowLeft } from 'lucide-react'
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
+import { FilePenLine, Download, ArrowLeft, ChevronDown } from 'lucide-react'
 import { useParams, useNavigate } from 'react-router-dom'
 
 import Header from '../components/global/Header'
@@ -48,6 +48,22 @@ export default function ScopeReviewDetailPage() {
   const [activeTypes, setActiveTypes] = useState<Set<string>>(new Set())
   const [highlightMatchId, setHighlightMatchId] = useState<number | null>(null)
   const [exporting, setExporting]     = useState(false)
+  const [exportMenuOpen, setExportMenuOpen] = useState(false)
+  const exportMenuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!exportMenuOpen) return
+
+    function handleClick(e: MouseEvent) {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(e.target as Node)) {
+        setExportMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClick)
+
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [exportMenuOpen])
 
   const { categoryMap } = useCategories()
 
@@ -111,10 +127,11 @@ export default function ScopeReviewDetailPage() {
 
   const unreviewedCount = actionItems.data?.summary?.unreviewed ?? 0
 
-  async function handleExport() {
+  async function handleExport(viewMode: string = 'full') {
     setExporting(true)
+    setExportMenuOpen(false)
     try {
-      await downloadScopeLetter(sessionId)
+      await downloadScopeLetter(sessionId, viewMode)
     } catch (err) {
       console.error('Export failed:', err)
     } finally {
@@ -164,14 +181,33 @@ export default function ScopeReviewDetailPage() {
             <FilePenLine size={14} />
             Open Editor
           </button>
-          <button
-            className="btn-analyze secondary"
-            onClick={handleExport}
-            disabled={exporting}
-          >
-            <Download size={14} />
-            {exporting ? 'Exporting...' : 'Download'}
-          </button>
+          <div style={{ position: 'relative' }} ref={exportMenuRef}>
+            <button
+              className="btn-analyze secondary"
+              onClick={() => setExportMenuOpen(!exportMenuOpen)}
+              disabled={exporting}
+            >
+              <Download size={14} />
+              {exporting ? 'Exporting...' : 'Download'}
+              <ChevronDown size={12} />
+            </button>
+            {exportMenuOpen && (
+              <div className="editor-overflow-menu" style={{ left: 0, right: 'auto' }}>
+                <button
+                  className="editor-overflow-item"
+                  onClick={() => handleExport('erector_exclusions')}
+                >
+                  Erector Section
+                </button>
+                <button
+                  className="editor-overflow-item"
+                  onClick={() => handleExport('full')}
+                >
+                  Full Document
+                </button>
+              </div>
+            )}
+          </div>
           <button
             className="btn-analyze secondary"
             onClick={() => navigate('/reviews')}

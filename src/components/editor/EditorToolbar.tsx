@@ -1,9 +1,31 @@
 import { useState, useRef, useEffect } from 'react'
-import { Download, Trash2, FileText, ListFilter, RotateCcw, MoreHorizontal } from 'lucide-react'
+import { Download, Trash2, FileText, ListFilter, RotateCcw, MoreHorizontal, ChevronDown } from 'lucide-react'
 import type { EditorViewMode, HighlightIntensity } from '../../types/editor'
 
 
-const INTENSITY_LEVELS: HighlightIntensity[] = ['dim', 'standard', 'bright']
+const INTENSITY_LEVELS: HighlightIntensity[] = ['off', 'standard', 'bright']
+
+
+export type EditorExportType = 'highlighted_unedited' | 'highlighted_edited' | 'clean_edited'
+
+const EXPORT_LABELS: Record<EditorExportType, string> = {
+  highlighted_unedited: 'Highlighted (Unedited)',
+  highlighted_edited:   'Highlighted (Edited)',
+  clean_edited:         'Clean (Edited)',
+}
+
+const EXPORT_TYPES: EditorExportType[] = ['highlighted_unedited', 'highlighted_edited', 'clean_edited']
+
+const STORAGE_KEY = 'scope-editor-export-type'
+
+function loadExportType(): EditorExportType {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored && stored in EXPORT_LABELS) return stored as EditorExportType
+  } catch { /* ignore */ }
+
+  return 'highlighted_unedited'
+}
 
 
 interface Props {
@@ -13,7 +35,7 @@ interface Props {
   onViewModeChange:       (mode: EditorViewMode) => void
   onHighlightIntensityChange: (level: HighlightIntensity) => void
   onRemoveAllUnmatched: () => void
-  onExport:           () => void
+  onExport:           (type: EditorExportType) => void
   onReset:            () => void
   exporting:          boolean
 }
@@ -24,23 +46,36 @@ export default function EditorToolbar({
     onHighlightIntensityChange, onRemoveAllUnmatched,
     onExport, onReset, exporting }: Props) {
 
-  const [menuOpen, setMenuOpen] = useState(false)
-  const menuRef = useRef<HTMLDivElement>(null)
+  const [menuOpen, setMenuOpen]           = useState(false)
+  const [exportOpen, setExportOpen]       = useState(false)
+  const [exportType, setExportType]       = useState<EditorExportType>(loadExportType)
+  const menuRef   = useRef<HTMLDivElement>(null)
+  const exportRef = useRef<HTMLDivElement>(null)
 
-  // Close menu on outside click
+  function selectExportType(type: EditorExportType) {
+    setExportType(type)
+    setExportOpen(false)
+    try { localStorage.setItem(STORAGE_KEY, type) } catch { /* ignore */ }
+    onExport(type)
+  }
+
+  // Close menus on outside click
   useEffect(() => {
-    if (!menuOpen) return
+    if (!menuOpen && !exportOpen) return
 
     function handleClick(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+      if (menuOpen && menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setMenuOpen(false)
+      }
+      if (exportOpen && exportRef.current && !exportRef.current.contains(e.target as Node)) {
+        setExportOpen(false)
       }
     }
 
     document.addEventListener('mousedown', handleClick)
 
     return () => document.removeEventListener('mousedown', handleClick)
-  }, [menuOpen])
+  }, [menuOpen, exportOpen])
 
   return (
     <div className="editor-toolbar">
@@ -91,10 +126,37 @@ export default function EditorToolbar({
 
         <span className="editor-toolbar-sep" />
 
-        <button className="editor-tool-btn primary" onClick={onExport} disabled={exporting}>
-          <Download size={13} />
-          {exporting ? 'Exporting...' : 'Export .docx'}
-        </button>
+        <div className="editor-split-btn" ref={exportRef}>
+          <button
+            className="editor-split-main"
+            onClick={() => onExport(exportType)}
+            disabled={exporting}
+          >
+            <Download size={13} />
+            {exporting ? 'Exporting...' : EXPORT_LABELS[exportType]}
+          </button>
+          <button
+            className={`editor-split-chevron ${exportOpen ? 'active' : ''}`}
+            onClick={() => setExportOpen(!exportOpen)}
+            disabled={exporting}
+          >
+            <ChevronDown size={12} />
+          </button>
+
+          {exportOpen && (
+            <div className="editor-overflow-menu">
+              {EXPORT_TYPES.map(type => (
+                <button
+                  key={type}
+                  className={`editor-overflow-item ${type === exportType ? 'selected' : ''}`}
+                  onClick={() => selectExportType(type)}
+                >
+                  {EXPORT_LABELS[type]}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         <div className="editor-overflow" ref={menuRef}>
           <button

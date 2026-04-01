@@ -180,13 +180,13 @@
   background:   var(--match-aligned);
 }
 
-.editor-intensity-step.dim    { opacity: 0.4; }
-.editor-intensity-step.standard { opacity: 0.7; }
-.editor-intensity-step.bright { opacity: 1.0; }
+.editor-intensity-step.off      { opacity: 0.3; background: var(--text-muted); }
+.editor-intensity-step.standard { opacity: 0.6; }
+.editor-intensity-step.bright   { opacity: 1.0; }
 
-.editor-intensity-step.dim.active    { opacity: 1; background: rgba(74, 222, 128, 0.35); }
+.editor-intensity-step.off.active      { opacity: 1; background: var(--text-muted); border-color: var(--text-muted); }
 .editor-intensity-step.standard.active { opacity: 1; background: rgba(74, 222, 128, 0.6); }
-.editor-intensity-step.bright.active { opacity: 1; background: var(--match-aligned); }
+.editor-intensity-step.bright.active   { opacity: 1; background: var(--match-aligned); }
 
 .editor-toolbar-stats {
   display: flex;
@@ -265,6 +265,64 @@
   background:   var(--bg-hover);
 }
 
+/* ── Export split button ─────────────────────────────────────── */
+
+.editor-split-btn {
+  position: relative;
+  display:  inline-flex;
+}
+
+.editor-split-main {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            5px;
+  padding:        5px 10px;
+  border:         1px solid var(--accent-btn);
+  border-right:   none;
+  border-radius:  var(--radius-md) 0 0 var(--radius-md);
+  background:     var(--accent-btn);
+  color:          #fff;
+  font-size:      12px;
+  font-weight:    500;
+  cursor:         pointer;
+  transition:     all 0.12s ease;
+  white-space:    nowrap;
+}
+
+.editor-split-main:hover {
+  background:   var(--accent-btn-hover);
+  border-color: var(--accent-btn-hover);
+}
+
+.editor-split-main:disabled {
+  opacity: 0.5;
+  cursor:  not-allowed;
+}
+
+.editor-split-chevron {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  padding:         5px 6px;
+  border:          1px solid var(--accent-btn);
+  border-left:     1px solid rgba(255, 255, 255, 0.2);
+  border-radius:   0 var(--radius-md) var(--radius-md) 0;
+  background:      var(--accent-btn);
+  color:           #fff;
+  cursor:          pointer;
+  transition:      all 0.12s ease;
+}
+
+.editor-split-chevron:hover,
+.editor-split-chevron.active {
+  background: var(--accent-btn-hover);
+}
+
+.editor-split-chevron:disabled {
+  opacity: 0.5;
+  cursor:  not-allowed;
+}
+
 /* ── Overflow menu ────────────────────────────────────────────── */
 
 .editor-overflow {
@@ -305,6 +363,11 @@
   color:      var(--text-primary);
 }
 
+.editor-overflow-item.selected {
+  color:      var(--accent);
+  font-weight: 600;
+}
+
 .editor-overflow-item.danger:hover {
   background: rgba(248, 113, 113, 0.08);
   color:      var(--status-error);
@@ -335,21 +398,21 @@
   transition:    margin 0.3s ease;
 
   /* Highlight intensity — standard (default) */
-  --hl-aligned:   rgba(74, 222, 128, 0.18);
-  --hl-partial:   rgba(250, 204, 21, 0.18);
-  --hl-unmatched: rgba(148, 163, 184, 0.08);
+  --hl-aligned:   rgba(74, 222, 128, 0.30);
+  --hl-partial:   rgba(250, 204, 21, 0.30);
+  --hl-unmatched: rgba(148, 163, 184, 0.12);
 }
 
-.editor-doc[data-highlight="dim"] {
-  --hl-aligned:   rgba(74, 222, 128, 0.08);
-  --hl-partial:   rgba(250, 204, 21, 0.08);
-  --hl-unmatched: rgba(148, 163, 184, 0.03);
+.editor-doc[data-highlight="off"] {
+  --hl-aligned:   transparent;
+  --hl-partial:   transparent;
+  --hl-unmatched: transparent;
 }
 
 .editor-doc[data-highlight="bright"] {
-  --hl-aligned:   rgba(74, 222, 128, 0.35);
-  --hl-partial:   rgba(250, 204, 21, 0.35);
-  --hl-unmatched: rgba(148, 163, 184, 0.15);
+  --hl-aligned:   rgba(74, 222, 128, 0.50);
+  --hl-partial:   rgba(250, 204, 21, 0.50);
+  --hl-unmatched: rgba(148, 163, 184, 0.25);
 }
 
 .editor-sidebar {
@@ -518,6 +581,58 @@
 
 .editor-region:hover .editor-region-remove {
   display: flex;
+}
+
+/* ── Erector-Only Block ────────────────────────────────────────── */
+
+.erector-only-block {
+  padding:        8px 0;
+  margin:         8px 0 12px;
+}
+
+.erector-only-header {
+  font-family:    'Shruti', 'Nirmala UI', sans-serif;
+  font-size:      11pt;
+  font-weight:    700;
+  color:          #dc2626;
+  margin-bottom:  4px;
+}
+
+.erector-only-item {
+  display:     flex;
+  align-items: baseline;
+  gap:         6px;
+  padding:     1px 0;
+}
+
+.erector-only-bullet {
+  color:       #dc2626;
+  font-size:   12pt;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.erector-only-text {
+  font-family: 'Shruti', 'Nirmala UI', sans-serif;
+  font-size:   10pt;
+  color:       #dc2626;
+  line-height: 1.6;
+}
+
+.erector-only-risk {
+  font-size:     9px;
+  font-weight:   700;
+  padding:       1px 6px;
+  border-radius: 999px;
+  flex-shrink:   0;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.erector-only-risk.high,
+.erector-only-risk.critical {
+  background: rgba(248, 113, 113, 0.12);
+  color:      var(--risk-high, #f87171);
 }
 
 /* ── Region detail sidebar ───────────────────────────────────────── */

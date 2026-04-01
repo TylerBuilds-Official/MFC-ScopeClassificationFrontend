@@ -7,11 +7,17 @@ import EmptyState from '../components/global/EmptyState'
 import ConfirmDialog from '../components/global/ConfirmDialog'
 import EditorParagraph from '../components/editor/EditorParagraph'
 import EditorToolbar from '../components/editor/EditorToolbar'
+import ErectorOnlyBlock from '../components/editor/ErectorOnlyBlock'
 import RegionDetail from '../components/editor/RegionDetail'
 import RemovedItemsPanel from '../components/editor/RemovedItemsPanel'
 import type { RemovedItem } from '../components/editor/RemovedItemsPanel'
 import { useApi } from '../hooks/useApi'
-import { getScopeLetterData, downloadEditorExport } from '../api/export'
+import {
+  getScopeLetterData,
+  downloadScopeLetter,
+  downloadEditorExport,
+  downloadHighlightedEditorExport,
+} from '../api/export'
 import { validateMatch as apiValidateMatch } from '../api/matches'
 import {
   removeRegion as apiRemoveRegion,
@@ -25,6 +31,7 @@ import {
 import { useAuth } from '../auth/AuthContext'
 import { useTheme } from '../context/ThemeContext'
 import type { EditorRegion, EditorViewMode, HighlightIntensity } from '../types/editor'
+import type { EditorExportType } from '../components/editor/EditorToolbar'
 
 import '../styles/editor.css'
 
@@ -47,9 +54,12 @@ export default function ScopeLetterEditorPage() {
   const [viewMode, setViewMode]               = useState<EditorViewMode>('erector_exclusions')
   const { user }               = useAuth()
   const { theme, toggleTheme } = useTheme()
-  const [highlightIntensity, setHighlightIntensity] = useState<HighlightIntensity>(
-    (user?.highlight_intensity as HighlightIntensity) ?? 'standard'
-  )
+  const [highlightIntensity, setHighlightIntensity] = useState<HighlightIntensity>(() => {
+    const stored = user?.highlight_intensity as string | undefined
+    if (stored === 'off' || stored === 'standard' || stored === 'bright') return stored
+
+    return 'standard'
+  })
   const [exporting, setExporting]             = useState(false)
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const [matchTypeOverrides, setMatchTypeOverrides] = useState<Map<number, string>>(new Map())
@@ -314,10 +324,22 @@ export default function ScopeLetterEditorPage() {
     }
   }, [sessionId, refetch])
 
-  async function handleExport() {
+  async function handleExport(type: EditorExportType) {
     setExporting(true)
     try {
-      await downloadEditorExport(sessionId, viewMode)
+      const vm = viewMode === 'full' ? 'full' : 'erector_exclusions'
+
+      switch (type) {
+        case 'highlighted_unedited':
+          await downloadScopeLetter(sessionId, vm)
+          break
+        case 'highlighted_edited':
+          await downloadHighlightedEditorExport(sessionId, vm)
+          break
+        case 'clean_edited':
+          await downloadEditorExport(sessionId, vm)
+          break
+      }
     } catch (err) {
       console.error('Export failed:', err)
     } finally {
@@ -399,17 +421,21 @@ export default function ScopeLetterEditorPage() {
       <div className="editor-layout">
         <div className="editor-doc" data-highlight={highlightIntensity}>
           {visibleParagraphs.map(p => (
-            <EditorParagraph
-              key={p.index}
-              paragraph={p}
-              removed={removedParas.has(p.index)}
-              removedRegions={removedRegions}
-              onTextChange={handleTextChange}
-              onRemovePara={handleRemovePara}
-              onRestorePara={handleRestorePara}
-              onRegionClick={handleRegionClick}
-              onRemoveRegion={handleRemoveRegion}
-            />
+            <div key={p.index}>
+              {p.index === data.erector_only_insert_before && data.erector_only_items.length > 0 && (
+                <ErectorOnlyBlock items={data.erector_only_items} />
+              )}
+              <EditorParagraph
+                paragraph={p}
+                removed={removedParas.has(p.index)}
+                removedRegions={removedRegions}
+                onTextChange={handleTextChange}
+                onRemovePara={handleRemovePara}
+                onRestorePara={handleRestorePara}
+                onRegionClick={handleRegionClick}
+                onRemoveRegion={handleRemoveRegion}
+              />
+            </div>
           ))}
         </div>
 

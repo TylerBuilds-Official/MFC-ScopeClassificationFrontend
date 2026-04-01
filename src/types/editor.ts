@@ -37,7 +37,7 @@ export type TemplateSection = 'erector_exclusions'
 
 export type EditorViewMode = 'full' | 'erector_exclusions'
 
-export type HighlightIntensity = 'dim' | 'standard' | 'bright'
+export type HighlightIntensity = 'off' | 'standard' | 'bright'
 
 export interface EditorParagraph {
   index:            number
@@ -61,6 +61,15 @@ export interface EditorPersistedState {
   text_edits:         { para_index: number; edited_text: string }[]
 }
 
+export interface ErectorOnlyItem {
+  match_id:     number
+  text:         string
+  confidence:   number | null
+  risk_level:   string | null
+  risk_notes:   string | null
+  ai_reasoning: string | null
+}
+
 export interface ScopeLetterData {
   session: {
     id:       number
@@ -68,6 +77,8 @@ export interface ScopeLetterData {
     job:      string
     job_name: string
   }
-  paragraphs:   EditorParagraph[]
-  editor_state: EditorPersistedState
+  paragraphs:                 EditorParagraph[]
+  editor_state:               EditorPersistedState
+  erector_only_items:         ErectorOnlyItem[]
+  erector_only_insert_before: number | null
 }
