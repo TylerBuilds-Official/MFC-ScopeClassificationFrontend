@@ -46,7 +46,7 @@ export default function SessionSummaryCard({ session, matchSummary, onUpdated }:
       {/* Match counts */}
       <div className="session-detail-grid">
         <StatCard label="Aligned"        value={matchSummary.Aligned}                cls="aligned" />
-        <StatCard label="Deterministic"  value={matchSummary.Deterministic ?? 0}     cls="deterministic" />
+        <StatCard label="Auto-Matched"   value={matchSummary.Deterministic ?? 0}     cls="deterministic" />
         <StatCard label="Partial"        value={matchSummary.Partial}                cls="partial" />
         <StatCard label="Erector Only"   value={matchSummary.ErectorOnly}            cls="erector-only" />
         <StatCard label="MFC Only"       value={matchSummary.MfcOnly}                cls="mfc-only" />

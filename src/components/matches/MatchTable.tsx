@@ -129,6 +129,13 @@ export default function MatchTable({ matches, showSession, showCategory = true, 
                     </div>
                   )}
 
+                  {m.match_type === 'Deterministic' && m.atomic_text && (
+                    <div className="atomic-match-label">
+                      <span className="atomic-match-prefix">matched</span>
+                      <span className="atomic-match-phrase">"{m.atomic_text}"</span>
+                    </div>
+                  )}
+
                   {m.mfc_text && (
                     <div className="excl-text-block mfc">
                       <div className="excl-text-label">
@@ -184,6 +191,7 @@ function matchTypeClass(type: string | null): string {
 
 function formatMatchType(type: string | null): string {
   if (!type) return '—'
+  if (type === 'Deterministic') return 'Auto-Matched'
 
   return type.replace(/([A-Z])/g, ' $1').trim()
 }

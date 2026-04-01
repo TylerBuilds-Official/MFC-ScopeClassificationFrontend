@@ -134,7 +134,7 @@
 }
 
 .editor-view-btn.active {
-  background: var(--accent);
+  background: var(--accent-btn);
   color:      #fff;
 }
 
@@ -244,13 +244,14 @@
 }
 
 .editor-tool-btn.primary {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--accent-btn);
+  border-color: var(--accent-btn);
   color: #fff;
 }
 
 .editor-tool-btn.primary:hover {
-  opacity: 0.9;
+  background: var(--accent-btn-hover);
+  border-color: var(--accent-btn-hover);
 }
 
 .editor-tool-btn:disabled {

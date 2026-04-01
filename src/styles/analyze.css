@@ -143,9 +143,9 @@
   align-items:   center;
   gap:           5px;
   padding:       5px 10px;
-  background:    var(--accent);
+  background:    var(--accent-btn);
   color:         #fff;
-  border:        1px solid var(--accent);
+  border:        1px solid var(--accent-btn);
   border-radius: var(--radius-md);
   font-size:     12px;
   font-weight:   500;
@@ -154,7 +154,8 @@
 }
 
 .btn-analyze:hover {
-  background: var(--accent-hover);
+  background: var(--accent-btn-hover);
+  border-color: var(--accent-btn-hover);
 }
 
 .btn-analyze.secondary {
@@ -172,6 +173,8 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+
 
 /* ── Progress ────────────────────────────────────────────────────── */
 

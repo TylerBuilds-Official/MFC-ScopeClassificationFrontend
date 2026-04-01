@@ -153,3 +153,17 @@
   font-size: 20px;
   font-weight: 600;
 }
+
+
+/* ── Light Mode Overrides ────────────────────────────────────── */
+
+[data-theme="light"] .nav-link.active {
+  background: rgba(37, 99, 195, 0.10);
+  color: #2563c3;
+  font-weight: 550;
+}
+
+[data-theme="light"] .nav-link:hover {
+  background: rgba(37, 99, 195, 0.06);
+  color: var(--text-primary);
+}

@@ -11,6 +11,7 @@ interface ErectorAccordionProps {
   matches:           MatchRow[]
   categoryMap?:      Map<number, string>
   showRisk?:         boolean
+  erectorName?:      string | null
   highlightMatchId?: number | null
   onHighlightDone?:  () => void
 }
@@ -23,14 +24,16 @@ interface ErectorGroup {
   bestRisk:     string | null
   bestType:     string | null
   multiMatch:   boolean
+  isMfcOnly:    boolean
 }
 
 
 const RISK_ORDER: Record<string, number> = { Critical: 0, High: 1, Medium: 2, Low: 3 }
 
 
-export default function ErectorAccordion({ matches, categoryMap, showRisk = true, highlightMatchId, onHighlightDone }: ErectorAccordionProps) {
-  const [openIds, setOpenIds] = useState<Set<number | null>>(new Set())
+export default function ErectorAccordion({ matches, categoryMap, showRisk = true, erectorName, highlightMatchId, onHighlightDone }: ErectorAccordionProps) {
+  const [openIds, setOpenIds]           = useState<Set<number | null>>(new Set())
+  const [hoveredAtomic, setHoveredAtomic] = useState<{ groupId: number | null; phrase: string } | null>(null)
 
   const groups = useMemo(() => buildGroups(matches), [matches])
 
@@ -86,7 +89,13 @@ export default function ErectorAccordion({ matches, categoryMap, showRisk = true
               </div>
 
               <div className="erector-header-text">
-                <p className="erector-excerpt">{g.erectorText}</p>
+                <p className="erector-excerpt">
+                  {erectorName && !g.isMfcOnly && <span className="erector-name-prefix">{erectorName}:</span>}
+                  <HighlightedExcerpt
+                    text={g.erectorText}
+                    highlight={hoveredAtomic?.groupId === g.extractedId ? hoveredAtomic.phrase : null}
+                  />
+                </p>
               </div>
 
               <div className="erector-header-badges">
@@ -117,6 +126,7 @@ export default function ErectorAccordion({ matches, categoryMap, showRisk = true
                     categoryMap={categoryMap}
                     showMultiLabel={g.multiMatch}
                     showRisk={showRisk}
+                    onAtomicHover={phrase => setHoveredAtomic(phrase ? { groupId: g.extractedId, phrase } : null)}
                   />
                 ))}
               </div>
@@ -138,9 +148,10 @@ interface MfcMatchCardProps {
   categoryMap?:   Map<number, string>
   showMultiLabel: boolean
   showRisk?:      boolean
+  onAtomicHover?: (phrase: string | null) => void
 }
 
-function MfcMatchCard({ match: m, index, total, categoryMap, showMultiLabel, showRisk = true }: MfcMatchCardProps) {
+function MfcMatchCard({ match: m, index, total, categoryMap, showMultiLabel, showRisk = true, onAtomicHover }: MfcMatchCardProps) {
   const [showReasoning, setShowReasoning] = useState(false)
 
   return (
@@ -161,6 +172,18 @@ function MfcMatchCard({ match: m, index, total, categoryMap, showMultiLabel, sho
           </span>
         )}
       </div>
+
+      {/* Atomic match phrase — shows which erector fragment triggered the deterministic match */}
+      {m.match_type === 'Deterministic' && m.atomic_text && (
+        <div
+          className="atomic-match-label"
+          onMouseEnter={() => onAtomicHover?.(m.atomic_text)}
+          onMouseLeave={() => onAtomicHover?.(null)}
+        >
+          <span className="atomic-match-prefix">matched</span>
+          <span className="atomic-match-phrase">"{m.atomic_text}"</span>
+        </div>
+      )}
 
       {/* MFC exclusion text */}
       {m.mfc_text && (
@@ -233,6 +256,18 @@ function buildGroups(matches: MatchRow[]): ErectorGroup[] {
 
   return Array.from(map.entries())
     .map(([id, rows]) => {
+      // If a Deterministic match exists, drop ErectorOnly rows and low-confidence
+      // AI matches that add noise alongside high-confidence auto-matches
+      const hasDeterministic = rows.some(r => r.match_type === 'Deterministic')
+      if (hasDeterministic) {
+        rows = rows.filter(r => {
+          if (r.match_type === 'ErectorOnly') return false
+          if (r.match_type !== 'Deterministic' && (r.confidence ?? 0) < 0.80) return false
+
+          return true
+        })
+      }
+
       // Sort within group: highest confidence first
       rows.sort((a, b) => (b.confidence ?? 0) - (a.confidence ?? 0))
 
@@ -247,17 +282,25 @@ function buildGroups(matches: MatchRow[]): ErectorGroup[] {
       // Best match type = first by confidence
       const bestType = rows[0]?.match_type ?? null
 
+      const isMfcOnly = id == null
+
       return {
         extractedId: id,
-        erectorText: rows[0]?.erector_text ?? `Erector Item #${id ?? '—'}`,
+        erectorText: isMfcOnly
+          ? 'Unaddressed — MFC template items not found in erector scope letter'
+          : (rows[0]?.erector_text ?? `Erector Item #${id}`),
         matches:     rows,
         bestRisk,
         bestType,
         multiMatch:  rows.length > 1,
+        isMfcOnly,
       }
     })
     .sort((a, b) => {
-      // Sort groups: multi-match first, then by risk severity
+      // MfcOnly group always at the bottom
+      if (a.isMfcOnly !== b.isMfcOnly) return a.isMfcOnly ? 1 : -1
+
+      // Multi-match first, then by risk severity
       if (a.multiMatch !== b.multiMatch) return a.multiMatch ? -1 : 1
 
       const ra = RISK_ORDER[a.bestRisk ?? ''] ?? 99
@@ -270,6 +313,28 @@ function buildGroups(matches: MatchRow[]): ErectorGroup[] {
 
 /* ── Helpers ─────────────────────────────────────────────────────── */
 
+/* ── Highlighted Excerpt (atomic hover) ───────────────────────── */
+
+function HighlightedExcerpt({ text, highlight }: { text: string; highlight: string | null }) {
+  if (!highlight) return <>{text}</>
+
+  const idx = text.toLowerCase().indexOf(highlight.toLowerCase())
+  if (idx === -1) return <>{text}</>
+
+  const before  = text.slice(0, idx)
+  const matched = text.slice(idx, idx + highlight.length)
+  const after   = text.slice(idx + highlight.length)
+
+  return (
+    <>
+      {before}
+      <span className="atomic-excerpt-highlight">{matched}</span>
+      {after}
+    </>
+  )
+}
+
+
 function matchTypeClass(type: string | null): string {
   if (!type) return ''
 
@@ -278,6 +343,7 @@ function matchTypeClass(type: string | null): string {
 
 function formatMatchType(type: string | null): string {
   if (!type) return '—'
+  if (type === 'Deterministic') return 'Auto-Matched'
 
   return type.replace(/([A-Z])/g, ' $1').trim()
 }

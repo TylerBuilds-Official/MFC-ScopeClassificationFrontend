@@ -34,7 +34,7 @@ export default function RegionDetail({ region, onClose, onValidate }: Props) {
     <div className="region-detail">
       <div className="region-detail-header">
         <span className={`region-detail-badge ${(region.match_type ?? 'unmatched').toLowerCase()}`}>
-          {region.match_type ?? 'Unmatched'}
+          {region.match_type === 'Deterministic' ? 'Auto-Matched' : (region.match_type ?? 'Unmatched')}
         </span>
         <button className="region-detail-close" onClick={onClose}>
           <X size={14} />
@@ -98,7 +98,7 @@ export default function RegionDetail({ region, onClose, onValidate }: Props) {
       {isDeterministic && (
         <div className="region-validated-banner">
           <Check size={14} />
-          <span>Deterministic</span>
+          <span>Auto-Matched</span>
         </div>
       )}
     </div>

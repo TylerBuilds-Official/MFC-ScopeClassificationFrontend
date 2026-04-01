@@ -569,3 +569,37 @@
   padding: 1px 8px;
   border-radius: 999px;
 }
+
+/* ── Light Mode Overrides ────────────────────────────────────── */
+
+[data-theme="light"] .cat-nav-item.active .cat-name {
+  color: #2563c3;
+}
+
+[data-theme="light"] .cat-nav-item.active {
+  border-left-color: #2563c3;
+  background: rgba(37, 99, 195, 0.08);
+}
+
+[data-theme="light"] .all-excl-category-header {
+  color: #2563c3;
+}
+
+[data-theme="light"] .excl-type-badge.clarification {
+  color: #2563c3;
+  background: rgba(37, 99, 195, 0.08);
+}
+
+[data-theme="light"] .excl-type-chip.clarification.active {
+  color: #2563c3;
+  border-color: #2563c3;
+  background: rgba(37, 99, 195, 0.08);
+}
+
+[data-theme="light"] .btn-sm.primary {
+  background: var(--accent-btn);
+}
+
+[data-theme="light"] .btn-sm.primary:hover {
+  background: var(--accent-btn-hover);
+}

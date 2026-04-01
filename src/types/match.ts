@@ -13,6 +13,7 @@ export interface MatchRow {
   mfc_text:                 string | null
   mfc_item_type:            string | null
   mfc_scope_type:           string | null
+  atomic_text:              string | null
 }
 
 export interface MatchListResponse {

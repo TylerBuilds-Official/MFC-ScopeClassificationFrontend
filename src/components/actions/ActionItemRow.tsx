@@ -286,6 +286,7 @@ function matchTypeClass(type: string | null): string {
 
 function formatMatchType(type: string | null): string {
   if (!type) return '—'
+  if (type === 'Deterministic') return 'Auto-Matched'
 
   return type.replace(/([A-Z])/g, ' $1').trim()
 }

@@ -26,11 +26,13 @@
   --text-muted:     #6b7080;
 
   /* Accent — steel blue */
-  --accent:         #4e8cff;
-  --accent-hover:   #6ba0ff;
+  --accent:           #4e8cff;
+  --accent-hover:     #6ba0ff;
   --accent-transparent: rgba(78, 140, 255, 0.75);
-  --accent-dull: #639cc8;
-  --accent-muted:   rgba(78, 140, 255, 0.12);
+  --accent-dull:      #639cc8;
+  --accent-muted:     rgba(78, 140, 255, 0.12);
+  --accent-btn:       #4e8cff;
+  --accent-btn-hover: #6ba0ff;
 
   /* Status */
   --status-complete:  #34d399;
@@ -87,8 +89,10 @@
 
   /* Accent — slightly deeper blue for light bg contrast */
   --accent: rgba(45, 111, 212, 0.5);
-  --accent-hover:   #1a5bbf;
-  --accent-muted:   rgba(45, 111, 212, 0.10);
+  --accent-hover:    #1a5bbf;
+  --accent-muted:    rgba(45, 111, 212, 0.10);
+  --accent-btn:      rgba(45, 111, 212, 0.78);
+  --accent-btn-hover: rgba(45, 111, 212, 0.9);
 
   /* Status — same hues, slightly deeper */
   --status-complete:  #059669;

@@ -27,7 +27,15 @@ import '../styles/action-items.css'
 type ViewMode   = 'erector' | 'accordion' | 'table'
 type ReviewTab  = 'matches' | 'action-items'
 
-const MATCH_TYPES = ['Aligned', 'Partial', 'ErectorOnly', 'MfcOnly'] as const
+const MATCH_TYPES = ['Aligned', 'Partial', 'Deterministic', 'ErectorOnly', 'MfcOnly'] as const
+
+const MATCH_TYPE_LABELS: Record<string, string> = {
+  Aligned:       'Aligned',
+  Partial:       'Partial',
+  Deterministic: 'Auto-Matched',
+  ErectorOnly:   'Erector Only',
+  MfcOnly:       'Mfc Only',
+}
 
 
 export default function ScopeReviewDetailPage() {
@@ -61,7 +69,21 @@ export default function ScopeReviewDetailPage() {
   const matchRows = matches.data?.matches ?? []
 
   const filtered = useMemo(() => {
-    let rows: MatchRow[] = matchRows
+    // Suppress ErectorOnly rows when a Deterministic match exists for the same extraction
+    const deterministicExtractions = new Set(
+      matchRows
+        .filter(m => m.match_type === 'Deterministic')
+        .map(m => m.extracted_exclusion_id)
+    )
+
+    let rows: MatchRow[] = matchRows.filter(m => {
+      if (deterministicExtractions.has(m.extracted_exclusion_id)) {
+        if (m.match_type === 'ErectorOnly') return false
+        if (m.match_type !== 'Deterministic' && (m.confidence ?? 0) < 0.80) return false
+      }
+
+      return true
+    })
 
     if (activeTypes.size > 0) {
       rows = rows.filter(m => m.match_type != null && activeTypes.has(m.match_type))
@@ -208,7 +230,7 @@ export default function ScopeReviewDetailPage() {
                   data-type={t.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '')}
                   onClick={() => toggleFilter(t)}
                 >
-                  {t.replace(/([A-Z])/g, ' $1').trim()}
+                  {MATCH_TYPE_LABELS[t] ?? t}
                 </button>
               ))}
 
@@ -243,6 +265,7 @@ export default function ScopeReviewDetailPage() {
                     matches={filtered}
                     categoryMap={categoryMap}
                     showRisk={false}
+                    erectorName={sess.ErectorNameRaw as string | undefined}
                     highlightMatchId={highlightMatchId}
                     onHighlightDone={() => setHighlightMatchId(null)}
                   />

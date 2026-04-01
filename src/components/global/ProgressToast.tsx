@@ -35,7 +35,7 @@ export default function ProgressToast() {
           <div
             key={sessionId}
             className={`toast-item ${done ? 'complete' : ''} ${error ? 'error' : ''}`}
-            onClick={() => navigate(`/sessions/${sessionId}`)}
+            onClick={() => navigate(`/reviews/${sessionId}`)}
           >
             <div className="toast-icon">
               {done  && <CheckCircle size={18} />}
